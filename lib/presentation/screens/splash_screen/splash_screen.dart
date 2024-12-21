@@ -1,4 +1,4 @@
-import 'package:esvilla_app/config/app_router.dart';
+import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:flutter/material.dart';
 
 
