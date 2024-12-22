@@ -1,10 +1,10 @@
 import 'package:esvilla_app/domain/entities/user_entity.dart';
 
-import '../../data/repositories/user_repository.dart';
+import '../../data/repositories/user_repository_impl.dart';
 
 class GetUsersUseCase{
 
-  final UserRepository repository;
+  final UserRepositoryImpl repository;
 
   GetUsersUseCase(this.repository);
 

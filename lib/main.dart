@@ -1,5 +1,5 @@
 import 'package:esvilla_app/core/config/app_router.dart';
-import 'package:esvilla_app/data/repositories/user_repository.dart';
+import 'package:esvilla_app/data/repositories/user_repository_impl.dart';
 import 'package:esvilla_app/domain/use_cases/get_users_use_case.dart';
 import 'package:esvilla_app/presentation/controller/user_controller.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider( create: (_) => UserRepository()),
-        ProxyProvider<UserRepository, GetUsersUseCase>(
+        Provider( create: (_) => UserRepositoryImpl()),
+        ProxyProvider<UserRepositoryImpl, GetUsersUseCase>(
           update: (_, userRepository,__) => GetUsersUseCase(userRepository),
         ),
         ChangeNotifierProvider<UserController>(

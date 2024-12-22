@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:esvilla_app/data/models/user_model.dart';
 import 'package:http/http.dart' as http;
-class UserRepository {
+class UserRepositoryImpl {
 
   Future<List<UserModel>> fetchUsers() async {
     final response = await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
