@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           )
       ],
       child: MaterialApp.router(
-        routerConfig: appRouter,
+        routerConfig: AppRouter.appRouter,
         title: 'Esvilla App',
         debugShowCheckedModeBanner: false,
       ),

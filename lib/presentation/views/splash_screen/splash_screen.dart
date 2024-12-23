@@ -68,7 +68,7 @@ class SplashWidget extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: ()=>{
-                    appRouter.go('/login')
+                    AppRouter.appRouter.go('/login')
                   },
                    style: ButtonStyle(
                     fixedSize: MaterialStateProperty.all(const Size(233, 50)),

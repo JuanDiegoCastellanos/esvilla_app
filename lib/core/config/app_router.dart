@@ -3,7 +3,7 @@ import 'package:esvilla_app/presentation/views/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-final appRouter = GoRouter(
+/* final  appRouter = GoRouter(
   initialLocation: '/',
   routes: <GoRoute>[
 
@@ -16,14 +16,14 @@ final appRouter = GoRouter(
     GoRoute(path: '/login',
     builder: (context, state) =>  const LoginScreen(), ),
 
-]);
+]); */
 
 class AppRouter {
   static const String splash = '/';
   static const String home = '/home';
   static const String login = '/login';
 
-  static final GoRouter router = GoRouter(
+  static final GoRouter appRouter = GoRouter(
     initialLocation: splash,
     routes: <GoRoute>[
       GoRoute(

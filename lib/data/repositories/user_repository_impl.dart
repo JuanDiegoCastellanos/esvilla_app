@@ -7,6 +7,8 @@ class UserRepositoryImpl {
   Future<List<UserModel>> fetchUsers() async {
     final response = await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
 
+      print(response);
+
     if (response.statusCode == 200){
       final List<dynamic> json = jsonDecode(response.body);
 
