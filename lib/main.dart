@@ -1,18 +1,28 @@
 import 'package:esvilla_app/core/config/app_router.dart';
-import 'package:esvilla_app/data/repositories/user_repository_impl.dart';
-import 'package:esvilla_app/domain/use_cases/get_users_use_case.dart';
-import 'package:esvilla_app/presentation/controller/user_controller.dart';
+import 'package:esvilla_app/core/config/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'injection/injection.dart' as di;
 
 void main() {
+  di.init();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
+  
   @override
+  Widget build(BuildContext context) {
+    
+    return MaterialApp.router(
+      routerConfig: AppRouter.appRouter,
+      title: 'esvilla e.s.p ',
+      theme: AppTheme.lightTheme,
+      debugShowCheckedModeBanner: false,
+    );
+  }
+
+ /*  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -29,8 +39,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         routerConfig: AppRouter.appRouter,
         title: 'Esvilla App',
+        theme: ThemeData.dark(),
         debugShowCheckedModeBanner: false,
       ),
     );
-  }
+  } */
 }
