@@ -1,4 +1,4 @@
-import 'package:esvilla_app/domain/use_cases/get_users_use_case.dart';
+import 'package:esvilla_app/domain/use_cases/get_local_users_use_case.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/user_entity.dart';

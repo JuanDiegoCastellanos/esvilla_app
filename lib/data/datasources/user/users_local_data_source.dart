@@ -1,6 +1,6 @@
 import 'package:esvilla_app/data/models/user_model.dart';
 
-class UserMockDataSource{
+class UsersLocalDataSource{
   Future<List<UserModel>> getUsers() async {
     await Future.delayed(const Duration(seconds: 2));
     return [
