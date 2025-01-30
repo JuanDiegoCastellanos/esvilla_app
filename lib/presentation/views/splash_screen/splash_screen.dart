@@ -2,22 +2,27 @@ import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/presentation/providers/conectivity_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 class SplashScreen extends ConsumerWidget {
   SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final connectivityStatus  = ref.watch(connectivityProvider);
+   
+
+    final connectivityStatus = ref.watch(connectivityProvider);
 
     debugPrint('Connectivity: ${connectivityStatus.isConnected}, '
-               'Type: ${connectivityStatus.connectionType}');
-    
+        'Type: ${connectivityStatus.connectionType}');
+
     return Scaffold(
         body: Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
         colors: <Color>[
-          connectivityStatus.isConnected ? const Color(0xFF82D8FF) : const Color.fromARGB(255, 110, 14, 200),
+          connectivityStatus.isConnected
+              ? const Color(0xFF82D8FF)
+              : const Color.fromARGB(255, 110, 14, 200),
           const Color(0xFFFFFFFF)
         ],
         begin: Alignment.topCenter,
@@ -40,7 +45,7 @@ class SplashWidget extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [              
+            children: [
               Container(
                   height: 250,
                   width: 338,

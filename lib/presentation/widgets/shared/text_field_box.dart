@@ -39,6 +39,7 @@ class TextFieldBox extends StatelessWidget {
         fontSize: 20,
         fontFamily: 'Sniglet',
       ),
+      onEditingComplete: () => FocusScope.of(context).unfocus(),
     );
   }
 }

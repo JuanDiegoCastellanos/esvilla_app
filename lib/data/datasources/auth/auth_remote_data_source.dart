@@ -1,24 +1,32 @@
-import 'dart:convert';
-import 'package:esvilla_app/core/config/app_config.dart';
-import 'package:http/http.dart' as http;
-
+import 'package:dio/dio.dart';
+import 'package:esvilla_app/data/models/auth_response.dart';
 class AuthRemoteDataSource {
-  final http.Client client;
+  final Dio dio;
 
-  AuthRemoteDataSource(this.client);
+  AuthRemoteDataSource(this.dio);
 
-  Future<String> login(String email, String password) async {
-    final response = await client.post(
-      Uri.parse('${AppConfig.apiUrl}/auth/login'),
-      headers: {'Content-Type': 'application/json'},  
-      body: json.encode({'identifier': email, 'password': password}),
-    );
+  Future<AuthResponse> login(String email, String password) async {
+   
+    try {
+      final response = await dio.post(
+        '/auth/login',
+        data: {'identifier': email, 'password': password},
+      );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return data;
-    } else {
-      throw Exception('Failed to login');
+      if (response.statusCode == 200 || response.statusCode == 201) {   
+
+        return AuthResponse.fromJson(response.data);
+
+      } else {
+        throw Exception(
+            'Failed to login. Status: ${response.statusCode}, Body: ${response.data}');
+      }
+    } on DioException catch (e) {
+      print('Dio error during login: $e');
+      throw Exception('Network or server error: ${e.message}');
+    } catch (e) {
+      print('Unexpected error during login: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 }

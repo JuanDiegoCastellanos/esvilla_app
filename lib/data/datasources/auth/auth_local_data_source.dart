@@ -1,5 +1,7 @@
+import 'package:esvilla_app/data/models/auth_response.dart';
+
 class AuthLocalDataSource {
-  Future<String> login(String email, String password) async {
+  Future<AuthResponse> login(String email, String password) async {
     await Future.delayed(const Duration(seconds: 2));
 
      const users = {
@@ -8,7 +10,10 @@ class AuthLocalDataSource {
     };
 
     if (users[email] == password) {
-      return 'mock_token_${email.hashCode}';
+      return AuthResponse(
+        accessToken: 'mock_token_${email.hashCode}',
+        role: 'user',
+      );
     } else {
       throw Exception('Invalid email or password');
     }

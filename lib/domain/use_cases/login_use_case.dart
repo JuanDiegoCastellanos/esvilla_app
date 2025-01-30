@@ -1,3 +1,4 @@
+import 'package:esvilla_app/domain/entities/auth_response_entity.dart';
 import 'package:esvilla_app/domain/repositories/auth_repository.dart';
 
 class LoginUseCase {
@@ -5,7 +6,7 @@ class LoginUseCase {
   
   LoginUseCase(this.repository);
 
-  Future<String> call( String email, String password) async {
+  Future<AuthResponseEntity> call( String email, String password) async {
     return await repository.login(email,password);
   }
 }
