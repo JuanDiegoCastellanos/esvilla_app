@@ -11,45 +11,58 @@ const String login = '/login';
 const String register = '/register';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authControllerProvider);
   return GoRouter(
+    debugLogDiagnostics: true,
     redirect: (context, state) {
+      final authState = ref.read(authControllerProvider);
       // Si no está autenticado y no está en login, redirige a login
       final isAuthenticated = authState.isAuthenticated;
-      final isOnLogin = state.matchedLocation == login;
-      final isOnSplash = state.matchedLocation == splash;
+      final currentLocation = state.matchedLocation;
       final isAdmin = authState.isAdmin;
       AppLogger.i(
-          "isAuthenticated: $isAuthenticated - isOnLogin: $isOnLogin - isOnSplash: $isOnSplash - isAdmin: $isAdmin");
+          "Redirección - Autenticado: $isAuthenticated | Ruta actual: $currentLocation | Admin: $isAdmin");
 
-      if (!isAuthenticated && !isOnLogin && !isOnSplash) {
-        return login;
+      // Usuario NO autenticado
+      if (!isAuthenticated) {
+        if (currentLocation == login || currentLocation == splash) return null;
+        return splash;
       }
-      // Usuario autenticado
-      if (isAuthenticated && (isOnLogin || isOnSplash)) {
-        return authState.isAdmin ? adminHome : home;
+      if (isAuthenticated){
+         if (currentLocation == login || currentLocation == splash) {
+          return isAdmin ? adminHome : home;
       }
+      }
+      // Verificar acceso a rutas admin
+        if (currentLocation.startsWith('/admin') && !isAdmin) {
+          return home;
+        }
+
       return null;
     },
     routes: <GoRoute>[
       GoRoute(
         path: splash,
+        name: splash,
         builder: (context, state) => SplashScreen(),
       ),
       GoRoute(
         path: home,
+        name: home,
         builder: (context, state) => HomeScreen(),
       ),
       GoRoute(
         path: login,
+        name: login,
         builder: (context, state) => LoginScreen(),
       ),
       GoRoute(
         path: register,
+        name: register,
         builder: (context, state) => RegisterScreen(),
       ),
       GoRoute(
         path: adminHome,
+        name: adminHome,
         builder: (context, state) => const AdminHome(),
       ),
     ],
