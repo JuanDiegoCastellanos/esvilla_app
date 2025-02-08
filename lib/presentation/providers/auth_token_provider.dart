@@ -1,34 +1,99 @@
 import 'package:esvilla_app/core/utils/secure_storage.dart';
 import 'package:esvilla_app/presentation/providers/secure_storage_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-class AuthTokenStateNotifier extends StateNotifier<String?> {
-  final SecureStorageService _storageService;
 
-  AuthTokenStateNotifier(this._storageService) : super(null) {
-    _loadToken(); // Cargar el token al iniciar
-  }
+class AuthTokenState {
+  final String? accessToken;
+  final String? refreshToken;
+  final int? expiration;
 
-  Future<void> _loadToken() async {
-    state = await _storageService.getToken();
-  }
-
-  Future<void> saveToken(String token) async {
-    await _storageService.saveToken(token);
-    state = token;
+  bool get isValid {
+    if (accessToken == null || expiration == null) return false;
+    final expirationDate = DateTime.fromMillisecondsSinceEpoch(expiration!);
+    return expirationDate.isAfter(DateTime.now());
   }
 
-  Future<void> clearToken() async {
-    await _storageService.clearToken();
-    state = null;
-  }
-  /// Exponer un método para obtener el token actual almacenado
-  Future<String?> getToken() async {
-    if (state != null) return state; // Si ya está cargado, devolverlo
-    state = await _storageService.getToken(); // Volver a consultar si es necesario
-    return state;
-  }
+  const AuthTokenState({
+    required this.accessToken,
+    required this.refreshToken,
+    required this.expiration,
+  });
+
+  const AuthTokenState.empty()
+      : accessToken = null,
+        refreshToken = null,
+        expiration = null;
 }
 
-final authTokenProvider = StateNotifierProvider<AuthTokenStateNotifier, String?>(
+class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
+  final SecureStorageService _storage;
+
+  AuthTokenStateNotifier(this._storage) : super(const AuthTokenState.empty()) {
+   // Cargar el token o tokens
+   _loadTokens();
+  }
+
+  Future<void> _loadTokens() async {
+    final accessToken = await _storage.getToken();
+    final refreshToken = await _storage.getRefreshToken();
+    final expiration = await _storage.getExpiration();
+    
+    state = AuthTokenState(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      expiration: expiration,
+    );
+  }
+
+  Future<void> saveTokens({
+    required String accessToken,
+    required String refreshToken,
+    required int expiresIn,
+  }) async {
+    await _storage.saveToken(accessToken);
+    await _storage.saveRefreshToken(refreshToken);
+    await _storage.saveExpiration(expiresIn);
+    
+    state = AuthTokenState(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      expiration: expiresIn,
+    );
+  }
+
+ Future<void> clearTokens() async {
+    await _storage.clearToken();
+    await _storage.clearRefreshToken();
+    await _storage.clearExpiration();
+    state = const AuthTokenState.empty();
+  }
+
+  /// Exponer un método para obtener el token actual almacenado
+  Future<String?> getAccessToken() async {
+    if (state.accessToken != null) return state.accessToken; // Si ya está cargado, devolverlo
+    final token = await _storage.getToken(); // Volver a consultar si es necesario
+    if (token != null) {
+      state = AuthTokenState(
+        accessToken: token,
+        refreshToken: state.refreshToken,
+        expiration: state.expiration,
+      );
+    }
+    return state.accessToken;
+  }
+
+  /// Valida si el token esta cerca de expirar o no
+  ///
+  /// Verifica si el token actual esta cerca de expirar (1 dia antes de expirar)
+  /// y devuelve true si esta cerca de expirar o false en caso contrario
+  bool validationToken() {
+    if (state.accessToken == null) return false;
+    final expirationDate = DateTime.fromMillisecondsSinceEpoch(state.expiration!);
+    return expirationDate.isAfter(DateTime.now().subtract(const Duration(days: 1))); // 1 dia antes de expirar
+  }
+
+}
+
+final authTokenProvider = StateNotifierProvider<AuthTokenStateNotifier, AuthTokenState>(
   (ref) => AuthTokenStateNotifier(ref.watch(secureStorageServiceProvider)),
 );
