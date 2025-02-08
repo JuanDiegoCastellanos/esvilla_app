@@ -1,29 +1,33 @@
-import 'dart:convert';
-
 import 'package:esvilla_app/domain/entities/auth_response_entity.dart';
 
-AuthResponse authResponseFromJson(String str) => AuthResponse.fromJson(json.decode(str));
-
-String authResponseToJson(AuthResponse data) => json.encode(data.toJson());
-
 class AuthResponse {
-    final String accessToken;
-    final String role;
+  final String accessToken;
+  final String refreshToken;
+  final String role;
+  final int expiresIn;
 
-    AuthResponse({
-        required this.accessToken,
-        required this.role,
-    });
+  AuthResponse({
+    required this.accessToken,
+    required this.refreshToken,
+    required this.role,
+    required this.expiresIn,
+  });
 
-    factory AuthResponse.fromJson(Map<String, dynamic> json) => AuthResponse(
+  factory AuthResponse.fromJson(Map<String, dynamic> json) => AuthResponse(
         accessToken: json["access_token"] ?? '',
+        refreshToken: json["refresh_token"] ?? '',
         role: json["role"] ?? '',
-    );
+        expiresIn: json["expires_in"] ?? 3600,
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "access_token": accessToken,
         "role": role,
-    };
+      };
 
-  AuthResponseEntity toEntity() => AuthResponseEntity(accessToken: accessToken, role: role);
+  AuthResponseEntity toEntity() => AuthResponseEntity(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      role: role,
+      expiration: expiresIn);
 }
