@@ -1,4 +1,5 @@
 import 'package:esvilla_app/core/config/app_router.dart';
+import 'package:esvilla_app/presentation/providers/auth_controller_provider.dart';
 import 'package:esvilla_app/presentation/widgets/home/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -20,7 +21,9 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final goRouter = ref.watch(goRouterProvider);
+    final router = ref.watch(goRouterProvider);
+    final auth = ref.read(authControllerProvider.notifier);
+
     return Scaffold(
       backgroundColor: const Color(0xFFE4F7FF),
       body: SafeArea(
@@ -52,7 +55,10 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => goRouter.pop(),
+                  onTap: () {
+                    auth.logout();
+                    router.go('/login');
+                  },
                   child: const Icon(
                     Icons.logout,
                     size: 40,
