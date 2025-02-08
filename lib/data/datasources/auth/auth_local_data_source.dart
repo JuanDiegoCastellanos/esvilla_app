@@ -13,6 +13,8 @@ class AuthLocalDataSource {
       return AuthResponse(
         accessToken: 'mock_token_${email.hashCode}',
         role: 'user',
+        refreshToken: 'mock_refresh_token_${email.hashCode}',
+        expiresIn: 3600,
       );
     } else {
       throw Exception('Invalid email or password');
