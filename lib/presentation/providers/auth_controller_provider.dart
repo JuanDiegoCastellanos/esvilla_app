@@ -27,7 +27,7 @@ class AuthController extends StateNotifier<AuthState> {
   /// Si el login es exitoso, se guarda el token de acceso y se
   /// actualiza el estado de autenticacion.
   ///
-  /// Si el login falla, se cierra la sesion y se lanza una excepci n.
+  /// Si el login falla, se cierra la sesion y se lanza una excepcion.
   ///
   /// [email] es el correo electronico del usuario.
   /// [password] es la contrasena del usuario.
