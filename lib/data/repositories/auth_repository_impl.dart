@@ -13,6 +13,12 @@ class AuthLocalRepositoryImpl implements AuthRepository {
   Future<AuthResponseEntity> login(String email, String password) async {
     return await authLocalDataSource.login(email, password).then((authResponse) => authResponse.toEntity());
   }
+  
+  @override
+  Future<AuthResponseEntity> refreshToken(String refreshToken) {
+    // TODO: implement refreshToken
+    throw UnimplementedError();
+  }
 }
 
 class AuthRemoteRepositoryImpl extends AuthRepository {
@@ -24,6 +30,11 @@ class AuthRemoteRepositoryImpl extends AuthRepository {
   @override
   Future<AuthResponseEntity> login(String email, String password) async {
     return await authRemoteDataSource.login(email, password).then((authResponse) => authResponse.toEntity());    
+  }
+
+  @override
+  Future<AuthResponseEntity> refreshToken(String refreshToken) async {
+    return await authRemoteDataSource.refreshToken(refreshToken).then((authResponse) => authResponse.toEntity());    
   }
 
 }
