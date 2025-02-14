@@ -13,6 +13,10 @@ abstract class SecureStorageService {
   Future<void> saveExpiration(int expiresIn);
   Future<int?> getExpiration();
   Future<void> clearExpiration();
+
+  Future<void> saveASimpleToken(String key, String value);
+  Future<String?> getASimpleToken(String key);
+  Future<void> clearASimpleToken(String key);
 }
 
 class SecureStorageServiceImpl  implements SecureStorageService{
@@ -67,6 +71,21 @@ class SecureStorageServiceImpl  implements SecureStorageService{
   @override
   Future<void> clearToken() async  {
     await _storage.delete(key: 'ACCESS_TOKEN');
+  }
+  
+  @override
+  Future<void> clearASimpleToken(String key) async {
+    await _storage.delete(key: key);
+  }
+  
+  @override
+  Future<String?> getASimpleToken(String key) async {
+    return await _storage.read(key: key);
+  }
+  
+  @override
+  Future<void> saveASimpleToken(String key, String value) async {
+    await _storage.write(key: key, value: value);
   }
 
 }

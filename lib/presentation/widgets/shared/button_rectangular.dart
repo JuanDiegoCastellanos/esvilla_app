@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class ButtonRectangular extends StatelessWidget {
   const ButtonRectangular(
-      {super.key, required this.onPressedFunction, required this.title});
+      {super.key, required this.onPressedFunction, required this.child});
 
-  final VoidCallback onPressedFunction;
-  final String title;
+  final VoidCallback? onPressedFunction;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +20,7 @@ class ButtonRectangular extends StatelessWidget {
         )),
       ),
       onPressed: onPressedFunction,
-      child: Text(
-        title,
-        style: const TextStyle(
-            color: Colors.white, fontSize: 24, fontFamily: 'Sniglet'),
-      ),
+      child: child,
     );
   }
 }

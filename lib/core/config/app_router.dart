@@ -10,11 +10,10 @@ const String adminHome = '/admin/home';
 const String login = '/login';
 const String register = '/register';
 
-final goRouterProvider = Provider<GoRouter>((ref) {
+final goRouterProvider = Provider<GoRouter>((ref) {  
   return GoRouter(
-    debugLogDiagnostics: true,
     redirect: (context, state) {
-      final authState = ref.read(authControllerProvider);
+      final authState = ref.watch(authControllerProvider);
       // Si no está autenticado y no está en login, redirige a login
       final isAuthenticated = authState.isAuthenticated;
       final currentLocation = state.matchedLocation;
@@ -24,8 +23,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       // Usuario NO autenticado
       if (!isAuthenticated) {
-        if (currentLocation == login || currentLocation == splash) return null;
-        return splash;
+        if (currentLocation == login) return login;
+        if (currentLocation == splash) return splash;
       }
       if (isAuthenticated){
          if (currentLocation == login || currentLocation == splash) {
