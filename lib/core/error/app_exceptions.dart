@@ -11,7 +11,7 @@ class AppException implements Exception {
       case 400:
         return const AppException(code: 400, message: 'Bad Request, por favor revise los campos');
       case 401:
-        return const AppException(code: 401, message: 'No autenticado, por favor inicie sesión');
+        return const AppException(code: 401, message: 'No autenticado, por favor revise sus credenciales');
       case 404:
         return const AppException(code: 404, message: 'No se encontró la página solicitada');
       case 500:
