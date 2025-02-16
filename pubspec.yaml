@@ -42,6 +42,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   dio: ^5.8.0+1
   logger: ^2.5.0
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:
@@ -95,3 +96,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/img/logoEsvillaOficial.png"

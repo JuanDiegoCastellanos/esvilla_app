@@ -1,32 +1,83 @@
 import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/core/constants/app_texts.dart';
+import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/presentation/providers/auth_controller_provider.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginScreen extends ConsumerWidget {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
-  LoginScreen({super.key});
+class LoginScreen extends ConsumerStatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(goRouterProvider);
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _login() async {
+    // Oculta el teclado
+    FocusScope.of(context).unfocus();
+
+    if (_emailController.text.trim().isNotEmpty &&
+        _passwordController.text.trim().isNotEmpty) {
+      try {
+        await ref.read(authControllerProvider.notifier).login(
+              _emailController.text.trim(),
+              _passwordController.text.trim(),
+            );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Bienvenido!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } on AppException catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.code == 401? 'Email o contraseña incorrectos': e.message),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Los campos son obligatorios'),
+          duration: Duration(seconds: 4),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Image.asset(
                   'assets/img/imgLogin.png',
-                  fit: BoxFit.fill,
+                  fit: BoxFit.contain,
                 ),
               ), // image
               Column(
@@ -73,8 +124,11 @@ class LoginScreen extends ConsumerWidget {
                     width: MediaQuery.of(context).size.width * 0.9,
                     height: 40,
                     child: TextFieldBox(
-                      controller: emailController,
+                      controller: _emailController,
                       obscureText: false,
+                      errorMessage: _passwordController.text.isEmpty
+                          ? 'El campo es obligatorio'
+                          : '',
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -93,47 +147,32 @@ class LoginScreen extends ConsumerWidget {
                     width: MediaQuery.of(context).size.width * 0.9,
                     height: 40,
                     child: TextFieldBox(
-                      controller: passwordController,
+                      controller: _passwordController,
                       obscureText: true,
+                      errorMessage: _passwordController.text.isEmpty
+                          ? 'El campo es obligatorio'
+                          : '',
                     ),
                   ),
+                  //authState.isLoading ? const CircularProgressIndicator() :
                   ButtonRectangular(
-                    onPressedFunction: () async {
-                      FocusScope.of(context).unfocus();
-                      final authController =
-                          ref.read(authControllerProvider.notifier);
-
-                      final email = emailController.text;
-                      final password = passwordController.text;
-
-                      if (email.isEmpty || password.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              backgroundColor: Colors.red,
-                              content: Text(
-                                'Por favor, completa todos los campos',
-                              )),
-                        );
-                        return;
-                      }
-                      try {
-                        await authController.login(email, password);
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Login error: $e'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    title: 'Login',
+                    onPressedFunction: authState.isLoading ? null : _login,
+                    child: authState.isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Iniciar Sesión',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontFamily: 'Sniglet')),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
                   GestureDetector(
-                    onTap: () => router.push('/register'),
+                    onTap: () {
+                      final goRouter = ref.read(goRouterProvider);
+                      goRouter.replace('/register');
+                    },
                     child: const Text(
                       'Register',
                       style: TextStyle(
