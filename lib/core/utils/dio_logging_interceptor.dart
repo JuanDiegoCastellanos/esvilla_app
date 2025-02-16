@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_logger.dart';
-import 'package:esvilla_app/core/error/app_exceptions.dart';
 
 class DioLoggingInterceptor extends Interceptor {
 
@@ -19,8 +18,7 @@ class DioLoggingInterceptor extends Interceptor {
   
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    AppLogger.e("❌ ERROR[${err.response?.statusCode}] => ${err.message}");
-    final appException = AppException.fromDioError(err);
-    handler.next(DioException(requestOptions: err.requestOptions, error: appException));
+    AppLogger.e("❌ ERROR[${err.response?.statusCode}] => ${err.message}, type: ${err.type}");
+    handler.next(err);
   }
 }

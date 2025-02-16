@@ -92,6 +92,20 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
     return state.accessToken;
   }
 
+  Future<String?> getRole() async {
+    if (state.role != null) return state.role; // Si ya está cargado, devolverlo
+    final role = await _storage.getASimpleToken('ROLE'); // Volver a consultar si es necesario
+    if (role != null) {
+      state = AuthTokenState(
+        accessToken: state.accessToken,
+        role: role,
+        refreshToken: state.refreshToken,
+        expiration: state.expiration,
+      );
+    }
+    return state.role;
+  }
+
   /// Valida si el token esta cerca de expirar o no
   ///
   /// Verifica si el token actual esta cerca de expirar (1 dia antes de expirar)

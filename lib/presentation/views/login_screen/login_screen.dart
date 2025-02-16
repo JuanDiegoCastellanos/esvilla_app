@@ -1,5 +1,6 @@
 import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/core/constants/app_texts.dart';
+import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/presentation/providers/auth_controller_provider.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_box.dart';
@@ -26,7 +27,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _login() async {
     // Oculta el teclado
-    //FocusScope.of(context).unfocus();
+    FocusScope.of(context).unfocus();
 
     if (_emailController.text.trim().isNotEmpty &&
         _passwordController.text.trim().isNotEmpty) {
@@ -42,11 +43,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             backgroundColor: Colors.green,
           ),
         );
-      } catch (e) {
+      } on AppException catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString()),
+            content: Text(e.code == 401? 'Email o contraseña incorrectos': e.message),
             backgroundColor: Colors.red,
           ),
         );
@@ -170,7 +171,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   GestureDetector(
                     onTap: () {
                       final goRouter = ref.read(goRouterProvider);
-                      goRouter.push('/register');
+                      goRouter.replace('/register');
                     },
                     child: const Text(
                       'Register',

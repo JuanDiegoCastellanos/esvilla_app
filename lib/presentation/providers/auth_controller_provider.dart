@@ -1,40 +1,11 @@
 import 'package:esvilla_app/core/config/app_logger.dart';
+import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/domain/use_cases/login_use_case.dart';
 import 'package:esvilla_app/presentation/providers/auth_provider.dart';
 import 'package:esvilla_app/presentation/providers/auth_token_provider.dart';
 import 'package:esvilla_app/presentation/providers/login_use_case_provider.dart';
+import 'package:esvilla_app/presentation/providers/states/auth_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class AuthState {
-  final String token;
-  final bool isAdmin;
-  final bool isLoading;
-  final String? error;
-
-  AuthState({
-    this.token = '',
-    this.isAdmin = false,
-    this.isLoading = false,
-    this.error,
-  });
-
-  bool get isAuthenticated => token.isNotEmpty;
-
-  //copyWith
-  AuthState copyWith({
-    String? token,
-    bool? isAdmin,
-    bool? isLoading,
-    String? error,
-  }) {
-    return AuthState(
-      token: token ?? this.token,
-      isAdmin: isAdmin ?? this.isAdmin,
-      isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
-    );
-  }
-}
 
 class AuthController extends StateNotifier<AuthState> {
   final LoginUseCase _loginUseCase;
@@ -71,9 +42,10 @@ class AuthController extends StateNotifier<AuthState> {
       );
       AppLogger.i(
           "AuthState : $state.isAdmin: ${state.isAdmin} - ${state.token}");
-    } catch (e) {
-      state = state.copyWith(error: e.toString());
-      AppLogger.e("Login failed: $e");
+    } on AppException catch (e) {
+      state = state.copyWith(error: e.message);
+      AppLogger.e("Login failed: ${e.message}");
+      rethrow;
     } finally {
       state = state.copyWith(isLoading: false);
     }
@@ -81,10 +53,12 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<void> checkAuthentication() async {
     final storedToken = await _authTokenStateNotifier.getAccessToken();
+    final storedRole = await _authTokenStateNotifier.getRole();
     if (storedToken != null && storedToken.isNotEmpty) {
       state = state.copyWith(
           token: storedToken,
-          isAdmin: _authTokenStateNotifier.state.role == 'admin');
+          isAdmin: storedRole == 'admin',
+      );
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_config.dart';
+import 'package:esvilla_app/core/utils/auth_interceptor.dart';
 import 'package:esvilla_app/core/utils/dio_logging_interceptor.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,6 +23,7 @@ class DioClient {
     );
     // Añadir interceptores
     _dio.interceptors.addAll([
+      AuthInterceptor(ref),
       DioLoggingInterceptor()
       ]);
   }
