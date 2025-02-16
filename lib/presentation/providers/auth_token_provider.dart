@@ -6,6 +6,7 @@ class AuthTokenState {
   final String? accessToken;
   final String? refreshToken;
   final int? expiration;
+  final String? role;
 
   bool get isValid {
     if (accessToken == null || expiration == null) return false;
@@ -14,6 +15,7 @@ class AuthTokenState {
   }
 
   const AuthTokenState({
+    this.role,
     required this.accessToken,
     required this.refreshToken,
     required this.expiration,
@@ -22,6 +24,7 @@ class AuthTokenState {
   const AuthTokenState.empty()
       : accessToken = null,
         refreshToken = null,
+        role = null,
         expiration = null;
 }
 
@@ -37,8 +40,10 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
     final accessToken = await _storage.getToken();
     final refreshToken = await _storage.getRefreshToken();
     final expiration = await _storage.getExpiration();
+    final role = await _storage.getASimpleToken('ROLE');
     
     state = AuthTokenState(
+      role: role,
       accessToken: accessToken,
       refreshToken: refreshToken,
       expiration: expiration,
@@ -49,12 +54,15 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
     required String accessToken,
     required String refreshToken,
     required int expiresIn,
+    required String role
   }) async {
     await _storage.saveToken(accessToken);
     await _storage.saveRefreshToken(refreshToken);
     await _storage.saveExpiration(expiresIn);
+    await _storage.saveASimpleToken('ROLE', role);
     
     state = AuthTokenState(
+      role: role,
       accessToken: accessToken,
       refreshToken: refreshToken,
       expiration: expiresIn,
@@ -65,6 +73,7 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
     await _storage.clearToken();
     await _storage.clearRefreshToken();
     await _storage.clearExpiration();
+    await _storage.clearASimpleToken('ROLE');
     state = const AuthTokenState.empty();
   }
 
@@ -75,11 +84,26 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
     if (token != null) {
       state = AuthTokenState(
         accessToken: token,
+        role: state.role,
         refreshToken: state.refreshToken,
         expiration: state.expiration,
       );
     }
     return state.accessToken;
+  }
+
+  Future<String?> getRole() async {
+    if (state.role != null) return state.role; // Si ya está cargado, devolverlo
+    final role = await _storage.getASimpleToken('ROLE'); // Volver a consultar si es necesario
+    if (role != null) {
+      state = AuthTokenState(
+        accessToken: state.accessToken,
+        role: role,
+        refreshToken: state.refreshToken,
+        expiration: state.expiration,
+      );
+    }
+    return state.role;
   }
 
   /// Valida si el token esta cerca de expirar o no

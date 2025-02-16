@@ -8,8 +8,6 @@ class SplashScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-   
-
     final connectivityStatus = ref.watch(connectivityProvider);
 
     debugPrint('Connectivity: ${connectivityStatus.isConnected}, '
@@ -39,7 +37,6 @@ class SplashWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final goRouter = ref.watch(goRouterProvider);
     return SafeArea(
       child: Center(
         child: SingleChildScrollView(
@@ -72,8 +69,9 @@ class SplashWidget extends ConsumerWidget {
                     ..rotateZ(0.6)),
               ElevatedButton(
                 onPressed: () {
+                  final goRouter = ref.watch(goRouterProvider);
                   //AppRouter.appRouter.push('/login');
-                  goRouter.push('/login');
+                  goRouter.replace('/login');
                 },
                 style: ButtonStyle(
                   fixedSize: MaterialStateProperty.all(const Size(233, 50)),

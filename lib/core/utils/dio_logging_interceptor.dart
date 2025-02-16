@@ -12,7 +12,13 @@ class DioLoggingInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    AppLogger.i("✅ RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.uri}");
+    AppLogger.d("✅ RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.uri}");
     handler.next(response);
+  }
+  
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    AppLogger.e("❌ ERROR[${err.response?.statusCode}] => ${err.message}, type: ${err.type}");
+    handler.next(err);
   }
 }
