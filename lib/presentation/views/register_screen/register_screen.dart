@@ -1,7 +1,6 @@
-import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/core/constants/app_texts.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
-import 'package:esvilla_app/presentation/providers/auth_controller_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +19,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _telefonoController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordAgainController = TextEditingController();
-  
+  final _direccionController = TextEditingController();
+
   static const requiredField = "Este campo es obligatorio";
 
   @override
@@ -31,6 +31,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _telefonoController.dispose();
     _passwordController.dispose();
     _passwordAgainController.dispose();
+    _direccionController.dispose();
     super.dispose();
   }
 
@@ -38,29 +39,59 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // Oculta el teclado
     FocusScope.of(context).unfocus();
 
-    if (_emailController.text.trim().isNotEmpty &&
-        _passwordController.text.trim().isNotEmpty && 
-        _passwordAgainController.text.trim().isNotEmpty ) {
-      try {
-        await ref.read(authControllerProvider.notifier).login(
-              _emailController.text.trim(),
-              _passwordController.text.trim(),
-            );
+    final name = _nameController.text.trim();
+    final document = _documentController.text.trim();
+    final email = _emailController.text.trim();
+    final telefono = _telefonoController.text.trim();
+    final password = _passwordController.text.trim();
+    final passwordAgain = _passwordAgainController.text.trim();
+    final direccion = _direccionController.text.trim();
+
+    if (name.isNotEmpty &&
+        document.isNotEmpty &&
+        email.isNotEmpty &&
+        telefono.isNotEmpty &&
+        password.isNotEmpty &&
+        passwordAgain.isNotEmpty && 
+        direccion.isNotEmpty) {
+      if (password == passwordAgain) {
+        try {
+          await ref.read(authControllerProvider.notifier).register(
+                name,
+                document,
+                email,
+                telefono,
+                password,
+                direccion,
+              );
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('¡Bienvenido!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } on AppException catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.code == 401
+                  ? 'Email o contraseña incorrectos'
+                  : e.message),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('¡Bienvenido!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } on AppException catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.code == 401? 'Email o contraseña incorrectos': e.message),
+            content: Text('Las contraseñas no coinciden'),
+            duration: Duration(seconds: 4),
             backgroundColor: Colors.red,
           ),
         );
+        return;
       }
     } else {
       if (!mounted) return;
@@ -74,11 +105,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final controller = ref.read(authControllerProvider.notifier);
-    final goRouter = ref.read(goRouterProvider);
+    final authState = ref.watch(authControllerProvider);
 
     return Scaffold(
         body: Container(
@@ -122,6 +151,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   newLabelText(context, 'Telefono: '),
                   newInputField(_telefonoController, requiredField),
                   const SizedBox(height: 20),
+                  newLabelText(context, 'Direccion: '),
+                  newInputField(_direccionController, requiredField),
+                  const SizedBox(height: 20),
                   newLabelText(context, 'Contraseña: '),
                   newInputField(_passwordController, requiredField),
                   const SizedBox(height: 20),
@@ -139,17 +171,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ),
                       ),
                     ),
-                    onPressed: () async {
-                      await Future.delayed(const Duration(seconds: 1));
-                      goRouter.push('/home');
-                    },
-                    child: const Text(
-                      'Register',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontFamily: 'Sniglet'),
-                    ),
+                    onPressed: _register,
+                    child: authState.isLoading
+                        ? const CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.red),
+                          )
+                        : const Text(
+                            'Register',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontFamily: 'Sniglet'),
+                          ),
                   ),
                   const SizedBox(
                     height: 10,
@@ -196,4 +230,3 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 }
-

@@ -1,4 +1,4 @@
-import 'package:esvilla_app/presentation/providers/auth_controller_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
 import 'package:esvilla_app/presentation/widgets/home/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

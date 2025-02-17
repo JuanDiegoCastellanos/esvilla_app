@@ -4,7 +4,7 @@ class RegisterRequestEntity {
   final String email;
   final String phone;
   final String password;
-  final String confirmPassword;
+  final String direccion;
 
   const RegisterRequestEntity({
     required this.name,
@@ -12,6 +12,18 @@ class RegisterRequestEntity {
     required this.email,
     required this.phone,
     required this.password,
-    required this.confirmPassword,
+    required this.direccion,
   });
+
+// to Map<String, dynamic> method
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'name': name,
+      'documentNumber': document,
+      'email': email,
+      'phone': phone,
+      'password': password,
+      'mainAddress': direccion
+    };
+  }
 }

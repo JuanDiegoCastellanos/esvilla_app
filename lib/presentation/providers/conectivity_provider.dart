@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:esvilla_app/presentation/providers/states/connectivity_status.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConnectivityNotifier extends StateNotifier<ConnectivityStatus> {
@@ -70,23 +71,6 @@ class ConnectivityNotifier extends StateNotifier<ConnectivityStatus> {
   }
 }
 enum ConnectionType { mobile, wifi, bluetooth, ethernet, none }
-
-class ConnectivityStatus {
-  final bool isConnected;
-  final ConnectionType connectionType;
-  final String? error;
-
-  ConnectivityStatus({
-    required this.isConnected, 
-    this.connectionType = ConnectionType.none,
-    this.error
-  });
-
-  factory ConnectivityStatus.initial() => ConnectivityStatus(
-    isConnected: false, 
-    connectionType: ConnectionType.none
-  );
-}
 
 final connectivityProvider = StateNotifierProvider<ConnectivityNotifier, ConnectivityStatus>((ref) {
   return ConnectivityNotifier(Connectivity());

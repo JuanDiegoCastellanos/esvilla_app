@@ -1,19 +1,24 @@
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
+import 'package:esvilla_app/domain/entities/register_request_entity.dart';
 import 'package:esvilla_app/domain/use_cases/login_use_case.dart';
-import 'package:esvilla_app/presentation/providers/auth_provider.dart';
-import 'package:esvilla_app/presentation/providers/auth_token_provider.dart';
+import 'package:esvilla_app/domain/use_cases/register_use_cart.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_repository_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_token_provider.dart';
 import 'package:esvilla_app/presentation/providers/login_use_case_provider.dart';
+import 'package:esvilla_app/presentation/providers/register/register_use_case_provider.dart';
 import 'package:esvilla_app/presentation/providers/states/auth_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthController extends StateNotifier<AuthState> {
   final LoginUseCase _loginUseCase;
+  final RegisterUseCase _registerUseCase;
   final AuthTokenStateNotifier _authTokenStateNotifier;
   final Ref _ref;
 
   AuthController(
     this._loginUseCase,
+    this._registerUseCase,
     this._authTokenStateNotifier,
     this._ref,
   ) : super(AuthState(token: '')) {
@@ -50,6 +55,48 @@ class AuthController extends StateNotifier<AuthState> {
       state = state.copyWith(isLoading: false);
     }
   }
+
+  Future<void> register(String name, String document, String email,
+      String phone, String password, String direccion) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final response = await _registerUseCase(RegisterRequestEntity(
+          name: name,
+          document: document,
+          email: email,
+          phone: phone,
+          password: password,
+          direccion: direccion
+          ));
+      //hacer login si el accessToken es 
+
+
+      AppLogger.i("Response response: ${response.accessToken} - ${response.role}");
+
+      await _authTokenStateNotifier.saveTokens(
+        role: response.role,
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        expiresIn: response.expiration,
+      );
+
+      state = AuthState(
+        token: response.accessToken,
+        isAdmin: response.role == 'admin',
+      );
+
+      AppLogger.i(
+          "AuthState : $state.isAdmin: ${state.isAdmin} - ${state.token}");
+
+    } on AppException catch (e) {
+      state = state.copyWith(error: e.message);
+      AppLogger.e("Login failed: ${e.message}");
+      rethrow;
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
 
   Future<void> checkAuthentication() async {
     final storedToken = await _authTokenStateNotifier.getAccessToken();
@@ -97,8 +144,9 @@ class AuthController extends StateNotifier<AuthState> {
 
 final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
   (ref) {
+    final registerUserCase = ref.watch(registerUseCaseProvider);
     final loginUseCase = ref.watch(loginUseCaseProvider);
     final authTokenStateNotifier = ref.watch(authTokenProvider.notifier);
-    return AuthController(loginUseCase, authTokenStateNotifier, ref);
+    return AuthController(loginUseCase, registerUserCase,  authTokenStateNotifier, ref);
   },
 );

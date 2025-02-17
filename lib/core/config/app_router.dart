@@ -1,7 +1,7 @@
 import 'package:esvilla_app/core/config/app_logger.dart';
-import 'package:esvilla_app/presentation/providers/auth_controller_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
 import 'package:esvilla_app/presentation/views/screens.dart';
-import 'package:flutter/src/foundation/change_notifier.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -49,12 +49,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return splash;
       }
       if (isAuthenticated) {
-        if (currentLocation == login || currentLocation == splash) {
-          return isAdmin ? adminHome : home;
-        }
         if (currentLocation.startsWith('/admin') && !isAdmin) {
           return home;
         }
+        return isAdmin ? adminHome : home;
       }
       // Verificar acceso a rutas admin
 

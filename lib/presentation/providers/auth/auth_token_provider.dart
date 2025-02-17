@@ -1,32 +1,7 @@
 import 'package:esvilla_app/core/utils/secure_storage.dart';
 import 'package:esvilla_app/presentation/providers/secure_storage_provider.dart';
+import 'package:esvilla_app/presentation/providers/states/auth_token_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class AuthTokenState {
-  final String? accessToken;
-  final String? refreshToken;
-  final int? expiration;
-  final String? role;
-
-  bool get isValid {
-    if (accessToken == null || expiration == null) return false;
-    final expirationDate = DateTime.fromMillisecondsSinceEpoch(expiration!);
-    return expirationDate.isAfter(DateTime.now());
-  }
-
-  const AuthTokenState({
-    this.role,
-    required this.accessToken,
-    required this.refreshToken,
-    required this.expiration,
-  });
-
-  const AuthTokenState.empty()
-      : accessToken = null,
-        refreshToken = null,
-        role = null,
-        expiration = null;
-}
 
 class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
   final SecureStorageService _storage;
