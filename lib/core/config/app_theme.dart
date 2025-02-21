@@ -8,6 +8,6 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       color: Colors.green,
     ),
-    fontFamily: 'Sniglet'
+    fontFamily: 'Lexend'
   );
 }

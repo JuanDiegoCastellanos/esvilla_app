@@ -45,17 +45,13 @@ class TextFieldBox extends StatelessWidget {
         hintStyle: const TextStyle(
           //codium que sea rojo  
           color: Colors.red,
-          fontSize: 16,
-          fontFamily: 'Sniglet',
+          fontSize: 14,
+          fontWeight: FontWeight.w400
         )
       ),
       textAlignVertical: TextAlignVertical.bottom,
       cursorHeight: 30,
       obscureText: obscureText,
-      style: const TextStyle(
-        fontSize: 20,
-        fontFamily: 'Sniglet',
-      ),
       onEditingComplete: () => FocusScope.of(context).unfocus(),
     );
   }

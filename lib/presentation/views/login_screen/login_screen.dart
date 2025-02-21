@@ -39,7 +39,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('¡Bienvenido!'),
+            content: Text(
+              '¡Bienvenido!',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -47,7 +50,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.code == 401? 'Email o contraseña incorrectos': e.message),
+            content: Center(
+              child: Text(
+                e.code == 401 ? 'Email o contraseña incorrectos' : e.message,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -56,7 +65,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Los campos son obligatorios'),
+          content: Center(
+            child: Text(
+              'Los campos son obligatorios',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          ),
           duration: Duration(seconds: 4),
           backgroundColor: Colors.red,
         ),
@@ -88,10 +102,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       'Iniciar Sesión',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 35,
-                        color: Color.fromRGBO(47, 39, 125, 1),
-                        fontFamily: 'Sniglet',
-                      ),
+                          fontSize: 35,
+                          color: Color.fromRGBO(47, 39, 125, 1),
+                          fontWeight: FontWeight.w400),
                     ),
                   ),
                   Container(
@@ -102,10 +115,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       AppTexts.welcomeTitle,
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                        fontSize: 21,
-                        color: Colors.black,
-                        fontFamily: 'Sniglet',
-                      ),
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w300),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -115,7 +127,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     padding: const EdgeInsets.only(left: 20),
                     child: const Text(
                       'Documento de identidad :',
-                      style: TextStyle(fontFamily: 'Sniglet', fontSize: 19),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -138,7 +151,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     padding: const EdgeInsets.only(left: 20),
                     child: const Text(
                       'Clave :',
-                      style: TextStyle(fontFamily: 'Sniglet', fontSize: 19),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -159,14 +173,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressedFunction: authState.isLoading ? null : _login,
                     child: authState.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Iniciar Sesión',
+                        : const Text(
+                            'Iniciar Sesión',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
-                                fontFamily: 'Sniglet')),
+                                fontWeight: FontWeight.w600),
+                          ),
                   ),
                   const SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -176,9 +192,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: const Text(
                       'Register',
                       style: TextStyle(
-                          fontSize: 20,
-                          color: Color(0xFF4F78FF),
-                          decoration: TextDecoration.underline),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF4F78FF),
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -188,7 +206,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: const Text(
                       AppTexts.termsAndPrivacy,
-                      style: TextStyle(fontFamily: 'Sniglet', fontSize: 16),
+                      style: TextStyle(
+                        fontFamily: 'Sniglet',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w300,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),

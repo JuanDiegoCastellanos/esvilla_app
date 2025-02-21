@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
-class MenuItem{
+class ItemNews{
   final IconData icon;
-  final String label;
+  final String text;
+  final Image? image;
 
-  MenuItem({required this.icon, required this.label});
+  ItemNews({
+    required this.icon,
+    required this.text,
+    this.image});
 }

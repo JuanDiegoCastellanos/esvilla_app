@@ -1,5 +1,6 @@
 import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/presentation/providers/conectivity_provider.dart';
+import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -66,32 +67,19 @@ class SplashWidget extends ConsumerWidget {
                       borderRadius: BorderRadius.all(Radius.circular(25)),
                       color: Color.fromRGBO(47, 39, 125, 1)),
                   transform: Matrix4.translationValues(-150, -250, 0)
-                    ..rotateZ(0.6)),
-              ElevatedButton(
-                onPressed: () {
-                  final goRouter = ref.watch(goRouterProvider);
-                  //AppRouter.appRouter.push('/login');
-                  goRouter.replace('/login');
-                },
-                style: ButtonStyle(
-                  fixedSize: MaterialStateProperty.all(const Size(233, 50)),
-                  backgroundColor: MaterialStateColor.resolveWith(
-                      (states) => const Color.fromRGBO(47, 39, 125, 1)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                  )),
-                ),
-                child: const Text(
-                  "Continuar",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Sniglet',
+                    ..rotateZ(0.6),
+                    ),
+              ButtonRectangular(
+                  onPressedFunction: () => ref.read(goRouterProvider).replace('/login'),
+                  child: const Text(
+                    "Continuar", 
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      ),
                   ),
                 ),
-              )
             ],
           ),
         ),

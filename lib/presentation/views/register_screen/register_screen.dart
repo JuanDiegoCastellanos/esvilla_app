@@ -133,9 +133,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     'Registro',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 40,
+                      fontSize: 35,
                       color: Color.fromRGBO(47, 39, 125, 1),
-                      fontFamily: 'Sniglet',
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -155,10 +155,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   newInputField(_direccionController, requiredField),
                   const SizedBox(height: 20),
                   newLabelText(context, 'Contraseña: '),
-                  newInputField(_passwordController, requiredField),
+                  newInputField(_passwordController, requiredField, obscure: true),
                   const SizedBox(height: 20),
                   newLabelText(context, 'Contraseña nuevamente: '),
-                  newInputField(_passwordAgainController, requiredField),
+                  newInputField(_passwordAgainController, requiredField, obscure: true),
                   const SizedBox(height: 30),
                   ElevatedButton(
                     style: ButtonStyle(
@@ -182,7 +182,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
-                                fontFamily: 'Sniglet'),
+                                fontWeight: FontWeight.w600
+                                ),
                           ),
                   ),
                   const SizedBox(
@@ -192,7 +193,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: const Text(
                       AppTexts.termsAndPrivacy,
-                      style: TextStyle(fontFamily: 'Sniglet', fontSize: 14),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w300,
+                         ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -212,14 +216,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       child: Text(
         text,
         style: const TextStyle(
-          fontFamily: 'Sniglet',
-          fontSize: 19,
+          fontSize: 16,
+          fontWeight: FontWeight.w500
         ),
       ),
     );
   }
 
-  Widget newInputField(TextEditingController controller, String error) {
+  Widget newInputField(TextEditingController controller, String error, {bool obscure=false}) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.9,
       height: 40,
