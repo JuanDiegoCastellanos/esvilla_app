@@ -1,5 +1,5 @@
 name: esvilla_app
-description: "A new Flutter project."
+description: "Aplicacion oficial de ESVILLA E.S.P."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -83,10 +83,25 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-     - family: Sniglet
+     - family: Lexend
        fonts:
-         - asset: assets/fonts/Sniglet-Regular.ttf
-         - asset: assets/fonts/Sniglet-ExtraBold.ttf
+         - asset: assets/fonts/Lexend-Thin.ttf
+           weight: 100
+         - asset: assets/fonts/Lexend-ExtraLight.ttf
+           weight: 200
+         - asset: assets/fonts/Lexend-Light.ttf
+           weight: 300
+         - asset: assets/fonts/Lexend-Regular.ttf
+           weight: 400
+         - asset: assets/fonts/Lexend-Medium.ttf
+           weight: 500
+         - asset: assets/fonts/Lexend-SemiBold.ttf
+           weight: 600
+         - asset: assets/fonts/Lexend-Bold.ttf
+           weight: 700
+         - asset: assets/fonts/Lexend-ExtraBold.ttf
+           weight: 800
+         - asset: assets/fonts/Lexend-Black.ttf
            weight: 900
   #   - family: Trajan Pro
   #     fonts:
