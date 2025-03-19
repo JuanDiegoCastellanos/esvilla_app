@@ -187,7 +187,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   GestureDetector(
                     onTap: () {
                       final goRouter = ref.read(goRouterProvider);
-                      goRouter.replace('/register');
+                      goRouter.push('/register');
                     },
                     child: const Text(
                       'Register',

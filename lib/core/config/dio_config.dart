@@ -17,8 +17,8 @@ class DioClient {
 
     _dio.options = BaseOptions(
       baseUrl: AppConfig.apiUrl,
-      connectTimeout: const Duration(seconds: 100),
-      receiveTimeout: const Duration(seconds: 100),
+      connectTimeout: const Duration(seconds: 400),
+      receiveTimeout: const Duration(seconds: 400),
       contentType: 'application/json',
     );
     // Añadir interceptores

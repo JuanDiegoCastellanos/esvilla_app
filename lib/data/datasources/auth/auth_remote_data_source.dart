@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
-import 'package:esvilla_app/data/models/auth_response.dart';
+import 'package:esvilla_app/data/models/auth/auth_response.dart';
 import 'package:esvilla_app/domain/entities/register_request_entity.dart';
 
 class AuthRemoteDataSource {

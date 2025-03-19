@@ -1,24 +1,16 @@
-import 'package:esvilla_app/data/models/user_model.dart';
+import 'package:esvilla_app/data/datasources/user/user_remote_data_source.dart';
 import 'package:esvilla_app/domain/entities/user_entity.dart';
 import 'package:esvilla_app/domain/repositories/user_repository.dart';
 
-class UserLocalRepositoryImpl implements UserRepository{
+class UserRemoteRepositoryImpl implements UserRepository{
 
-  final UserLocalRepositoryImpl mockDataSource;
+  final UserRemoteDataSource  userRemoteDataSource;
 
-  UserLocalRepositoryImpl(this.mockDataSource);
-
-  Future<List<UserModel>> getUsers() async {
-    final models = await mockDataSource.getUsers();
-    return models
-        .map((model) => UserModel(id: model.id, name: model.name, email: model.email))
-        .toList();
-  }
+  UserRemoteRepositoryImpl(this.userRemoteDataSource);
 
   @override
-  Future<List<UserEntity>> loadUsers() {
-    // TODO: implement loadUsers
-    throw UnimplementedError();
+  Future<UserEntity> myProfile(String token) {
+    return userRemoteDataSource.myProfile(token).then((userModel) => userModel.toEntity());
   }
 
 }

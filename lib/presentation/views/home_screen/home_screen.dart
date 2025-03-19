@@ -1,15 +1,43 @@
+import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/core/utils/mocks/news_images.mock.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
-import 'package:esvilla_app/presentation/widgets/home/menu_item.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:esvilla_app/presentation/views/home_screen/schedule.mock.dart';
+import 'package:esvilla_app/presentation/widgets/home/user/home_bottom_navigation.dart';
+import 'package:esvilla_app/presentation/widgets/home/user/item_news.dart';
+import 'package:esvilla_app/presentation/widgets/home/user/news_section.dart';
+import 'package:esvilla_app/presentation/widgets/home/user/schedule_card.dart';
+import 'package:esvilla_app/presentation/widgets/home/user_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   HomeScreen({super.key});
 
-  final List<ItemNews> itemsNews = [
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+// idea manejar los horarios de [HorarioRecoleccion] recoleccion de basura diarios, mostrando la hora y los sectores de recoleccion desde 
+// la API
+// hora , sector, dia 
+// por dia listar los sectores de recoleccion y la hora de recoleccion
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text('Index 0: Home', style: optionStyle),
+    Text('Index 1: Business', style: optionStyle),
+    Text('Index 2: School', style: optionStyle),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+    final List<ItemNews> itemsNews = [
     ItemNews(
         icon: Icons.person,
         text:
@@ -18,24 +46,34 @@ class HomeScreen extends ConsumerWidget {
           newsImages['noticiaDeReciclaje']!,
           fit: BoxFit.cover,
         )),
-    ItemNews(icon: Icons.receipt, 
-    text: 'Otra noticia con alguna informacion relevante',
-     image: Image.network(newsImages['villaDeLeyva']!)
-     ),
-    ItemNews(icon: Icons.event_note, text: 'Informacion para enseñar al cuidado y al reciclaje, estos textos son temporales, se deben reemplazar',
-    image: Image.network(newsImages['reciclaje']!)),
-    ItemNews(icon: Icons.upload_file, text: 'Descripcion que se quiera poner, esto solo es una prueba, aca va algo de texto repecto a la importancia de las 3 R', 
-    image: Image.network(newsImages['tresR']!)
-    ),
-    ItemNews(icon: Icons.home, text: 'Aprender sobre el reciclaje, tambien se pueden poner noticias de los horarios de reciclaje y las personas pueden ver mas facilmente',
-      image: Image.network(newsImages['noticiaDeReciclaje']!)
-    ),
-    ItemNews(icon: Icons.announcement, text: 'Informacion sobre la recoleccion de residuos, se pueden poner mas informacion de la recoleccion de residuos',
-      image: Image.network(newsImages['noticiaDeRecoleccion']!)),
+    ItemNews(
+        icon: Icons.receipt,
+        text: 'Otra noticia con alguna informacion relevante',
+        image: Image.network(newsImages['villaDeLeyva']!)),
+    ItemNews(
+        icon: Icons.event_note,
+        text:
+            'Informacion para enseñar al cuidado y al reciclaje, estos textos son temporales, se deben reemplazar',
+        image: Image.network(newsImages['reciclaje']!)),
+    ItemNews(
+        icon: Icons.upload_file,
+        text:
+            'Descripcion que se quiera poner, esto solo es una prueba, aca va algo de texto repecto a la importancia de las 3 R',
+        image: Image.network(newsImages['tresR']!)),
+    ItemNews(
+        icon: Icons.home,
+        text:
+            'Aprender sobre el reciclaje, tambien se pueden poner noticias de los horarios de reciclaje y las personas pueden ver mas facilmente',
+        image: Image.network(newsImages['noticiaDeReciclaje']!)),
+    ItemNews(
+        icon: Icons.announcement,
+        text:
+            'Informacion sobre la recoleccion de residuos, se pueden poner mas informacion de la recoleccion de residuos',
+        image: Image.network(newsImages['noticiaDeRecoleccion']!)),
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final auth = ref.read(authControllerProvider.notifier);
 
     return Scaffold(
@@ -58,35 +96,18 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.zero,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            'Juan Diego Castellanos',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            '1002676988',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        auth.logout();
-                      },
-                      child: const Icon(
-                        Icons.logout,
-                        size: 45,
+                    const UserInfo(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: GestureDetector(
+                        onTap: () {
+                          auth.logout();
+                        },
+                        child: const Icon(
+                          Icons.logout,
+                          color: Colors.red,
+                          size: 45,
+                        ),
                       ),
                     ),
                   ],
@@ -116,66 +137,25 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
-          SizedBox(
-              height: MediaQuery.of(context).size.height * 0.6,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(minHeight: constraints.maxHeight),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: itemsNews
-                            .map(
-                              (item) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: Card(
-                                  color: Colors.blue.shade100,
-                                  child: Container(
-                                    margin: const EdgeInsets.all(10),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          item.text,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600
-                                          )
-                                          ),
-                                        item.image ?? Container(),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        /* List.generate(
-                        10, (index) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Card(
-                            color: Colors.blue.shade100,
-                            child: Container(
-                              height: 100,
-                              margin: const EdgeInsets.all(10),
-                              child: Center(
-                                child: Text('Item $index'),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ), */
-                      ),
-                    ),
-                  );
-                },
+          NewsSection(
+            newsList: itemsNews,
+          ),
+          const SizedBox(
+            height: 40,
+            child: Center(
+              child: Text(
+                'Ver más',
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                    decorationStyle: TextDecorationStyle.dashed,
+                    decorationColor: Colors.blueAccent),
               ),
-              ),
-              SizedBox(height: 40,),
-            Container(
+            ),
+          ),
+          Container(
             padding: const EdgeInsets.only(
               left: 20,
               right: 20,
@@ -191,61 +171,24 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: ListView(
-              children: List.generate(
-                10, (index) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.amber,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    height: 100,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                      child: Text(
-                        'Horarios de recoleccion \n del dia ${index + 1}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600
-                        ),
-                        ),
-                    ),
-                  ),
-                ),
+          Column(
+            children: mockSchedule.days.map(
+              (e) => GestureDetector(
+                onTap: (){
+                  ref.read(goRouterProvider).pushNamed('schedule', extra: e);
+                },
+                child: ScheduleCard(name: e.name),
               ),
-            ),
-
-          )
-
-
+            ).toList()
+          ),
         ]),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        fixedColor: Colors.blue.shade900,
-        backgroundColor: Colors.blue.shade100,
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.api_rounded),
-            label: 'Gestion',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
-
-      ),
+      bottomNavigationBar: const HomeBottomNavigation(),
     );
+  
   }
-}
 
+}
 /*
 Se debe implementar el cambio entre tabs, para poner no solo las noticias si no tambien 
 la gestion que es donde debe ir lo de los usuarios y lo que pueden hacer

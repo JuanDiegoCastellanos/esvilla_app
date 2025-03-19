@@ -24,21 +24,21 @@ class TextFieldBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           borderSide:  BorderSide(
             color: borderColor, //Color(0xFF4F78FF),
-            width: 2.5,
+            width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide:  BorderSide(
             color: borderColor, //Color(0xFF4F78FF), // Color del borde al enfocar
-            width: 2.5, // Grosor del borde al enfocar
+            width: 1, // Grosor del borde al enfocar
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide:  BorderSide(
             color: borderColor, //Color(0xFF4F78FF), // Color del borde al habilitar
-            width: 2.5, // Grosor del borde al habilitar
+            width: 1, // Grosor del borde al habilitar
           ),
         ),
         hintText: errorMessage,

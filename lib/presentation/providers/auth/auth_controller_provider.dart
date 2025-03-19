@@ -5,7 +5,7 @@ import 'package:esvilla_app/domain/use_cases/login_use_case.dart';
 import 'package:esvilla_app/domain/use_cases/register_use_cart.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_repository_provider.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_token_provider.dart';
-import 'package:esvilla_app/presentation/providers/login_use_case_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/login_use_case_provider.dart';
 import 'package:esvilla_app/presentation/providers/register/register_use_case_provider.dart';
 import 'package:esvilla_app/presentation/providers/states/auth_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +22,7 @@ class AuthController extends StateNotifier<AuthState> {
     this._authTokenStateNotifier,
     this._ref,
   ) : super(AuthState(token: '')) {
-    checkAuthentication();
+    //checkAuthentication();
   }
 
   Future<void> login(String email, String password) async {
@@ -35,11 +35,16 @@ class AuthController extends StateNotifier<AuthState> {
         throw Exception("Token vacío, login fallido");
       }
 
+      //final timeExpiration = DateTime.now().add(Duration(seconds: response.expiration));
+      final expirationTime = DateTime.now()
+        .add(Duration(seconds: response.expiration))
+        .millisecondsSinceEpoch;
+
       await _authTokenStateNotifier.saveTokens(
         role: response.role,
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
-        expiresIn: response.expiration,
+        expiresIn: expirationTime,
       );
       state = AuthState(
         token: response.accessToken,
@@ -66,18 +71,21 @@ class AuthController extends StateNotifier<AuthState> {
           email: email,
           phone: phone,
           password: password,
-          direccion: direccion
-          ));
-      //hacer login si el accessToken es 
+          direccion: direccion));
+      //hacer login si el accessToken es
 
+      AppLogger.i(
+          "Response response: ${response.accessToken} - ${response.role}");
 
-      AppLogger.i("Response response: ${response.accessToken} - ${response.role}");
+      final expirationTime = DateTime.now()
+        .add(Duration(seconds: response.expiration))
+        .millisecondsSinceEpoch;
 
       await _authTokenStateNotifier.saveTokens(
         role: response.role,
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
-        expiresIn: response.expiration,
+        expiresIn: expirationTime,
       );
 
       state = AuthState(
@@ -87,7 +95,6 @@ class AuthController extends StateNotifier<AuthState> {
 
       AppLogger.i(
           "AuthState : $state.isAdmin: ${state.isAdmin} - ${state.token}");
-
     } on AppException catch (e) {
       state = state.copyWith(error: e.message);
       AppLogger.e("Login failed: ${e.message}");
@@ -97,15 +104,18 @@ class AuthController extends StateNotifier<AuthState> {
     }
   }
 
-
   Future<void> checkAuthentication() async {
     final storedToken = await _authTokenStateNotifier.getAccessToken();
     final storedRole = await _authTokenStateNotifier.getRole();
     if (storedToken != null && storedToken.isNotEmpty) {
       state = state.copyWith(
-          token: storedToken,
-          isAdmin: storedRole == 'admin',
+        token: storedToken,
+        isAdmin: storedRole == 'admin',
       );
+    }
+    final isTokenExpired = await _authTokenStateNotifier.isTokenExpired();
+    if (isTokenExpired) {
+      logout();
     }
   }
 
@@ -147,6 +157,7 @@ final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
     final registerUserCase = ref.watch(registerUseCaseProvider);
     final loginUseCase = ref.watch(loginUseCaseProvider);
     final authTokenStateNotifier = ref.watch(authTokenProvider.notifier);
-    return AuthController(loginUseCase, registerUserCase,  authTokenStateNotifier, ref);
+    return AuthController(
+        loginUseCase, registerUserCase, authTokenStateNotifier, ref);
   },
 );

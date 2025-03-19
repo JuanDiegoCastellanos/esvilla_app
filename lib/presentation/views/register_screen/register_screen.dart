@@ -230,6 +230,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       child: TextFieldBox(
         controller: controller,
         errorMessage: error,
+        obscureText: obscure,
       ),
     );
   }
