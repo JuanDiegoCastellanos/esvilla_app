@@ -10,8 +10,9 @@ class PqrsRemoteDataSource {
 
   PqrsRemoteDataSource(this._dio);
 
-    /// Crea un nuevo PQRS en el servidor.
-  Future<PqrsModel> createPqrs(CreatePqrsRequest request, String token) async {
+  /// Crea un nuevo PQRS en el servidor.
+  Future<PqrsModel> generatePqrs(
+      CreatePqrsRequest request, String token) async {
     try {
       final response = await _dio.post(
         '/pqrs',
@@ -24,7 +25,7 @@ class PqrsRemoteDataSource {
         ),
       );
       AppLogger.i('Response Data: ${response.data}');
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return PqrsModel.fromMap(response.data);
       } else {
@@ -42,7 +43,7 @@ class PqrsRemoteDataSource {
     }
   }
 
-    /// Obtiene todos los PQRS desde el servidor.
+  /// Obtiene todos los PQRS desde el servidor.
   Future<List<PqrsModel>> getPqrs(String token) async {
     try {
       final response = await _dio.get(
@@ -55,7 +56,7 @@ class PqrsRemoteDataSource {
         ),
       );
       AppLogger.i('Response Data: ${response.data}');
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> responseData = response.data;
         return responseData
@@ -89,7 +90,7 @@ class PqrsRemoteDataSource {
         ),
       );
       AppLogger.i('Response Data: ${response.data}');
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return PqrsModel.fromMap(response.data);
       } else {
@@ -107,7 +108,7 @@ class PqrsRemoteDataSource {
     }
   }
 
-    Future<List<PqrsModel>> getPqrsByUser(String token, String id) async {
+  Future<List<PqrsModel>> getPqrsByUser(String token, String id) async {
     try {
       final response = await _dio.get(
         '/pqrs/user/$id',
@@ -119,7 +120,7 @@ class PqrsRemoteDataSource {
         ),
       );
       AppLogger.i('Response Data: ${response.data}');
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> responseData = response.data;
         return responseData
@@ -140,7 +141,40 @@ class PqrsRemoteDataSource {
     }
   }
 
- /// Actualiza un PQRS en el servidor.
+  Future<List<PqrsModel>> getMyPqrs(String token) async {
+    try {
+      final response = await _dio.get(
+        '/pqrs/my-pqrs',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      AppLogger.i('Response Data: ${response.data}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final List<dynamic> responseData = response.data;
+        return responseData
+            .map((item) => PqrsModel.fromMap(item as Map<String, dynamic>))
+            .toList();
+      } else {
+        AppLogger.e(
+            'Failed to get My PQRS. Status: ${response.statusCode}, Body: ${response.data}');
+        throw Exception(
+            'Failed to get My PQRS. Status: ${response.statusCode}, Body: ${response.data}');
+      }
+    } on DioException catch (e) {
+      AppLogger.e('Dio error during get My PQRS: $e');
+      throw AppException.fromDioExceptionType(e.type);
+    } catch (e) {
+      AppLogger.e('Unexpected error during get My PQRS: $e');
+      throw AppException(code: -1, message: 'Unexpected error occurred');
+    }
+  }
+
+  /// Actualiza un PQRS en el servidor.
   Future<PqrsModel> updatePqrs(UpdatePqrsRequest request, String token) async {
     try {
       final response = await _dio.patch(
@@ -154,7 +188,7 @@ class PqrsRemoteDataSource {
         ),
       );
       AppLogger.i('Response Data: ${response.data}');
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return PqrsModel.fromMap(response.data);
       } else {
@@ -172,7 +206,7 @@ class PqrsRemoteDataSource {
     }
   }
 
- /// Actualiza un PQRS en el servidor.
+  /// Actualiza un PQRS en el servidor.
   Future<PqrsModel> closePqrs(UpdatePqrsRequest request, String token) async {
     try {
       final response = await _dio.patch(
@@ -186,7 +220,7 @@ class PqrsRemoteDataSource {
         ),
       );
       AppLogger.i('Response Data: ${response.data}');
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return PqrsModel.fromMap(response.data);
       } else {
@@ -234,5 +268,4 @@ class PqrsRemoteDataSource {
       throw AppException(code: -1, message: 'Unexpected error occurred');
     }
   }
-
 }
