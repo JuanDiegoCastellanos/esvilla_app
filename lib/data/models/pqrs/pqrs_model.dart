@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class PqrsModel {
     final String id;
     final String asunto;
@@ -30,10 +28,6 @@ class PqrsModel {
         required this.fechaCierre,
     });
 
-    factory PqrsModel.fromJson(String str) => PqrsModel.fromMap(json.decode(str));
-
-    String toJson() => json.encode(toMap());
-
     factory PqrsModel.fromMap(Map<String, dynamic> json) => PqrsModel(
         id: json["_id"],
         asunto: json["asunto"],
@@ -49,7 +43,7 @@ class PqrsModel {
         fechaCierre: DateTime.parse(json["fechaCierre"]),
     );
 
-    Map<String, dynamic> toMap() => {
+    Map<String, dynamic> toJson() => {
         "_id": id,
         "asunto": asunto,
         "descripcion": descripcion,

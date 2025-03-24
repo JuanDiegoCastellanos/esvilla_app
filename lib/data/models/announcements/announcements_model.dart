@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class AnnouncementModel {
     final String id;
     final String title;
@@ -25,10 +23,6 @@ class AnnouncementModel {
         required this.updatedAt,
     });
 
-    factory AnnouncementModel.fromJson(String str) => AnnouncementModel.fromMap(json.decode(str));
-
-    String toJson() => json.encode(toMap());
-
     factory AnnouncementModel.fromMap(Map<String, dynamic> json) => AnnouncementModel(
         id: json["_id"],
         title: json["title"],
@@ -42,7 +36,7 @@ class AnnouncementModel {
         updatedAt: DateTime.parse(json["updatedAt"]),
     );
 
-    Map<String, dynamic> toMap() => {
+    Map<String, dynamic> toJson() => {
         "_id": id,
         "title": title,
         "description": description,

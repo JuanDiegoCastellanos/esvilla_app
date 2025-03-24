@@ -68,7 +68,7 @@ class UsersRemoteDataSource {
   }
 
   Future<UserModel> createUser(String token, CreateUserRequest model) async {
-    try{
+    try {
       final response = await _dio.post(
         '/users/',
         data: model.toMap(),
@@ -90,7 +90,7 @@ class UsersRemoteDataSource {
     } on DioException catch (e) {
       AppLogger.e('Dio error during create users: $e');
       throw AppException.fromDioExceptionType(e.type);
-    }catch (e) {
+    } catch (e) {
       AppLogger.e('Unexpected error during create user: $e');
       throw AppException(code: -1, message: 'Unexpected error occurred');
     }
@@ -125,7 +125,7 @@ class UsersRemoteDataSource {
     }
   }
 
-Future<UserModel> deleteUser(String token, String id) async {
+  Future<UserModel> deleteUser(String token, String id) async {
     try {
       final response = await _dio.delete(
         '/users/$id',
@@ -153,4 +153,62 @@ Future<UserModel> deleteUser(String token, String id) async {
     }
   }
 
+  Future<UserModel> myProfile(String token) async {
+    try {
+      final response = await _dio.get(
+        '/users/profile',
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        }),
+      );
+      AppLogger.i('Response Data: ${response.data}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return UserModel.fromMap(response.data);
+      } else {
+        AppLogger.e(
+            'Failed to login. Status: ${response.statusCode}, Body: ${response.data}');
+
+        throw Exception(
+            'Failed to login. Status: ${response.statusCode}, Body: ${response.data}');
+      }
+    } on DioException catch (e) {
+      AppLogger.e('Dio error during get the user info: $e');
+      throw AppException.fromDioExceptionType(e.type);
+    } catch (e) {
+      AppLogger.e('Unexpected error during login: $e');
+      throw AppException(code: -1, message: 'Unexpected error occurred');
+    }
+  }
+
+  Future<UserModel> updateMyInfo(UpdateUserRequest model, String token) async {
+    try {
+      final response = await _dio.put(
+        '/users/profile',
+        data: model.toJson(),
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        }),
+      );
+      AppLogger.i('Response Data: ${response.data}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return UserModel.fromMap(response.data);
+      } else {
+        AppLogger.e(
+            'Failed to update the user info. Status: ${response.statusCode}, Body: ${response.data}');
+
+        throw Exception(
+            'Failed to update the user info. Status: ${response.statusCode}, Body: ${response.data}');
+      }
+    } on DioException catch (e) {
+      AppLogger.e('Dio error during update the user info: $e');
+      throw AppException.fromDioExceptionType(e.type);
+    } catch (e) {
+      AppLogger.e('Unexpected error during update the user info: $e');
+      throw AppException(code: -1, message: 'Unexpected error occurred');
+    }
+  }
 }
