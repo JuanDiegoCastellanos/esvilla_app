@@ -53,7 +53,7 @@ class AuthRemoteDataSource {
 
   Future<AuthResponse> register(RegisterRequestEntity registerRequestEntity) async {
     try {
-     final registerResponse = await dio.post(
+    final registerResponse = await dio.post(
         '/users',
         data: {
           'name': registerRequestEntity.name,
