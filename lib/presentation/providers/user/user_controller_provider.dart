@@ -3,9 +3,9 @@ import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/domain/use_cases/get_my_profile_use_case.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_token_provider.dart';
-import 'package:esvilla_app/presentation/providers/states/user_state.dart';
-import 'package:esvilla_app/presentation/providers/user/user_data_provider.dart';
-import 'package:esvilla_app/presentation/providers/user/user_get_my_profile_user_case.dart';
+import 'package:esvilla_app/presentation/providers/user/user_state.dart';
+import 'package:esvilla_app/presentation/providers/user/user_data_state_notifier.dart';
+import 'package:esvilla_app/presentation/providers/user/get_my_user_profile_use_case_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserController extends StateNotifier<UserState> {
@@ -52,7 +52,6 @@ class UserController extends StateNotifier<UserState> {
 
       } on AppException catch (e) {
       AppLogger.e("GetUserProfileInfo failed: ${e.message}");
-      rethrow;
     } finally {
       state = state.copyWith(isLoading: false);
     }

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:esvilla_app/presentation/providers/states/connectivity_status.dart';
+import 'package:esvilla_app/presentation/providers/connectivity/connectivity_status.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConnectivityNotifier extends StateNotifier<ConnectivityStatus> {

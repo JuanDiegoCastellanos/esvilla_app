@@ -1,6 +1,6 @@
 import 'package:esvilla_app/core/utils/secure_storage.dart';
-import 'package:esvilla_app/presentation/providers/secure_storage_provider.dart';
-import 'package:esvilla_app/presentation/providers/states/user_state.dart';
+import 'package:esvilla_app/presentation/providers/storage/secure_storage_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/user_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserDataStateNotifier extends StateNotifier<UserState> {

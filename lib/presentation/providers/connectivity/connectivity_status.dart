@@ -1,4 +1,4 @@
-import 'package:esvilla_app/presentation/providers/conectivity_provider.dart';
+import 'package:esvilla_app/presentation/providers/connectivity/conectivity_provider.dart';
 
 class ConnectivityStatus {
   final bool isConnected;

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_token_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_token_state_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthInterceptor extends Interceptor {

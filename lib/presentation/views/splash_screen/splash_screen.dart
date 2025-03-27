@@ -1,5 +1,5 @@
 import 'package:esvilla_app/core/config/app_router.dart';
-import 'package:esvilla_app/presentation/providers/conectivity_provider.dart';
+import 'package:esvilla_app/presentation/providers/connectivity/conectivity_provider.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

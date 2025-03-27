@@ -1,0 +1,60 @@
+import 'package:esvilla_app/data/models/user/create_user_request.dart';
+import 'package:esvilla_app/data/models/user/user_model.dart';
+import 'package:esvilla_app/data/models/user/user_update_request.dart';
+import 'package:esvilla_app/domain/entities/user/create_user_request_entity.dart';
+import 'package:esvilla_app/domain/entities/user/update_user_request_entity.dart';
+import 'package:esvilla_app/domain/entities/user/user_entity.dart';
+
+class UserMapper {
+  static UserEntity toEntity(UserModel model) {
+    return UserEntity(
+      id: model.id,
+      name: model.name,
+      email: model.email,
+      documentNumber: model.documentNumber,
+      phone: model.phone,
+      mainAddress: model.mainAddress,
+      role: model.role,
+      password: model.password,
+    );
+  }
+
+  static UserModel toModel(UserEntity entity) {
+    return UserModel(
+      id: entity.id,
+      name: entity.name,
+      email: entity.email,
+      documentNumber: entity.documentNumber,
+      phone: entity.phone,
+      mainAddress: entity.mainAddress,
+      role: entity.role,
+      password: entity.password,
+    );
+  }
+
+  static CreateUserRequest toCreateRequest(CreateUserRequestEntity entity) {
+    return CreateUserRequest(
+        documentNumber: entity.documentNumber,
+        name: entity.name,
+        email: entity.email,
+        phone: entity.phone,
+        mainAddress: entity.mainAddress,
+        password: entity.password,
+        role: entity.role
+        // ...
+        );
+  }
+
+  static UpdateUserRequest toUpdateRequest(UpdateUserRequestEntity entity) {
+    return UpdateUserRequest(
+      id: entity.id,
+      name: entity.name,
+      documentNumber: entity.documentNumber,
+      email: entity.email,
+      phone: entity.phone,
+      mainAddress: entity.mainAddress,
+      role: entity.role,
+      password: entity.password,
+    );
+  }
+}

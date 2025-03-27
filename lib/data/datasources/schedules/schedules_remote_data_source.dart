@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
-import 'package:esvilla_app/data/datasources/admin/sectors/sectors_remote_data_source.dart';
+import 'package:esvilla_app/data/datasources/sectors/sectors_remote_data_source.dart';
 import 'package:esvilla_app/data/models/schedules/add_sectors_request.dart';
 import 'package:esvilla_app/data/models/schedules/create_schedule_request.dart';
 import 'package:esvilla_app/data/models/schedules/schedule_model.dart';

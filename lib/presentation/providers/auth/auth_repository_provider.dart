@@ -5,7 +5,8 @@ import 'package:esvilla_app/domain/repositories/auth_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref){
-  return AuthRemoteRepositoryImpl(AuthRemoteDataSource(ref.watch(dioClientProvider).dio));
+  final dio = ref.watch(dioClientProvider).dio;
+  return AuthRemoteRepositoryImpl(AuthRemoteDataSource(dio));
  /*  final hasInternet = ref.watch(connectivityProvider).isConnected;
     if (hasInternet) {
       return AuthRemoteRepositoryImpl(AuthRemoteDataSource(http.Client()));

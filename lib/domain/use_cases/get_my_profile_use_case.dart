@@ -1,4 +1,4 @@
-import 'package:esvilla_app/domain/entities/user_entity.dart';
+import 'package:esvilla_app/domain/entities/user/user_entity.dart';
 import 'package:esvilla_app/domain/repositories/user_repository.dart';
 
 class GetMyProfileUseCase {

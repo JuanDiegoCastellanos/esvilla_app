@@ -39,14 +39,10 @@ class UsersRemoteDataSource {
     }
   }
 
-  Future<UserModel> getUserById(String token, String id) async {
+  Future<UserModel> getUserById(String id) async {
     try {
       final response = await _dio.get(
         '/users/$id',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -67,14 +63,13 @@ class UsersRemoteDataSource {
     }
   }
 
-  Future<UserModel> createUser(String token, CreateUserRequest model) async {
+  Future<UserModel> createUser(CreateUserRequest model) async {
     try {
       final response = await _dio.post(
         '/users/',
         data: model.toMap(),
         options: Options(headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
         }),
       );
       AppLogger.i('Response Data: ${response.data}');
