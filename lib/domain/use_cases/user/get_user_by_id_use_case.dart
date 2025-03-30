@@ -7,6 +7,6 @@ class GetUserByIdUseCase {
 
   GetUserByIdUseCase(this.repository);
 
-  Future<UserEntity> call(String id) async => repository.getById(id);
+  Future<UserEntity> call(String id) async => await repository.getById(id);
 
 }

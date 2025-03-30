@@ -1,4 +1,6 @@
 import 'package:esvilla_app/core/config/app_router.dart';
+import 'package:esvilla_app/presentation/providers/user/all_users_controller_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/user_model_presentation.dart';
 import 'package:esvilla_app/presentation/widgets/home/admin/user_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,36 +14,15 @@ class ListUsersScreen extends ConsumerStatefulWidget {
 }
 
 class _ListUsersScreenState extends ConsumerState<ListUsersScreen> {
-  final List<Map<String, dynamic>> users = [
-    {
-      "name": "Angie Lorena Moncada",
-      "email": "M6oOe@example.com",
-    },
-    {
-      "name": "Juan David Moncada",
-      "email": "Jua9920@example.com",
-    },
-    {
-      "name": "Manuel Moncada",
-      "email": "Man9920@example.com",
-    },
-    {
-      "name": "Luis Moncada",
-      "email": "Lui9920@example.com",
-    },
-    {
-      "name": "Pedro Moncada",
-      "email": "Ped9920@example.com",
-    },
-  ];
+  
+  List<UserPresentationModel> users = [];
   final searchController = TextEditingController();
-  List<Map<String, dynamic>> filteredUsers = [];
+  List<UserPresentationModel> filteredUsers = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    filteredUsers = users;
   }
 
   void _filterUsers(String query) {
@@ -50,8 +31,8 @@ class _ListUsersScreenState extends ConsumerState<ListUsersScreen> {
       setState(() {
         filteredUsers = users
             .where((user) =>
-                user['name'].toLowerCase().contains(query.toLowerCase()) ||
-                user['email'].toLowerCase().contains(query.toLowerCase()))
+                user.name!.toLowerCase().contains(query.toLowerCase()) ||
+                user.email!.toLowerCase().contains(query.toLowerCase()))
             .toList();
       });
     }
@@ -89,7 +70,7 @@ class _ListUsersScreenState extends ConsumerState<ListUsersScreen> {
                     onPressed: () {
                       Navigator.of(context).pop(); // Cerrar diálogo
                     },
-                    child: Text(
+                    child: const Text(
                       'Cancelar',
                       style: TextStyle(
                         color: Colors.white
@@ -103,12 +84,12 @@ class _ListUsersScreenState extends ConsumerState<ListUsersScreen> {
                     onPressed: () {
                       setState(() {
                         filteredUsers.removeWhere((user) =>
-                            user['name'] == name || user['email'] == email);
+                            user.name == name || user.email == email);
                       });
                       Navigator.of(context).pop(); // Cerrar diálogo
                     },
                     child: 
-                    Text(
+                    const Text(
                       'Aceptar',
                       style: TextStyle(
                         color: Colors.white
@@ -120,7 +101,16 @@ class _ListUsersScreenState extends ConsumerState<ListUsersScreen> {
 
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
+    users = ref.watch(allUsersControllerProvider);
+    final searchQuery = searchController.text;
+    filteredUsers = searchQuery.isEmpty
+      ? users
+      : users.where((user) {
+          final lowerQuery = searchQuery.toLowerCase();
+          return user.name?.toLowerCase().contains(lowerQuery) ?? false ||
+              user.email!.toLowerCase().contains(lowerQuery);
+        }).toList();
     final goRouter = ref.read(goRouterProvider);
     return Scaffold(
       backgroundColor: const Color(0xFFE4F7FF),
@@ -166,8 +156,10 @@ class _ListUsersScreenState extends ConsumerState<ListUsersScreen> {
                 size: 30,
               ),
               onPressed: () {
+                
                 final searchQuery = searchController.text;
-                if (searchQuery.isEmpty) {
+                if (searchQuery.isEmpty){
+                  ref.read(allUsersControllerProvider.notifier).loadUsers();
                   setState(() {
                     filteredUsers = users;
                   });
@@ -186,15 +178,17 @@ class _ListUsersScreenState extends ConsumerState<ListUsersScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
+      body: users.isEmpty ?  const Center(
+        child: CircularProgressIndicator(),
+      ) : ListView.builder(
         itemCount: filteredUsers.length,
         itemBuilder: (context, index) {
           final user = filteredUsers[index];
           return UserListItem(
-            userEmail: user['email'],
-            userName: user['name'],
+            userEmail: user.email ?? '',
+            userName: user.name ?? '',
             onDeleteTap: () =>
-                _onDeleteTap(context, user['name'], user['email']),
+                _onDeleteTap(context, user.name, user.email),
             onEditTap: () => goRouter.pushNamed('adminEditUser', extra: user),
           );
         },

@@ -11,9 +11,12 @@ class UserRemoteRepositoryImpl implements UserRepository {
   UserRemoteRepositoryImpl(this.userRemoteDataSource);
 
   @override
-  Future<UserEntity> add(CreateUserRequestEntity createUserRequestEntity) async {
-    final createUserRequest = UserMapper.toCreateRequest(createUserRequestEntity);
-    final userModelResponse = await userRemoteDataSource.createUser(createUserRequest);
+  Future<UserEntity> add(
+      CreateUserRequestEntity createUserRequestEntity) async {
+    final createUserRequest =
+        UserMapper.toCreateRequest(createUserRequestEntity);
+    final userModelResponse =
+        await userRemoteDataSource.createUser(createUserRequest);
     return UserMapper.toEntity(userModelResponse);
   }
 
@@ -24,9 +27,9 @@ class UserRemoteRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<List<UserEntity>> getAll() {
-    // TODO: implement getAll
-    throw UnimplementedError();
+  Future<List<UserEntity>> getAll() async {
+    return await userRemoteDataSource.getAllUsers().then(
+        (users) => users.map((user) => UserMapper.toEntity(user)).toList());
   }
 
   @override

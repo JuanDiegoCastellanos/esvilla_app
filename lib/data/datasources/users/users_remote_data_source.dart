@@ -10,15 +10,9 @@ class UsersRemoteDataSource {
 
   UsersRemoteDataSource(this._dio);
 
-  Future<List<UserModel>> getAllUsers(String token) async {
+  Future<List<UserModel>> getAllUsers() async {
     try {
-      final response = await _dio.get(
-        '/users/list',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
-      );
+      final response = await _dio.get('/users/list');
       AppLogger.i('Response Data: ${response.data}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -34,7 +28,7 @@ class UsersRemoteDataSource {
       AppLogger.e('Dio error during get users: $e');
       throw AppException.fromDioExceptionType(e.type);
     } catch (e) {
-      AppLogger.e('Unexpected error during get users: $e');
+      AppLogger.e('Unexpected error during get users: ${e.toString()}');
       throw AppException(code: -1, message: 'Unexpected error occurred');
     }
   }
