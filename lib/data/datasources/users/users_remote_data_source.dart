@@ -61,10 +61,7 @@ class UsersRemoteDataSource {
     try {
       final response = await _dio.post(
         '/users/',
-        data: model.toMap(),
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-        }),
+        data: model.toMap()
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -85,15 +82,11 @@ class UsersRemoteDataSource {
     }
   }
 
-  Future<UserModel> updateUser(String token, UpdateUserRequest model) async {
+  Future<UserModel> updateUser(UpdateUserRequest model) async {
     try {
       final response = await _dio.put(
         '/users/${model.id}',
-        data: model.toJson(),
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
+        data: model.toJson()
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -114,14 +107,10 @@ class UsersRemoteDataSource {
     }
   }
 
-  Future<UserModel> deleteUser(String token, String id) async {
+  Future<UserModel> deleteUser(String id) async {
     try {
       final response = await _dio.delete(
         '/users/$id',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -142,14 +131,10 @@ class UsersRemoteDataSource {
     }
   }
 
-  Future<UserModel> myProfile(String token) async {
+  Future<UserModel> myProfile() async {
     try {
       final response = await _dio.get(
         '/users/profile',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -171,15 +156,11 @@ class UsersRemoteDataSource {
     }
   }
 
-  Future<UserModel> updateMyInfo(UpdateUserRequest model, String token) async {
+  Future<UserModel> updateMyInfo(UpdateUserRequest model) async {
     try {
       final response = await _dio.put(
         '/users/profile',
-        data: model.toJson(),
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
+        data: model.toJson()
       );
       AppLogger.i('Response Data: ${response.data}');
 

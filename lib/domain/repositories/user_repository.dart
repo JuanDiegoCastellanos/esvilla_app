@@ -5,7 +5,7 @@ import 'package:esvilla_app/domain/repositories/generic_repository.dart';
 
 abstract class UserRepository implements GenericRepository<UserEntity, CreateUserRequestEntity, UpdateUserRequestEntity> {
 
-  Future<UserEntity> myProfile(String token);
+  Future<UserEntity> myProfile();
 
-  Future<UserEntity> updateMyInfo(UpdateUserRequestEntity model, String token);
+  Future<UserEntity> updateMyInfo(UpdateUserRequestEntity model);
 }

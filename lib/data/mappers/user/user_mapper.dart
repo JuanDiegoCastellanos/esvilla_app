@@ -14,8 +14,9 @@ class UserMapper {
       documentNumber: model.documentNumber,
       phone: model.phone,
       mainAddress: model.mainAddress,
-      role: model.role,
       password: model.password,
+      role: model.role,
+      
     );
   }
 

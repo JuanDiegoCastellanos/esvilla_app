@@ -29,13 +29,13 @@ class _UserInfoState extends ConsumerState<UserInfo> {
 
     return Padding(
       padding: EdgeInsets.zero,
-      child: Column(
+      child: userData.isLoading ? const Center(child: CircularProgressIndicator()) : Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
             userData.name ?? 'nombre de usuario',
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.w500,
               color: Colors.black
             ),
@@ -43,7 +43,7 @@ class _UserInfoState extends ConsumerState<UserInfo> {
           Text(
             userData.documentNumber ?? 'numero de identificacion',
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.w300,
               color: Colors.black
 

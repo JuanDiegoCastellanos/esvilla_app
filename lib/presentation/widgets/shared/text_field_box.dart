@@ -50,7 +50,6 @@ class TextFieldBox extends StatelessWidget {
         )
       ),
       textAlignVertical: TextAlignVertical.bottom,
-      cursorHeight: 30,
       obscureText: obscureText,
       onEditingComplete: () => FocusScope.of(context).unfocus(),
     );
