@@ -91,9 +91,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return const PaymentLinksSectionScreen();
       case Pages.profile:
         return const ProfileSectionScreen();
-      default:
-        return _buildHomeContent();
-    }
+      }
   }
 
   Widget _buildHomeContent() {
@@ -206,6 +204,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   (timeBySector) => Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                                      Divider(
+                                        color: Colors.blue.shade800,
+                                        thickness: 2,
+                                      ),
                                       Text(
                                         timeBySector.hour,
                                         style: const TextStyle(
@@ -220,7 +222,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         children: timeBySector.sectors
                                             .map(
                                               (sector) => Chip(
-                                                label: Text(sector.name),
+                                                color: WidgetStateProperty.all<Color>(Colors.red),
+                                                label: Text(
+                                                  sector.name,
+                                                  style: TextStyle(
+                                                    color: Colors.white
+                                                  ),
+                                                  ),
                                               ),
                                             )
                                             .toList(),

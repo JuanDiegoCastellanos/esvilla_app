@@ -7,10 +7,4 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final authRepositoryProvider = Provider<AuthRepository>((ref){
   final dio = ref.watch(dioClientProvider).dio;
   return AuthRemoteRepositoryImpl(AuthRemoteDataSource(dio));
- /*  final hasInternet = ref.watch(connectivityProvider).isConnected;
-    if (hasInternet) {
-      return AuthRemoteRepositoryImpl(AuthRemoteDataSource(http.Client()));
-    }else{
-      return AuthLocalRepositoryImpl(AuthLocalDataSource());
-    } */
 });

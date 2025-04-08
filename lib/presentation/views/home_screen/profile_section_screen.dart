@@ -1,4 +1,9 @@
+import 'package:esvilla_app/core/config/app_logger.dart';
+import 'package:esvilla_app/presentation/providers/user/get_my_user_profile_use_case_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/get_user_by_id_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/update_user_provider.dart';
 import 'package:esvilla_app/presentation/providers/user/user_controller_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/user_model_presentation.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +20,7 @@ class ProfileSectionScreen extends ConsumerStatefulWidget {
 class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
   // Llave global para el Form
   final _formKey = GlobalKey<FormState>();
+  final _formKeyPasswords = GlobalKey<FormState>();
 
   // Controladores de los campos
   final _nombreController = TextEditingController();
@@ -53,6 +59,30 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
       return 'Por favor ingresa $campo';
     }
     return null;
+  }
+
+  // Llamado al proveedor para actualizar los datos del usuario
+  void _actualizarDatos() async {
+    final localUser = await ref.read(getMyProfileInfoUseCaseProvider).call();
+    final userPresentationModel = UserPresentationModel.fromEntity(localUser);
+    // validaciones para los controllers
+    final updatedUserPresentationModel = userPresentationModel.copyWith(
+      name: _nombreController.text.isNotEmpty ? _nombreController.text : userPresentationModel.name,
+      documentNumber: _documentoController.text.isNotEmpty ? _documentoController.text : userPresentationModel.documentNumber,
+      email: _emailController.text.isNotEmpty ? _emailController.text : userPresentationModel.email,
+      phone: _telefonoController.text.isNotEmpty ? _telefonoController.text : userPresentationModel.phone,
+      mainAddress: _direccionController.text.isNotEmpty ? _direccionController.text : userPresentationModel.mainAddress,
+    );
+
+    final updatedUser = await ref.watch(updateUserProvider(updatedUserPresentationModel).future);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Usuario actualizado: ${updatedUser.name}'),
+      backgroundColor: Colors.green,
+    ),
+  );
+  ref.read(userControllerProvider.notifier).getMyProfileInfo();
   }
 
   @override
@@ -142,125 +172,147 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                 // Botón para "Guardar"
                 Center(
                   child: ButtonRectangular(
-                      onPressedFunction: () {
-                        if (_formKey.currentState!.validate()) {
+                    onPressedFunction: () async  {
+                      if (_formKey.currentState!.validate()) {
+                        // Aquí manejas el guardado de datos
+                        _actualizarDatos();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Datos guardados',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Icon(
+                            Icons.save_as_sharp,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            'Guardar',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKeyPasswords,
+              child: Column(
+                children: [
+                  // Sección: Nueva clave
+                  const Text(
+                    'Nueva clave',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  TextFieldFormEsvilla(
+                    controller: _claveAntiguaController,
+                    name: 'Clave antigua',
+                    inputType: TextInputType.visiblePassword,
+                    obscureText: true,
+                    validator: (value) =>
+                        _validarCampo(value, 'la clave antigua'),
+                  ),
+                  const SizedBox(height: 16),
+
+                  TextFieldFormEsvilla(
+                    controller: _nuevaClaveController,
+                    name: 'Nueva clave',
+                    inputType: TextInputType.visiblePassword,
+                    validator: (value) =>
+                        _validarCampo(value, 'la nueva clave'),
+                  ),
+                  const SizedBox(height: 16),
+
+                  TextFieldFormEsvilla(
+                    controller: _repetirClaveController,
+                    name: 'Repetir nueva clave',
+                    inputType: TextInputType.visiblePassword,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor repite la nueva clave';
+                      }
+                      if (value != _nuevaClaveController.text) {
+                        return 'Las claves no coinciden';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  Center(
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        fixedSize: WidgetStateProperty.all(const Size(233, 50)),
+                        backgroundColor: WidgetStateColor.resolveWith(
+                            (states) => Colors.red),
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        )),
+                      ),
+                      onPressed: () {
+                        if (_formKeyPasswords.currentState!.validate()) {
+                          if (_nuevaClaveController.text !=
+                              _repetirClaveController.text) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Las nuevas claves no coinciden'),
+                              ),
+                            );
+                            return;
+                          }
                           // Aquí manejas el guardado de datos
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Datos guardados')),
+                            const SnackBar(content: Text('Clave cambiada')),
                           );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Colors.red,
+                              content:
+                                  Text(
+                                    'Completa todos los campos de clave',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700
+                                    ),
+                                    ),
+                            ),
+                          );
+                          return;
                         }
                       },
                       child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 4),
-                            child: Icon(
-                              Icons.save_as_sharp,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 4),
-                            child: Text(
-                              'Guardar',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                      ),
-                ),
-
-                const SizedBox(height: 32),
-
-                // Sección: Nueva clave
-                const Text(
-                  'Nueva clave',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                TextFieldFormEsvilla(
-                  controller: _claveAntiguaController,
-                  name: 'Clave antigua',
-                  inputType: TextInputType.visiblePassword,
-                  obscureText: true,
-                  validator: (value) =>
-                      _validarCampo(value, 'la clave antigua'),
-                ),
-                const SizedBox(height: 16),
-
-                TextFieldFormEsvilla(
-                  controller: _nuevaClaveController,
-                  name: 'Nueva clave',
-                  inputType: TextInputType.visiblePassword,
-                  validator: (value) => _validarCampo(value, 'la nueva clave'),
-                ),
-                const SizedBox(height: 16),
-
-                TextFieldFormEsvilla(
-                  controller: _repetirClaveController,
-                  name: 'Repetir nueva clave',
-                  inputType: TextInputType.visiblePassword,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor repite la nueva clave';
-                    }
-                    if (value != _nuevaClaveController.text) {
-                      return 'Las claves no coinciden';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                Center(
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      fixedSize: MaterialStateProperty.all(const Size(233, 50)),
-                      backgroundColor: MaterialStateColor.resolveWith(
-                          (states) => Colors.red),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      )),
-                    ),
-                    onPressed: () {
-                      // Validar solo la parte de la nueva clave
-                      // Si quieres validar todo el form, usa _formKey.currentState!.validate()
-                      if (_claveAntiguaController.text.isEmpty ||
-                          _nuevaClaveController.text.isEmpty ||
-                          _repetirClaveController.text.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Completa todos los campos de clave'),
-                          ),
-                        );
-                        return;
-                      }
-                      if (_nuevaClaveController.text !=
-                          _repetirClaveController.text) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Las nuevas claves no coinciden'),
-                          ),
-                        );
-                        return;
-                      }
-                      // Aquí manejas el cambio de clave
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Clave cambiada')),
-                      );
-                    },
-                    child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Padding(
@@ -283,12 +335,11 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                           ),
                         ],
                       ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
+                ],
+              ),
+            ))
       ]),
     );
   }

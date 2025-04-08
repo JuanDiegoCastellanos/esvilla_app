@@ -67,22 +67,23 @@ class UserRemoteRepositoryImpl implements UserRepository {
   @override
   Future<UserEntity> update(String id, UpdateUserRequestEntity entity) async {
     try {
-      if(id.isEmpty){
+      if (id.isEmpty) {
         AppLogger.e('The id can not be empty');
         throw AppException(message: 'The id can not be empty');
       }
-      if(id == entity.id){
+      if (id == entity.id) {
         final user = await userRemoteDataSource.getUserById(id);
-        if(user.id == entity.id){
+        if (user.id == entity.id) {
           // Ready to update
           final userToUpdate = UserMapper.toUpdateRequest(entity);
-          final userUpdatedModel = await userRemoteDataSource.updateUser(userToUpdate);
+          final userUpdatedModel =
+              await userRemoteDataSource.updateUser(userToUpdate);
           return UserMapper.toEntity(userUpdatedModel);
-        }else{
+        } else {
           AppLogger.e('Error with the user is not the same');
           throw AppException(message: 'Error with the user');
         }
-      }else{
+      } else {
         AppLogger.e('Error with the user, the id is not the same');
         throw AppException(message: 'Error with the user');
       }
@@ -92,7 +93,20 @@ class UserRemoteRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<UserEntity> updateMyInfo(UpdateUserRequestEntity model) {
-    throw UnimplementedError();
+  Future<UserEntity> updateMyInfo(UpdateUserRequestEntity model) async {
+    try {
+      if (model.id.isEmpty) {
+        AppLogger.e('The id can not be empty');
+        throw AppException(message: 'The id can not be empty');
+      }
+      final updateRequestDto = UserMapper.toUpdateRequest(model);
+      final userModel =
+          await userRemoteDataSource.updateMyInfo(updateRequestDto);
+      final userEntity = UserMapper.toEntity(userModel);
+      return userEntity;
+    } catch (e) {
+      AppLogger.e('An error occurred: $e');
+      throw AppException(message: e.toString());
+    }
   }
 }

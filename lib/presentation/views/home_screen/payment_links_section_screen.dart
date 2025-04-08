@@ -1,4 +1,5 @@
 import 'package:esvilla_app/core/config/app_router.dart';
+import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,32 +32,35 @@ class PaymentLinksSectionScreen extends ConsumerWidget {
               Column(
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          Future.delayed(const Duration(seconds: 2), () {
-                            ref.read(goRouterProvider).pop();
-                            launchDavivienda();
-                          });
-                          return const AlertDialog(
-                            backgroundColor: Colors.red,
-                            title: Text(
-                              'Redirigiendo a Daviplata',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
+                    onTap: () async {
+                      await launchDavivienda();
+
+                      if (context.mounted) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            Future.delayed(const Duration(seconds: 2), () {
+                              ref.read(goRouterProvider).pop();
+                            });
+                            return const AlertDialog(
+                              backgroundColor: Colors.red,
+                              title: Text(
+                                'Redirigiendo a Daviplata',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                            content: CupertinoActivityIndicator(
-                              radius: 25,
-                              animating: true,
-                              color: Colors.white,
-                            ),
-                          );
-                        },
-                      );
+                              content: CupertinoActivityIndicator(
+                                radius: 25,
+                                animating: true,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
+                        );
+                      }
                     },
                     child: Container(
                       height: MediaQuery.of(context).size.height * 0.15,
@@ -64,7 +68,8 @@ class PaymentLinksSectionScreen extends ConsumerWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(width: 2, color: Colors.black),
+                        border: Border.all(width: 4, color: Colors.red),
+                        color: Colors.white
                       ),
                       child: Image.asset(
                         'assets/img/BancoDavivienda01.png',
@@ -74,10 +79,10 @@ class PaymentLinksSectionScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const Text(
+                  /* const Text(
                     "Daviplata",
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-                  )
+                  ) */
                 ],
               )
             ]),
@@ -89,11 +94,11 @@ class PaymentLinksSectionScreen extends ConsumerWidget {
 }
 
 Future<void> launchDavivienda() async {
-  final url = Uri.parse(
+  try{
+    final url = Uri.parse(
       'https://portalpagos.davivienda.com/#/comercio/10043/EMPRESA%20DE%20SERVICIOS%20PUBLICOS%20DE%20VILLA%20DE%20LEYVA');
-  if (await canLaunchUrl(url)) {
-    await launchUrl(url, mode: LaunchMode.externalApplication);
-  } else {
-    throw 'No se pudo abrir la URL: $url';
+  await launchUrl(url, mode: LaunchMode.externalApplication);
+  }catch(e){
+    throw AppException(message: 'Error al abrir Link Davivienda $e');
   }
 }

@@ -61,6 +61,17 @@ class NewsSectionScreen extends ConsumerWidget {
           ),
         ),
       ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Text(
+          textAlign: TextAlign.center,
+          'Noticias más importantes o destacadas',
+          style: TextStyle(
+            fontWeight: FontWeight.w300,
+            fontSize: 20
+          )
+          ),
+      ),
       NewsSection(
         onClick: () {
           showModalBottomSheet(
@@ -102,7 +113,7 @@ class NewsSectionScreen extends ConsumerWidget {
                                   width: 40,
                                   height: 4,
                                   decoration: BoxDecoration(
-                                    color: Colors.grey[300],
+                                    color: Colors.blue.shade900,
                                     borderRadius: BorderRadius.circular(2),
                                   ),
                                 ),
@@ -111,9 +122,16 @@ class NewsSectionScreen extends ConsumerWidget {
                             // Botón de cierre
                             IconButton(
                               icon: const Icon(Icons.close),
+                              color: Colors.blue.shade900,
                               onPressed: () => Navigator.pop(context),
                             ),
                           ],
+                        ),
+                        Divider(
+                          endIndent: 20,
+                          indent: 20,
+                          color: Colors.grey,
+                          thickness: 1,
                         ),
                         // Contenido desplazable.
                         Expanded(
@@ -149,6 +167,23 @@ class NewsSectionScreen extends ConsumerWidget {
           );
         },
         newsList: itemsNews,
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: TextButton(
+          onPressed: () {
+            // Agrega la lógica para cargar más noticias
+          },
+          child: Text(
+            'Ver más',
+            style: TextStyle(
+              color: Colors.blue.shade800,
+              fontSize: 18,
+              decoration: TextDecoration.underline,
+              decorationColor: Colors.blue.shade800
+            ),
+          ),
+        ),
       ),
     ]);
   }
