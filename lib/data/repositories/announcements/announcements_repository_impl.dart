@@ -71,44 +71,74 @@ class AnnouncementsRepositoryImpl implements AnnouncementsRepository {
   }
   
   @override
-  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenCreationDates(String startDate, String endDate) {
-    // TODO: implement getAnnouncementsBetweenCreationDates
-    throw UnimplementedError();
+  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenCreationDates(String startDate, String endDate) async {
+    try {
+      final request = await _announcementsRemoteDataSource.getAnnouncementsByCreationDate(startDate, endDate);
+      return AnnouncementsMapper.toEntityList(request);
+    } catch (e) {
+      throw AppException(message: e.toString());
+    }
   }
   
   @override
-  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenPublishDates(String startDate, String endDate) {
-    // TODO: implement getAnnouncementsBetweenPublishDates
-    throw UnimplementedError();
+  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenPublishDates(String startDate, String endDate) async {
+    try {
+      final request= await _announcementsRemoteDataSource.getAnnouncementsByPublishDate(startDate, endDate);
+      return AnnouncementsMapper.toEntityList(request);
+    } catch (e) {
+      throw AppException(message: e.toString());
+    }
   }
   
   @override
-  Future<List<AnnouncementsEntity>> getAnnouncementsByUser(String id) {
-    // TODO: implement getAnnouncementsByUser
-    throw UnimplementedError();
+  Future<List<AnnouncementsEntity>> getAnnouncementsByUser(String id) async {
+    try {
+      final request = await _announcementsRemoteDataSource.getAnnouncementsByUser(id);
+      return AnnouncementsMapper.toEntityList(request);
+    } catch (e) {
+      throw AppException(message: e.toString());
+    }
   }
   
   @override
-  Future<List<AnnouncementsEntity>> getMyAnnouncements() {
-    // TODO: implement getMyAnnouncements
-    throw UnimplementedError();
+  Future<List<AnnouncementsEntity>> getMyAnnouncements()async {
+    try {
+      final request = await _announcementsRemoteDataSource.getMyAnnouncements();
+      return AnnouncementsMapper.toEntityList(request);
+    } catch (e) {
+      throw AppException(message: e.toString()); 
+    }
   }
   
   @override
-  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenCreationDates(String startDate, String endDate) {
-    // TODO: implement getMyAnnouncementsBetweenCreationDates
-    throw UnimplementedError();
+  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenCreationDates(String startDate, String endDate) async {
+    try {
+      final request = await _announcementsRemoteDataSource.getMyAnnouncementsByCreationDate(startDate, endDate);
+      return AnnouncementsMapper.toEntityList(request);
+    } catch (e) {
+      throw AppException(message: e.toString());
+    }
+    
   }
   
   @override
-  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenPublishDates(String startDate, String endDate) {
-    // TODO: implement getMyAnnouncementsBetweenPublishDates
-    throw UnimplementedError();
+  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenPublishDates(String startDate, String endDate) async {
+    try {
+      final request = await _announcementsRemoteDataSource.getMyAnnouncementsByPublicationDate(startDate, endDate);
+      return AnnouncementsMapper.toEntityList(request);
+    } catch (e) {
+      throw AppException(message: e.toString());
+    }
+    
   }
   
   @override
-  Future<AnnouncementsEntity> publishAnnouncement(String id) {
-    // TODO: implement publishAnnouncement
-    throw UnimplementedError();
+  Future<AnnouncementsEntity> publishAnnouncement(String id) async {
+    try {
+      final request =  await _announcementsRemoteDataSource.publishAnnouncement(id);
+      return AnnouncementsMapper.toEntity(request);
+    } catch (e) {
+      throw AppException(message: e.toString());
+    }
   }
 }

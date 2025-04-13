@@ -1,9 +1,13 @@
+import 'package:esvilla_app/data/models/schedules/add_sectors_request.dart';
 import 'package:esvilla_app/data/models/schedules/create_schedule_request.dart';
 import 'package:esvilla_app/data/models/schedules/schedule_model.dart';
 import 'package:esvilla_app/data/models/schedules/update_schedule_request.dart';
+import 'package:esvilla_app/data/models/schedules/update_sectors_schedule_request.dart';
+import 'package:esvilla_app/domain/entities/schedules/add_sectors_request_entity.dart';
 import 'package:esvilla_app/domain/entities/schedules/create_schedule_request_entity.dart';
 import 'package:esvilla_app/domain/entities/schedules/schedule_entity.dart';
 import 'package:esvilla_app/domain/entities/schedules/update_schedule_request_entity.dart';
+import 'package:esvilla_app/domain/entities/schedules/update_sectors_schedule_request_entity.dart';
 
 class SchedulesMapper {
   static List<ScheduleEntity> toEntityList(List<ScheduleModel> models) =>
@@ -59,6 +63,27 @@ class SchedulesMapper {
       active: entity.active,
       observations: entity.observations,
       garbageType: entity.garbageType,
+    );
+  }
+
+  static AddSectorsRequestEntity toAddSectorsRequestEntity(AddSectorsRequest entity){
+    return AddSectorsRequestEntity(
+      sectors: entity.sectors,
+    );
+  } 
+  static AddSectorsRequest toAddSectorsRequest(AddSectorsRequestEntity entity){
+    return AddSectorsRequest(
+      sectors: entity.sectors,
+    );
+  } 
+  static UpdateSectorsScheduleRequestEntity toUpdateRequestEntity(UpdateSectorsScheduleRequest request){
+    return UpdateSectorsScheduleRequestEntity(
+      sectors: request.sectors,
+    );
+  }
+  static UpdateSectorsScheduleRequest toUpdateSectorsRequest(UpdateSectorsScheduleRequestEntity request){
+    return UpdateSectorsScheduleRequest(
+      sectors: request.sectors,
     );
   }
 }
