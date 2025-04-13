@@ -50,21 +50,18 @@ class ScheduleCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Horarios de Recolección',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withOpacity(0.9),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: 8.0,
+                            left: 22.0,
+                            ),
+                          child: Text(
+                            name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ],
@@ -72,7 +69,7 @@ class ScheduleCard extends StatelessWidget {
                   ),
                   // Icono de navegación (opcional)
                   const Padding(
-                    padding: EdgeInsets.only(right: 16.0),
+                    padding: EdgeInsets.only(right: 36.0),
                     child: Icon(
                       Icons.arrow_forward_ios,
                       size: 20,

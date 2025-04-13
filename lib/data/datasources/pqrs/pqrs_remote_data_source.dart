@@ -11,18 +11,11 @@ class PqrsRemoteDataSource {
   PqrsRemoteDataSource(this._dio);
 
   /// Crea un nuevo PQRS en el servidor.
-  Future<PqrsModel> generatePqrs(
-      CreatePqrsRequest request, String token) async {
+  Future<PqrsModel> generatePqrs(CreatePqrsRequest request) async {
     try {
       final response = await _dio.post(
         '/pqrs',
         data: request.toJson(),
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -44,16 +37,10 @@ class PqrsRemoteDataSource {
   }
 
   /// Obtiene todos los PQRS desde el servidor.
-  Future<List<PqrsModel>> getPqrs(String token) async {
+  Future<List<PqrsModel>> getPqrs() async {
     try {
       final response = await _dio.get(
         '/pqrs',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -78,16 +65,10 @@ class PqrsRemoteDataSource {
   }
 
   /// Obtiene un PQRS por ID desde el servidor.
-  Future<PqrsModel> getPqrsById(String token, String id) async {
+  Future<PqrsModel> getPqrsById(String id) async {
     try {
       final response = await _dio.get(
         '/pqrs/$id',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -108,16 +89,10 @@ class PqrsRemoteDataSource {
     }
   }
 
-  Future<List<PqrsModel>> getPqrsByUser(String token, String id) async {
+  Future<List<PqrsModel>> getPqrsByUser(String id) async {
     try {
       final response = await _dio.get(
         '/pqrs/user/$id',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -141,24 +116,15 @@ class PqrsRemoteDataSource {
     }
   }
 
-  Future<List<PqrsModel>> getMyPqrs(String token) async {
+  Future<PqrsModel> getMyPqrs() async {
     try {
       final response = await _dio.get(
         '/pqrs/my-pqrs',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       AppLogger.i('Response Data: ${response.data}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final List<dynamic> responseData = response.data;
-        return responseData
-            .map((item) => PqrsModel.fromMap(item as Map<String, dynamic>))
-            .toList();
+        return PqrsModel.fromMap(response.data);
       } else {
         AppLogger.e(
             'Failed to get My PQRS. Status: ${response.statusCode}, Body: ${response.data}');
@@ -175,17 +141,11 @@ class PqrsRemoteDataSource {
   }
 
   /// Actualiza un PQRS en el servidor.
-  Future<PqrsModel> updatePqrs(UpdatePqrsRequest request, String token) async {
+  Future<PqrsModel> updatePqrs(UpdatePqrsRequest request) async {
     try {
       final response = await _dio.patch(
         '/pqrs/${request.id}',
         data: request.toJson(),
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -207,17 +167,11 @@ class PqrsRemoteDataSource {
   }
 
   /// Actualiza un PQRS en el servidor.
-  Future<PqrsModel> closePqrs(UpdatePqrsRequest request, String token) async {
+  Future<PqrsModel> closePqrs(UpdatePqrsRequest request) async {
     try {
       final response = await _dio.patch(
         '/pqrs/${request.id}/close',
         data: request.toJson(),
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -239,21 +193,15 @@ class PqrsRemoteDataSource {
   }
 
   /// Elimina un PQRS del servidor.
-  Future<void> deletePqrs(String id, String token) async {
+  Future<PqrsModel> deletePqrs(String id) async {
     try {
       final response = await _dio.delete(
         '/pqrs/$id',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       if (response.statusCode == 200 || response.statusCode == 204) {
         AppLogger.i(
             'PQRS deleted successfully. Status: ${response.statusCode}');
-        return;
+        return PqrsModel.fromMap(response.data);
       } else {
         AppLogger.e(
             'Failed to delete PQRS. Status: ${response.statusCode}, Body: ${response.data}');

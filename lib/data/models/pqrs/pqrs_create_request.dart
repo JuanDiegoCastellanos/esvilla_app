@@ -1,35 +1,17 @@
-class CreatePqrsRequest{
-    final String asunto;
-    final String descripcion;
-    final String idRadicador;
-    final String nombreRadicador;
-    final String telefonoRadicador;
-    final String emailRadicador;
-    final String documentoRadicador;
-    final String estado;
-    final DateTime fechaCierre;
+class CreatePqrsRequest {
+  final String subject;
+  final String description;
+  final String status;
 
-    CreatePqrsRequest({
-      required this.asunto,
-      required this.descripcion,
-      required this.idRadicador,
-      required this.nombreRadicador,
-      required this.telefonoRadicador,
-      required this.emailRadicador,
-      required this.documentoRadicador,
-      required this.estado,
-      required this.fechaCierre
-    });
+  CreatePqrsRequest({
+    required this.subject,
+    required this.description,
+    required this.status,
+  });
 
   Map<String, dynamic> toJson() => {
-        "asunto": asunto,
-        "descripcion": descripcion,
-        "idRadicador": idRadicador,
-        "nombreRadicador": nombreRadicador,
-        "telefonoRadicador": telefonoRadicador,
-        "emailRadicador": emailRadicador,
-        "documentoRadicador": documentoRadicador,
-        "estado": estado,
-        "fechaCierre": fechaCierre.toIso8601String(),
-      };  
+        "asunto": subject,
+        "descripcion": description,
+        "estado": status,
+      };
 }

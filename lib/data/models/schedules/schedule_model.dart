@@ -1,51 +1,52 @@
 class ScheduleModel {
     final String id;
-    final List<String> dias;
-    final String horaInicio;
-    final String horaFin;
-    final List<String> sectoresAsociados;
-    final bool activo;
-    final String observaciones;
-    final String tipoBasura;
+    final List<String> days;
+    final String startTime;
+    final String endTime;
+    final List<String> associatedSectors;
+    final bool active;
+    final String observations;
+    final String garbageType;
     final DateTime createdAt;
     final DateTime updatedAt;
 
     ScheduleModel({
         required this.id,
-        required this.dias,
-        required this.horaInicio,
-        required this.horaFin,
-        required this.sectoresAsociados,
-        required this.activo,
-        required this.observaciones,
-        required this.tipoBasura,
+        required this.days,
+        required this.startTime,
+        required this.endTime,
+        required this.associatedSectors,
+        required this.active,
+        required this.observations,
+        required this.garbageType,
         required this.createdAt,
         required this.updatedAt,
     });
 
     factory ScheduleModel.fromMap(Map<String, dynamic> json) => ScheduleModel(
         id: json["_id"],
-        dias: List<String>.from(json["dias"].map((x) => x)),
-        horaInicio: json["horaInicio"],
-        horaFin: json["horaFin"],
-        sectoresAsociados: List<String>.from(json["sectoresAsociados"].map((x) => x)),
-        activo: json["activo"],
-        observaciones: json["observaciones"],
-        tipoBasura: json["tipoBasura"],
+        days: List<String>.from(json["dias"].map((x) => x)),
+        startTime: json["horaInicio"],
+        endTime: json["horaFin"],
+        associatedSectors: List<String>.from(json["sectoresAsociados"].map((x) => x)),
+        active: json["activo"],
+        observations: json["observaciones"],
+        garbageType: json["tipoBasura"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
     );
 
     Map<String, dynamic> toJson() => {
         "_id": id,
-        "dias": List<dynamic>.from(dias.map((x) => x)),
-        "horaInicio": horaInicio,
-        "horaFin": horaFin,
-        "sectoresAsociados": List<dynamic>.from(sectoresAsociados.map((x) => x)),
-        "activo": activo,
-        "observaciones": observaciones,
-        "tipoBasura": tipoBasura,
+        "dias": List<dynamic>.from(days.map((x) => x)),
+        "horaInicio": startTime,
+        "horaFin": endTime,
+        "sectoresAsociados": List<dynamic>.from(associatedSectors.map((x) => x)),
+        "activo": active,
+        "observaciones": observations,
+        "tipoBasura": garbageType,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
     };
 }
+

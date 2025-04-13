@@ -14,14 +14,10 @@ class SchedulesRemoteDataSource {
 
   SchedulesRemoteDataSource(this._dio);
 
-  Future<List<ScheduleModel>> getSchedules(String token) async {
+  Future<List<ScheduleModel>> getSchedules() async {
     try {
       final response = await _dio.get(
         '/schedules',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -44,20 +40,15 @@ class SchedulesRemoteDataSource {
     }
   }
 
-  Future<List<ScheduleModel>> getSchedulesByID(String token, String id) async {
+  Future<ScheduleModel> getSchedulesByID(String id) async {
     try {
       final response = await _dio.get(
         '/schedules/$id',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final List<dynamic> responseData = response.data;
-        return responseData.map((item) => ScheduleModel.fromMap(item)).toList();
+        return ScheduleModel.fromMap(response.data);
       } else {
         AppLogger.e(
             'Failed to get announcements. Status: ${response.statusCode}, Body: ${response.data}');
@@ -74,15 +65,10 @@ class SchedulesRemoteDataSource {
     }
   }
 
-  Future<List<SectorModel>> getSectorsByScheduleID(
-      String token, String id) async {
+  Future<List<SectorModel>> getSectorsByScheduleID(String id) async {
     try {
       final response = await _dio.get(
         '/schedules/$id/sectors',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -98,7 +84,7 @@ class SchedulesRemoteDataSource {
             try {
               if ((sectorId as String).isNotEmpty) {
                 // Si la funcion ya devuelve un Future no hay necesidad de usar el async 
-                return SectorsRemoteDataSource(_dio).getSectorById(token,sectorId);
+                return SectorsRemoteDataSource(_dio).getSectorById(sectorId);
                 // Old implementation
             /*    final sectorResponse = await _dio.get(
                   '/sectors/$sectorId',
@@ -136,15 +122,10 @@ class SchedulesRemoteDataSource {
     }
   }
 
-  Future<ScheduleModel> getScheduleOfASector(String token, String id) async {
+  Future<ScheduleModel> getScheduleOfASector(String id) async {
     try{
         final response = await _dio.get(
           '/schedules/sectors/$id',
-          options: Options(
-            headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
-          })
         );
         if(response.statusCode == 200 || response.statusCode == 201){
           AppLogger.i('Response Data: ${response.data}');
@@ -167,18 +148,12 @@ class SchedulesRemoteDataSource {
   }
 
   Future<ScheduleModel> createSchedule(
-    CreateScheduleRequest createScheduleRequest, String token
+    CreateScheduleRequest createScheduleRequest
   ) async {
     try{
       final response = await _dio.post(
         '/schedules',
         data: createScheduleRequest.toJson(),
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
-          }
-        )
       );
       if(response.statusCode == 200 || response.statusCode == 201){
         AppLogger.i('Response Data: ${response.data}');
@@ -201,18 +176,12 @@ class SchedulesRemoteDataSource {
   }
 
   Future<ScheduleModel> updateSchedule(
-    UpdateScheduleRequest updateScheduleRequest, String token
+    UpdateScheduleRequest updateScheduleRequest
   ) async {
     try{
       final response = await _dio.patch(
         'schedules/${updateScheduleRequest.id}',
         data: updateScheduleRequest.toJson(),
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
-          }
-        )
       );
       if(response.statusCode == 200 || response.statusCode == 201){
         AppLogger.i('Response Data: ${response.data}');
@@ -236,18 +205,12 @@ class SchedulesRemoteDataSource {
 
   // del horario tal quiero cambiar los sectores, agregar o remover tal vez
   Future<ScheduleModel> updateSectorsFromSchedule(
-    String id, String token, UpdateSectorsScheduleRequest updateSectorsRequest
+    String id,UpdateSectorsScheduleRequest updateSectorsRequest
   ) async {
     try{
       final response = await _dio.patch(
         'schedules/$id/sectors',
         data: updateSectorsRequest.toJson(),
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
-          }
-        )
       );
       if(response.statusCode == 200 || response.statusCode == 201){
         AppLogger.i('Response Data: ${response.data}');
@@ -271,18 +234,12 @@ class SchedulesRemoteDataSource {
   }
 
   Future<ScheduleModel> addSectorsToSchedule(
-    String id, String token, AddSectorsRequest addSectorsRequest
+    String id,AddSectorsRequest addSectorsRequest
   ) async {
     try{
       final response = await _dio.patch(
         'schedules/$id/add-sectors',
         data: addSectorsRequest.toJson(),
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
-          }
-        )
       );
       if(response.statusCode == 200 || response.statusCode == 201){
         AppLogger.i('Response Data: ${response.data}');
@@ -305,17 +262,11 @@ class SchedulesRemoteDataSource {
   }
 
   Future<ScheduleModel> deleteSchedule(
-    String id, String token
+    String id
   ) async{
     try{
       final response = await _dio.delete(
         'schedules/$id',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
-          }
-        )
       );
       if(response.statusCode == 200 || response.statusCode == 201){
         AppLogger.i('Response Data: ${response.data}');

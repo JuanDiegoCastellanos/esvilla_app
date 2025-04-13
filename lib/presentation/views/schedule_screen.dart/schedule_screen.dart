@@ -120,6 +120,7 @@ class ScheduleScreen extends StatelessWidget {
                                   height: 100,
                                   padding: const EdgeInsets.all(8.0),
                                   child:  CupertinoScrollbar(
+                                    controller: ScrollController(),
                                     thickness: 4,
                                     thumbVisibility: true,
                                     radius: const Radius.circular(10),

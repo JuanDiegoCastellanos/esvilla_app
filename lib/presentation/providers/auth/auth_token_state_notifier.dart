@@ -89,11 +89,11 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
   /// Verifica si el token actual esta cerca de expirar (1 dia antes de expirar)
   /// y devuelve true si esta cerca de expirar o false en caso contrario
   bool validationToken() {
-    if (state.accessToken == null) return false;
+    if (state.accessToken == null || state.expiration == null ) return false;
     final expirationDate =
         DateTime.fromMillisecondsSinceEpoch(state.expiration!);
-    return expirationDate.isAfter(DateTime.now()
-        .subtract(const Duration(days: 1))); // 1 dia antes de expirar
+    return expirationDate.isBefore(DateTime.now()
+        .add(const Duration(minutes: 10))); // 1 dia antes de expirar
   }
 
   Future<bool> isTokenExpired() async {

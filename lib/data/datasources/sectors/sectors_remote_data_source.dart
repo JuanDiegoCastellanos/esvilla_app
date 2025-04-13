@@ -10,14 +10,10 @@ class SectorsRemoteDataSource {
 
   SectorsRemoteDataSource(this._dio);
 
-  Future<List<SectorModel>> getSectors(String token) async {
+  Future<List<SectorModel>> getSectors() async {
     try {
       final response = await _dio.get(
         '/sectors',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -39,14 +35,10 @@ class SectorsRemoteDataSource {
     }
   }
 
-  Future<SectorModel> getSectorById(String token, String id) async {
+  Future<SectorModel> getSectorById(String id) async {
     try {
       final response = await _dio.get(
         '/sectors/$id',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -67,15 +59,11 @@ class SectorsRemoteDataSource {
     }
   }
 
-  Future<SectorModel> createSector(String token, CreateSectorRequest createSectorRequest) async {
+  Future<SectorModel> createSector(CreateSectorRequest createSectorRequest) async {
     try {
       final response = await _dio.post(
         '/sectors',
         data: createSectorRequest.toJson(),
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -96,15 +84,11 @@ class SectorsRemoteDataSource {
     }
   }
 
-  Future<SectorModel> updateSector(String token, UpdateSectorsRequest updateSectorsRequest) async {
+  Future<SectorModel> updateSector(UpdateSectorsRequest updateSectorsRequest) async {
     try {
       final response = await _dio.patch(
         '/sectors/${updateSectorsRequest.id}',
         data: updateSectorsRequest.toJson(),
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -125,14 +109,10 @@ class SectorsRemoteDataSource {
     }
   }
 
-  Future<SectorModel> deleteSector(String token, String id) async {
+  Future<SectorModel> deleteSector(String id) async {
     try {
       final response = await _dio.delete(
         '/sectors/$id',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 

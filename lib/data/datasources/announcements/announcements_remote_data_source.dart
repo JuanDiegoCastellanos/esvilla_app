@@ -17,14 +17,10 @@ class AnnouncementsRemoteDataSource {
   /// Returns a list of [AnnouncementModel] representing all announcements.
   ///
   /// Throws an [AppException] if a network error or unexpected error occurs.
-  Future<List<AnnouncementModel>> getAnnouncements(String token) async {
+  Future<List<AnnouncementModel>> getAnnouncements() async {
     try {
       final response = await _dio.get(
         '/announcements',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -57,14 +53,10 @@ class AnnouncementsRemoteDataSource {
   /// created by the user.
   ///
   /// Throws an [AppException] if a network error or unexpected error occurs.
-  Future<List<AnnouncementModel>> getMyAnnouncements(String token) async {
+  Future<List<AnnouncementModel>> getMyAnnouncements() async {
     try {
       final response = await _dio.get(
         '/announcements/my-announcements',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -100,14 +92,10 @@ class AnnouncementsRemoteDataSource {
   ///
   /// Throws an [AppException] if a network error or unexpected error occurs.
   Future<List<AnnouncementModel>> getAnnouncementsByUser(
-      String token, String id) async {
+    String id) async {
     try {
       final response = await _dio.get(
         '/announcements/users/$id',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -141,14 +129,10 @@ class AnnouncementsRemoteDataSource {
   /// Returns an [AnnouncementModel] representing the requested announcement.
   ///
   /// Throws an [AppException] if a network error or unexpected error occurs.
-  Future<AnnouncementModel> getAnnouncementByID(String token, String id) async {
+  Future<AnnouncementModel> getAnnouncementByID(String id) async {
     try {
       final response = await _dio.get(
         '/announcements/$id',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -185,8 +169,7 @@ class AnnouncementsRemoteDataSource {
   /// created by the user in the given range.
   ///
   /// Throws an [AppException] if a network error or unexpected error occurs.
-  Future<List<AnnouncementModel>> getMyAnnouncementsByCreationDate(
-      String token, String startDate, String endDate) async {
+  Future<List<AnnouncementModel>> getMyAnnouncementsByCreationDate(String startDate, String endDate) async {
     try {
       final response = await _dio.get(
         '/announcements/my-announcements/creation-range',
@@ -194,10 +177,6 @@ class AnnouncementsRemoteDataSource {
           'startDate': startDate,
           'endDate': endDate,
         },
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -244,8 +223,7 @@ class AnnouncementsRemoteDataSource {
   /// created by the user in the given range.
   ///
   /// Throws an [AppException] if a network error or unexpected error occurs.
-  Future<List<AnnouncementModel>> getMyAnnouncementsByPublicationDate(
-      String token, String startDate, String endDate) async {
+  Future<List<AnnouncementModel>> getMyAnnouncementsByPublicationDate(String startDate, String endDate) async {
     try {
       final response = await _dio.get(
         '/announcements/my-announcements/publication-range',
@@ -253,10 +231,6 @@ class AnnouncementsRemoteDataSource {
           'startDate': startDate,
           'endDate': endDate,
         },
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -288,8 +262,7 @@ class AnnouncementsRemoteDataSource {
     }
   }
 
-    Future<List<AnnouncementModel>> getAnnouncementsByCreationDate(
-      String token, String startDate, String endDate) async {
+    Future<List<AnnouncementModel>> getAnnouncementsByCreationDate(String startDate, String endDate) async {
     try {
       final response = await _dio.get(
         '/announcements/creation-range',
@@ -297,10 +270,6 @@ class AnnouncementsRemoteDataSource {
           'startDate': startDate,
           'endDate': endDate,
         },
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -332,8 +301,7 @@ class AnnouncementsRemoteDataSource {
     }
   }
 
-    Future<List<AnnouncementModel>> getAnnouncementsByPublishDate(
-      String token, String startDate, String endDate) async {
+    Future<List<AnnouncementModel>> getAnnouncementsByPublishDate(String startDate, String endDate) async {
     try {
       final response = await _dio.get(
         '/announcements/publication-range',
@@ -341,10 +309,6 @@ class AnnouncementsRemoteDataSource {
           'startDate': startDate,
           'endDate': endDate,
         },
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -386,15 +350,11 @@ class AnnouncementsRemoteDataSource {
   /// Throws an [AppException] if a network error or unexpected error occurs.
 
   Future<AnnouncementModel> createAnnouncement(
-      CreateAnnouncementRequest request, String token) async {
+      CreateAnnouncementRequest request) async {
     try {
       final response = await _dio.post(
         '/announcements',
         data: request.toJson(),
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }),
       );
       AppLogger.i('Response Data: ${response.data}');
 
@@ -425,17 +385,11 @@ class AnnouncementsRemoteDataSource {
   ///
   /// Throws an [AppException] if a network error or unexpected error occurs.
   Future<AnnouncementModel> updateAnnouncement(
-      UpdateAnnouncementRequest request, String token) async {
+      UpdateAnnouncementRequest request) async {
     try {
       final response = await _dio.patch(
         '/announcements/${request.id}',
         data: request.toJson(),
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         AppLogger.i('Update Response - Status: ${response.statusCode}');
@@ -464,16 +418,10 @@ class AnnouncementsRemoteDataSource {
   /// Returns an [AnnouncementModel] representing the published announcement.
   ///
   /// Throws an [AppException] if a network error or unexpected error occurs.
-  Future<AnnouncementModel> publishAnnouncement(String token, String id) async {
+  Future<AnnouncementModel> publishAnnouncement(String id) async {
     try {
       final response = await _dio.patch(
         '/announcements/$id/publish',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         AppLogger.i('Publish Response - Status: ${response.statusCode}');
@@ -502,21 +450,15 @@ class AnnouncementsRemoteDataSource {
   /// Throws an [AppException] if a network error or unexpected error occurs.
   /// Logs the success or failure of the delete operation.
 
-  Future<void> deleteAnnouncement(int id, String token) async {
+  Future<AnnouncementModel> deleteAnnouncement(String id) async {
     try {
       final response = await _dio.delete(
         '/announcements/$id',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
       );
       if (response.statusCode == 200 || response.statusCode == 204) {
         AppLogger.i(
             'Announcement deleted successfully. Status: ${response.statusCode}');
-        return;
+        return AnnouncementModel.fromMap(response.data);
       } else {
         AppLogger.e(
             'Failed to delete announcement. Status: ${response.statusCode}, Body: ${response.data}');

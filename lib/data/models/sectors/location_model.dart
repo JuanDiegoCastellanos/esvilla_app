@@ -1,13 +1,13 @@
-class Ubicacion {
+class LocationModel {
   final String type;
   final List<List<List<double>>> coordinates;
 
-  Ubicacion({
+  LocationModel({
     required this.type,
     required this.coordinates,
   });
 
-  factory Ubicacion.fromMap(Map<String, dynamic> json) => Ubicacion(
+  factory LocationModel.fromMap(Map<String, dynamic> json) => LocationModel(
         type: json["type"],
         coordinates: List<List<List<double>>>.from(json["coordinates"].map(
             (x) => List<List<double>>.from(

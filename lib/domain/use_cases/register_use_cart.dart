@@ -1,5 +1,5 @@
-import 'package:esvilla_app/domain/entities/auth_response_entity.dart';
-import 'package:esvilla_app/domain/entities/register_request_entity.dart';
+import 'package:esvilla_app/domain/entities/auth/auth_response_entity.dart';
+import 'package:esvilla_app/domain/entities/auth/register_request_entity.dart';
 import 'package:esvilla_app/domain/repositories/register_repository.dart';
 
 class RegisterUseCase {

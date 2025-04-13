@@ -1,6 +1,6 @@
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
-import 'package:esvilla_app/domain/entities/register_request_entity.dart';
+import 'package:esvilla_app/domain/entities/auth/register_request_entity.dart';
 import 'package:esvilla_app/domain/use_cases/login_use_case.dart';
 import 'package:esvilla_app/domain/use_cases/register_use_cart.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_repository_provider.dart';
@@ -13,6 +13,9 @@ class AuthController extends StateNotifier<AuthState> {
   final RegisterUseCase _registerUseCase;
   final AuthTokenStateNotifier _authTokenStateNotifier;
   final Ref _ref;
+
+  // Variable para evitar refresh simultáneos
+  Future<String?>? _refreshingFuture;
 
   AuthController(
     this._loginUseCase,
@@ -35,8 +38,8 @@ class AuthController extends StateNotifier<AuthState> {
 
       //final timeExpiration = DateTime.now().add(Duration(seconds: response.expiration));
       final expirationTime = DateTime.now()
-        .add(Duration(seconds: response.expiration))
-        .millisecondsSinceEpoch;
+          .add(Duration(seconds: response.expiration))
+          .millisecondsSinceEpoch;
 
       await _authTokenStateNotifier.saveTokens(
         role: response.role,
@@ -76,8 +79,8 @@ class AuthController extends StateNotifier<AuthState> {
           "Response response: ${response.accessToken} - ${response.role}");
 
       final expirationTime = DateTime.now()
-        .add(Duration(seconds: response.expiration))
-        .millisecondsSinceEpoch;
+          .add(Duration(seconds: response.expiration))
+          .millisecondsSinceEpoch;
 
       await _authTokenStateNotifier.saveTokens(
         role: response.role,
@@ -111,9 +114,12 @@ class AuthController extends StateNotifier<AuthState> {
         isAdmin: storedRole == 'admin',
       );
     }
-    final isTokenExpired = await _authTokenStateNotifier.isTokenExpired();
-    if (isTokenExpired) {
-      logout();
+    final isExpired = await _authTokenStateNotifier.isTokenExpired();
+    if (isExpired) {
+      final refreshed = await refreshToken();
+      if (refreshed == null) {
+        logout();
+      }
     }
   }
 
@@ -123,6 +129,17 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   Future<String?> refreshToken() async {
+    // Si ya hay un refresh en curso, reutilizamos ese Future.
+    if (_refreshingFuture != null) {
+      return _refreshingFuture;
+    }
+    _refreshingFuture = _performRefreshToken();
+    final result = await _refreshingFuture;
+    _refreshingFuture = null;
+    return result;
+  }
+
+  Future<String?> _performRefreshToken() async {
     try {
       final refreshToken = _authTokenStateNotifier.state.refreshToken;
       if (refreshToken == null) return null;
@@ -131,7 +148,8 @@ class AuthController extends StateNotifier<AuthState> {
       final isCloseToExpire = _authTokenStateNotifier.validationToken();
       if (isCloseToExpire) {
         // Si esta cerca de expirar, refrescar el token
-        AppLogger.i("Refresh token because it is close to expire");
+        AppLogger.i(
+            "Refresh token because it is close to expire (less than 10 minutes remain)");
         final newTokens =
             await _ref.read(authRepositoryProvider).refreshToken(refreshToken);
         await _authTokenStateNotifier.saveTokens(
@@ -148,6 +166,21 @@ class AuthController extends StateNotifier<AuthState> {
       return null;
     }
   }
+
+  // Este método actualiza los tokens en el estado y en el storage.
+  Future<void> updateTokenFromRefresh({
+    required String newAccessToken,
+    required String newRefreshToken,
+    required int newExpiration
+  }) async {
+    // Actualiza en el storage, etc.
+    await _authTokenStateNotifier.saveTokens(
+      role: state.isAdmin ? 'admin' : 'user', // O bien usa el role recibido
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      expiresIn: newExpiration,
+    );
+    // Actualiza el estado
+    state = state.copyWith(token: newAccessToken);
+  }
 }
-
-

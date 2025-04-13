@@ -4,6 +4,7 @@ class UserState {
   final String? email;
   final String? documentNumber;
   final String? phone;
+  final String? password;
   final String? mainAddress;
   final String? role;
   final bool isLoading;
@@ -16,6 +17,7 @@ class UserState {
     this.email,
     this.documentNumber,
     this.phone,
+    this.password,
     this.mainAddress,
     this.role,
     this.isLoading = false,
@@ -28,6 +30,7 @@ class UserState {
     email: '',
     documentNumber: '',
     phone: '',
+    password: '',
     mainAddress: '',
     role: '',
     isLoading: false,
@@ -41,6 +44,7 @@ class UserState {
     String? email,
     String? documentNumber,
     String? phone,
+    String? password,
     String? mainAddress,
     String? role,
     String? error,
@@ -52,6 +56,7 @@ class UserState {
       email: email ?? this.email,
       documentNumber: documentNumber ?? this.documentNumber,
       phone: phone ?? this.phone,
+      password: password ?? this.password,
       mainAddress: mainAddress ?? this.mainAddress,
       role: role ?? this.role,
       error: error ?? this.error,
@@ -65,6 +70,7 @@ class UserState {
         email = '',
         documentNumber = '',
         phone = '',
+        password = '',
         mainAddress = '',
         role = '',
         error = '';

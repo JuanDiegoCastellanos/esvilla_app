@@ -2,9 +2,8 @@ import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/core/constants/app_texts.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
-import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_notifier.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
-import 'package:esvilla_app/presentation/widgets/shared/text_field_box.dart';
+import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,6 +17,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -27,8 +27,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _login() async {
-    // Oculta el teclado
     FocusScope.of(context).unfocus();
+    if (_formKey.currentState!.validate()) {
 
     if (_emailController.text.trim().isNotEmpty &&
         _passwordController.text.trim().isNotEmpty) {
@@ -77,6 +77,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       );
     }
+    }
+  }
+  String? _validarCampo(String? value, String campo) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor ingresa $campo';
+    }
+    return null;
   }
 
   @override
@@ -95,127 +102,103 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   fit: BoxFit.contain,
                 ),
               ), // image
-              Column(
-                children: [
-                  Transform(
-                    transform: Matrix4.translationValues(0, -90, 0),
-                    child: const Text(
-                      'Iniciar Sesión',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 35,
-                          color: Color.fromRGBO(47, 39, 125, 1),
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ),
-                  Container(
-                    transform: Matrix4.translationValues(0, -50, 0),
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.only(left: 20),
-                    child: const Text(
-                      AppTexts.welcomeTitle,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w300),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    transform: Matrix4.translationValues(0, -40, 0),
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.only(left: 20),
-                    child: const Text(
-                      'Documento de identidad :',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    transform: Matrix4.translationValues(0, -40, 0),
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: 40,
-                    child: TextFieldBox(
-                      controller: _emailController,
-                      obscureText: false,
-                      errorMessage: _passwordController.text.isEmpty
-                          ? 'El campo es obligatorio'
-                          : '',
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    transform: Matrix4.translationValues(0, -40, 0),
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.only(left: 20),
-                    child: const Text(
-                      'Clave :',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    transform: Matrix4.translationValues(0, -40, 0),
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: 40,
-                    child: TextFieldBox(
-                      controller: _passwordController,
-                      obscureText: true,
-                      errorMessage: _passwordController.text.isEmpty
-                          ? 'El campo es obligatorio'
-                          : '',
-                    ),
-                  ),
-                  //authState.isLoading ? const CircularProgressIndicator() :
-                  ButtonRectangular(
-                    onPressedFunction: authState.isLoading ? null : _login,
-                    child: authState.isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Iniciar Sesión',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600),
-                          ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      final goRouter = ref.read(goRouterProvider);
-                      goRouter.push('/register');
-                    },
-                    child: const Text(
-                      'Register',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF4F78FF),
-                        decoration: TextDecoration.underline,
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Transform(
+                      transform: Matrix4.translationValues(0, -90, 0),
+                      child: const Text(
+                        'Iniciar Sesión',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 35,
+                            color: Color.fromRGBO(47, 39, 125, 1),
+                            fontWeight: FontWeight.w400),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    child: const Text(
-                      AppTexts.termsAndPrivacy,
-                      style: TextStyle(
-                        fontFamily: 'Sniglet',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w300,
+                    Container(
+                      transform: Matrix4.translationValues(0, -50, 0),
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.only(left: 20),
+                      child: const Text(
+                        AppTexts.welcomeTitle,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w300),
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: TextFieldFormEsvilla(
+                        name: 'Documento de identidad o Email',
+                        controller: _emailController,
+                        inputType: TextInputType.text,
+                        validator: (value) => _validarCampo(value, 'Documento'),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: TextFieldFormEsvilla(
+                        name: 'Clave',
+                        controller: _passwordController,
+                        inputType: TextInputType.visiblePassword,
+                        obscureText: true,
+                        validator: (value) => _validarCampo(value, 'Clave'),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    //authState.isLoading ? const CircularProgressIndicator() :
+                    ButtonRectangular(
+                      onPressedFunction: authState.isLoading ? null : _login,
+                      child: authState.isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Iniciar Sesión',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final goRouter = ref.read(goRouterProvider);
+                        goRouter.push('/register');
+                      },
+                      child: const Text(
+                        'Register',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF4F78FF),
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: const Text(
+                        AppTexts.termsAndPrivacy,
+                        style: TextStyle(
+                          fontFamily: 'Sniglet',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w300,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

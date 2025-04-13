@@ -1,11 +1,11 @@
 class UpdateSectorsScheduleRequest {
-    final List<String> sectores;
+    final List<String> sectors;
 
     UpdateSectorsScheduleRequest({
-        required this.sectores,
+        required this.sectors,
     });
 
     Map<String, dynamic> toJson() => {
-        "sectores": List<dynamic>.from(sectores.map((x) => x)),
+        "sectores": List<dynamic>.from(sectors.map((x) => x)),
     };
 }

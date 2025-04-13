@@ -20,14 +20,14 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> json) {
     return UserModel(
-      id: json['_id'],
-      name: json['name'],
-      documentNumber: json['documentNumber'],
-      email: json['email'],
-      phone: json['phone'],
-      mainAddress: json['mainAddress'],
-      password: json['password'],
-      role: json['role'],
+      id: json['_id'] ?? '',
+      name: json['name'] ?? 'Unknown',
+      documentNumber: json['documentNumber'] ?? '',
+      email: json['email'] ?? '',
+      phone: json['phone'] ?? '',
+      mainAddress: json['mainAddress'] ?? '',
+      password: json['password'] ?? '',
+      role: json['role'] ?? 'user',
     );
   }
 }

@@ -154,6 +154,24 @@ final List<DaySchedule> listDays = [
           ),
         ],
       ),
+
+      TimeBySector(
+        hour: '12:00 pm',
+        sectors: [
+          Sector(
+            id: 1,
+            name: 'La 272828dhdhdhdhd',
+          ),
+          Sector(
+            id: 2,
+            name: 'El jxjxdjdjdjdx',
+          ),
+          Sector(
+            id: 3,
+            name: 'La oosisisdjdji',
+          ),
+        ],
+      ),
     ],
   ),
   DaySchedule(
