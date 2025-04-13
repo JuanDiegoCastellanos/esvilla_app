@@ -1,15 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_logger.dart';
-import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_token_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_token_state_notifier.dart';
+import 'package:esvilla_app/presentation/providers/auth/refresh_token_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthInterceptor extends Interceptor {
-    final Ref _ref;
+  final Ref _ref;
+  final Dio dio;
 
-    AuthInterceptor(this._ref);
+  AuthInterceptor(this._ref, {required this.dio});
 
-    @override
+  @override
+
   /// Intercepta las respuestas con un estado de 401 (Unauthorized) y
   /// intenta refrescar el token de acceso. Si el token se puede refrescar,
   /// se reintenta la solicitud original con el nuevo token. Si no se puede
@@ -20,19 +23,38 @@ class AuthInterceptor extends Interceptor {
     ErrorInterceptorHandler handler,
   ) async {
     if (err.response?.statusCode == 401) {
-      final newToken = await _ref.read(authControllerProvider.notifier).refreshToken();
-      if (newToken != null) {
+      // Lee el refresh token actual del estado
+      final refreshToken = _ref.read(authTokenProvider).refreshToken;
+
+      if (refreshToken != null) {
+        // Usa el servicio para refrescar el token
+        final data = await _ref
+            .read(refreshTokenServiceProvider)
+            .refreshToken(refreshToken);
+        final newToken = data.accessToken;
+        // Actualizar el token en storage/estado mediante tu lógica (por ejemplo, usando AuthController)
+        await _ref.read(authTokenProvider.notifier).saveTokens(
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+            expiresIn: data.expiresIn,
+            role: data.role
+          );
         // Reintentar la solicitud original
         err.requestOptions.headers['Authorization'] = 'Bearer $newToken';
-        return handler.resolve(await Dio().fetch(err.requestOptions));
-      }
+        try {
+          final response = await dio.fetch(err.requestOptions);
+          return handler.resolve(response);
+        } catch (e) {
+          return handler.next(err);
+        }
+            }
     }
     _logError(err);
-
     handler.next(err);
   }
 
   @override
+
   /// Agrega el token de autenticación a la solicitud, si se encuentra disponible.
   ///
   /// Antes de realizar la solicitud, se verifica si se encuentra disponible el
@@ -52,7 +74,7 @@ class AuthInterceptor extends Interceptor {
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }
-    
+
     handler.next(options);
   }
 

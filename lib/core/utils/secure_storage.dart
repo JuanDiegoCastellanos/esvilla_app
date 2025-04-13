@@ -31,10 +31,7 @@ class SecureStorageServiceImpl  implements SecureStorageService{
 
   @override
   Future<void> saveExpiration(int expiresIn) async {
-    final expirationTime = DateTime.now()
-        .add(Duration(seconds: expiresIn))
-        .millisecondsSinceEpoch;
-    await _storage.write(key: 'EXPIRES_IN', value: expirationTime.toString());
+    await _storage.write(key: 'EXPIRES_IN', value: expiresIn.toString());
   }
   
   @override

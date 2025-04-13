@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
-import 'package:esvilla_app/data/models/auth_response.dart';
-import 'package:esvilla_app/domain/entities/register_request_entity.dart';
+import 'package:esvilla_app/data/models/auth/auth_response.dart';
+import 'package:esvilla_app/domain/entities/auth/register_request_entity.dart';
 
 class AuthRemoteDataSource {
   final Dio dio;
@@ -53,7 +53,7 @@ class AuthRemoteDataSource {
 
   Future<AuthResponse> register(RegisterRequestEntity registerRequestEntity) async {
     try {
-     final registerResponse = await dio.post(
+    final registerResponse = await dio.post(
         '/users',
         data: {
           'name': registerRequestEntity.name,

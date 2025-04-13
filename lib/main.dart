@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(
-    const ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
@@ -14,12 +13,13 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
-    
-    return MaterialApp.router(
-      routerConfig: router,
-      title: 'esvilla e.s.p ',
-      theme: AppTheme.lightTheme,
-      debugShowCheckedModeBanner: false,
+    return GlobalStatusBarConfig(
+      child: MaterialApp.router(
+        routerConfig: router,
+        title: 'esvilla e.s.p ',
+        theme: AppTheme.lightTheme,
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }

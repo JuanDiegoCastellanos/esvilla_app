@@ -1,10 +1,10 @@
-import 'package:esvilla_app/data/models/auth_response.dart';
+import 'package:esvilla_app/data/models/auth/auth_response.dart';
 
 class AuthLocalDataSource {
   Future<AuthResponse> login(String email, String password) async {
     await Future.delayed(const Duration(seconds: 2));
 
-     const users = {
+    const users = {
       '1002676988': 'admin',
       '1023927661': 'user1',
     };
