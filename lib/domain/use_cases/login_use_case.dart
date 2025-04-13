@@ -1,4 +1,4 @@
-import 'package:esvilla_app/domain/entities/auth_response_entity.dart';
+import 'package:esvilla_app/domain/entities/auth/auth_response_entity.dart';
 import 'package:esvilla_app/domain/repositories/auth_repository.dart';
 
 class LoginUseCase {

@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_logger.dart';
-import 'package:esvilla_app/core/config/dio_config.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_token_provider.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_token_state_notifier.dart';
@@ -9,8 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthInterceptor extends Interceptor {
   final Ref _ref;
+  final Dio dio;
 
-  AuthInterceptor(this._ref);
+  AuthInterceptor(this._ref, {required this.dio});
 
   @override
 
@@ -26,7 +26,7 @@ class AuthInterceptor extends Interceptor {
     if (err.response?.statusCode == 401) {
       // Lee el refresh token actual del estado
       final refreshToken = _ref.read(authTokenProvider).refreshToken;
-      //final newToken = await _ref.read(authControllerProvider.notifier).refreshToken();
+
       if (refreshToken != null) {
         // Usa el servicio para refrescar el token
         final data = await _ref
@@ -34,14 +34,14 @@ class AuthInterceptor extends Interceptor {
             .refreshToken(refreshToken);
         final newToken = data.accessToken;
         // Actualizar el token en storage/estado mediante tu lógica (por ejemplo, usando AuthController)
-        await _ref.read(authControllerProvider.notifier).updateTokenFromRefresh(
-            newAccessToken: data.accessToken,
-            newRefreshToken: data.refreshToken,
-            newExpiration: data.expiresIn,
+        await _ref.read(authTokenProvider.notifier).saveTokens(
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+            expiresIn: data.expiresIn,
+            role: data.role
           );
         // Reintentar la solicitud original
         err.requestOptions.headers['Authorization'] = 'Bearer $newToken';
-        final dio = _ref.read(dioClientProvider).dio;
         try {
           final response = await dio.fetch(err.requestOptions);
           return handler.resolve(response);

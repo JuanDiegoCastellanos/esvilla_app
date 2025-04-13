@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
-import 'package:esvilla_app/data/models/user/create_user_request.dart';
-import 'package:esvilla_app/data/models/user/user_model.dart';
-import 'package:esvilla_app/data/models/user/user_update_request.dart';
+import 'package:esvilla_app/data/models/users/create_user_request.dart';
+import 'package:esvilla_app/data/models/users/update_password_request.dart';
+import 'package:esvilla_app/data/models/users/user_model.dart';
+import 'package:esvilla_app/data/models/users/user_update_request.dart';
 
 class UsersRemoteDataSource {
   final Dio _dio;
@@ -158,8 +159,34 @@ class UsersRemoteDataSource {
 
   Future<UserModel> updateMyInfo(UpdateUserRequest model) async {
     try {
-      final response = await _dio.put(
+      final response = await _dio.patch(
         '/users/profile',
+        data: model.toJson()
+      );
+      AppLogger.i('Response Data: ${response.data}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return UserModel.fromMap(response.data);
+      } else {
+        AppLogger.e(
+            'Failed to update the user info. Status: ${response.statusCode}, Body: ${response.data}');
+
+        throw Exception(
+            'Failed to update the user info. Status: ${response.statusCode}, Body: ${response.data}');
+      }
+    } on DioException catch (e) {
+      AppLogger.e('Dio error during update the user info: $e');
+      throw AppException.fromDioExceptionType(e.type);
+    } catch (e) {
+      AppLogger.e('Unexpected error during update the user info: $e');
+      throw AppException(code: -1, message: 'Unexpected error occurred');
+    }
+  }
+
+  Future<UserModel> updateMyPassword(UpdatePasswordRequest model) async {
+    try {
+      final response = await _dio.patch(
+        'users/profile/password',
         data: model.toJson()
       );
       AppLogger.i('Response Data: ${response.data}');

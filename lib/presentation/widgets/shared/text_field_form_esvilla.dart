@@ -9,7 +9,8 @@ class TextFieldFormEsvilla extends StatelessWidget {
       this.obscureText = false,
       this.borderColor = const Color(0xFF4F78FF),
       this.validator,
-      });
+      this.minLength = 8,
+      this.maxLength = 20});
 
   final TextEditingController controller;
   final String name;
@@ -17,6 +18,8 @@ class TextFieldFormEsvilla extends StatelessWidget {
   final bool obscureText;
   final TextInputType? inputType;
   final String? Function(String?)? validator;
+  final int minLength;
+  final int maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -31,30 +34,38 @@ class TextFieldFormEsvilla extends StatelessWidget {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(
-              color: borderColor, //Color(0xFF4F78FF),
+              color: borderColor,
               width: 1,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(
-              color:
-                  borderColor, //Color(0xFF4F78FF), // Color del borde al enfocar
-              width: 4, // Grosor del borde al enfocar
+              color: borderColor,
+              width: 4,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(
-              color:
-                  borderColor, //Color(0xFF4F78FF), // Color del borde al habilitar
-              width: 1, // Grosor del borde al habilitar
+              color: borderColor,
+              width: 1,
             ),
           ),
       ),
-      validator: validator,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Este campo es requerido';
+        }
+        if (value.length < minLength) {
+          return 'El campo debe tener al menos $minLength caracteres';
+        }
+        return validator?.call(value);
+      },
       obscureText: obscureText,
+      maxLength: maxLength,
       onEditingComplete: () => FocusScope.of(context).unfocus(),
     );
   }
 }
+

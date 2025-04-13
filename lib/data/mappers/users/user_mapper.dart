@@ -1,7 +1,9 @@
-import 'package:esvilla_app/data/models/user/create_user_request.dart';
-import 'package:esvilla_app/data/models/user/user_model.dart';
-import 'package:esvilla_app/data/models/user/user_update_request.dart';
+import 'package:esvilla_app/data/models/users/create_user_request.dart';
+import 'package:esvilla_app/data/models/users/update_password_request.dart';
+import 'package:esvilla_app/data/models/users/user_model.dart';
+import 'package:esvilla_app/data/models/users/user_update_request.dart';
 import 'package:esvilla_app/domain/entities/user/create_user_request_entity.dart';
+import 'package:esvilla_app/domain/entities/user/update_password_request_entity.dart';
 import 'package:esvilla_app/domain/entities/user/update_user_request_entity.dart';
 import 'package:esvilla_app/domain/entities/user/user_entity.dart';
 
@@ -56,6 +58,14 @@ class UserMapper {
       mainAddress: entity.mainAddress,
       role: entity.role,
       password: entity.password,
+    );
+  }
+
+  static UpdatePasswordRequest toUpdatePasswordRequest(UpdatePasswordRequestEntity entity) {
+    return UpdatePasswordRequest(
+      oldPassword: entity.oldPassword,
+      newPassword: entity.newPassword,
+      confirmNewPassword: entity.confirmNewPassword,
     );
   }
 }

@@ -1,33 +1,33 @@
 class UpdateScheduleRequest {
     final String id;
-    final List<String>? dias;
-    final String? horaInicio;
-    final String? horaFin;
-    final List<String>? sectoresAsociados;
-    final bool? activo;
-    final String? observaciones;
-    final String? tipoBasura;
+    final List<String>? days;
+    final String? startTime;
+    final String? endTime;
+    final List<String>? associatedSectors;
+    final bool? active;
+    final String? observations;
+    final String? garbageType;
 
     UpdateScheduleRequest({
         required this.id,
-        this.dias,
-        this.horaInicio,
-        this.horaFin,
-        this.sectoresAsociados,
-        this.activo,
-        this.observaciones,
-        this.tipoBasura,
+        this.days,
+        this.startTime,
+        this.endTime,
+        this.associatedSectors,
+        this.active,
+        this.observations,
+        this.garbageType,
     });
     Map<String, dynamic> toJson(){
       final map = <String, dynamic>{'_id': id};
 
-      if(dias != null) map["dias"] = List<dynamic>.from(dias!.map((x) => x));
-      if(horaInicio != null) map["horaInicio"] = horaInicio;
-      if(horaFin != null) map["horaFin"] = horaFin;
-      if(sectoresAsociados != null) map["sectoresAsociados"] = List<dynamic>.from(sectoresAsociados!.map((x) => x));
-      if(activo != null) map["activo"] = activo;
-      if(observaciones != null) map["observaciones"] = observaciones;
-      if(tipoBasura != null) map["tipoBasura"] = tipoBasura;
+      if(days != null) map["dias"] = List<dynamic>.from(days!.map((x) => x));
+      if(startTime != null) map["horaInicio"] = startTime;
+      if(endTime != null) map["horaFin"] = endTime;
+      if(associatedSectors != null) map["sectoresAsociados"] = List<dynamic>.from(associatedSectors!.map((x) => x));
+      if(active != null) map["activo"] = active;
+      if(observations != null) map["observaciones"] = observations;
+      if(garbageType != null) map["tipoBasura"] = garbageType;
 
       return map;
     }

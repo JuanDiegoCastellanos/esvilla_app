@@ -1,25 +1,25 @@
-import 'package:esvilla_app/data/models/sectors/ubicacion_model.dart';
+import 'package:esvilla_app/data/models/sectors/location_model.dart';
 
 class CreateSectorRequest {
-    final String nombre;
-    final String descripcion;
-    final Ubicacion ubicacion;
+    final String name;
+    final String description;
+    final LocationModel location;
 
     CreateSectorRequest({
-        required this.nombre,
-        required this.descripcion,
-        required this.ubicacion,
+        required this.name,
+        required this.description,
+        required this.location,
     });
 
     factory CreateSectorRequest.fromMap(Map<String, dynamic> json) => CreateSectorRequest(
-        nombre: json["nombre"],
-        descripcion: json["descripcion"],
-        ubicacion: Ubicacion.fromMap(json["ubicacion"]),
+        name: json["nombre"],
+        description: json["descripcion"],
+        location: LocationModel.fromMap(json["ubicacion"]),
     );
 
     Map<String, dynamic> toJson() => {
-        "nombre": nombre,
-        "descripcion": descripcion,
-        "ubicacion": ubicacion.toJson(),
+        "nombre": name,
+        "descripcion": description,
+        "ubicacion": location.toJson(),
     };
 }

@@ -36,6 +36,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 width: MediaQuery.of(context).size.width,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Flexible(
                       child: Container(
@@ -45,7 +46,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                     ),
-                    const UserInfo(),
+                    SizedBox(
+                      width: 120,
+                      child: const UserInfo()
+                      ),
                     Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: GestureDetector(

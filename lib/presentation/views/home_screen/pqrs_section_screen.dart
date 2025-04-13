@@ -17,15 +17,15 @@ class _PqrsSectionScreenState extends ConsumerState<PqrsSectionScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Controladores
-  final _asuntoController = TextEditingController();
-  final _descripcionController = TextEditingController();
+  final _subjectController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
   final int _maxDescripcionLength = 1000;
 
   @override
   void dispose() {
-    _asuntoController.dispose();
-    _descripcionController.dispose();
+    _subjectController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -44,8 +44,8 @@ class _PqrsSectionScreenState extends ConsumerState<PqrsSectionScreen> {
       child: userHasPQRS
           ? buildPQRSStatusInfo(context, ref, 'PQRS 1234',
               '2023-06-01 10:00:00', 'Pendiente', _validarCampo)
-          : buildPQRSForm(context, ref, _formKey, _asuntoController,
-              _descripcionController, _validarCampo, _maxDescripcionLength),
+          : buildPQRSForm(context, ref, _formKey, _subjectController,
+              _descriptionController, _validarCampo, _maxDescripcionLength),
     );
   }
 }
@@ -82,9 +82,11 @@ Widget buildPQRSForm(
         // Campo: Asunto
         TextFieldFormEsvilla(
           name: 'ASUNTO:',
+          maxLength: 50,
+          minLength: 10,
           controller: asuntoController,
           inputType: TextInputType.text,
-          validator: (value) => validarCampo(value, 'el asunto'),
+          validator: (value) => validarCampo(value, 'el ASUNTO'),
         ),
         const SizedBox(height: 16),
         // Campo: Descripción

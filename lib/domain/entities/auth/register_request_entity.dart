@@ -14,16 +14,4 @@ class RegisterRequestEntity {
     required this.password,
     required this.direccion,
   });
-
-// to Map<String, dynamic> method
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'name': name,
-      'documentNumber': document,
-      'email': email,
-      'phone': phone,
-      'password': password,
-      'mainAddress': direccion
-    };
-  }
 }

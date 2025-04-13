@@ -1,6 +1,6 @@
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
-import 'package:esvilla_app/domain/entities/register_request_entity.dart';
+import 'package:esvilla_app/domain/entities/auth/register_request_entity.dart';
 import 'package:esvilla_app/domain/use_cases/login_use_case.dart';
 import 'package:esvilla_app/domain/use_cases/register_use_cart.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_repository_provider.dart';
