@@ -69,4 +69,46 @@ class AnnouncementsRepositoryImpl implements AnnouncementsRepository {
       throw AppException(message: e.toString());
     }
   }
+  
+  @override
+  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenCreationDates(String startDate, String endDate) {
+    // TODO: implement getAnnouncementsBetweenCreationDates
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenPublishDates(String startDate, String endDate) {
+    // TODO: implement getAnnouncementsBetweenPublishDates
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<List<AnnouncementsEntity>> getAnnouncementsByUser(String id) {
+    // TODO: implement getAnnouncementsByUser
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<List<AnnouncementsEntity>> getMyAnnouncements() {
+    // TODO: implement getMyAnnouncements
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenCreationDates(String startDate, String endDate) {
+    // TODO: implement getMyAnnouncementsBetweenCreationDates
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenPublishDates(String startDate, String endDate) {
+    // TODO: implement getMyAnnouncementsBetweenPublishDates
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<AnnouncementsEntity> publishAnnouncement(String id) {
+    // TODO: implement publishAnnouncement
+    throw UnimplementedError();
+  }
 }
