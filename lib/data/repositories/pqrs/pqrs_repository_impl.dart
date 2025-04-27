@@ -78,10 +78,10 @@ class PqrsRepositoryImpl implements PqrsRepository {
   }
 
   @override
-  Future<PqrsEntity> getMyPqrs() async {
+  Future<PqrsEntity?> getMyPqrs() async {
     try {
       final response = await _pqrsRemoteDataSource.getMyPqrs();
-      return PqrsMapper.toEntity(response);
+      return response != null ? PqrsMapper.toEntity(response) : null;
     } catch (e) {
       AppLogger.e('Unexpected error during get My PQRS: $e');
       throw AppException(code: -1, message: 'Unexpected error occurred');

@@ -1,11 +1,9 @@
-import 'package:esvilla_app/core/config/app_logger.dart';
-import 'package:esvilla_app/presentation/providers/user/get_my_user_profile_use_case_provider.dart';
-import 'package:esvilla_app/presentation/providers/user/get_user_by_id_provider.dart';
+import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/presentation/providers/user/update_user_controller_provider.dart';
-import 'package:esvilla_app/presentation/providers/user/update_user_provider.dart';
 import 'package:esvilla_app/presentation/providers/user/user_model_presentation.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
+import 'package:esvilla_app/presentation/widgets/shared/title_section.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,7 +35,6 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
 
   bool _controllersInitialized = false;
 
-  late final Future<UserPresentationModel> _userFuture;
   dynamic localUser;
 
   @override
@@ -93,21 +90,30 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
     );
 
     // Llama al método del controlador
-    final success = await ref
-        .read(updateUserControllerProvider.notifier)
-        .updateUserProfile(updatedModel);
+    try {
+      final success = await ref
+          .read(updateUserControllerProvider.notifier)
+          .updateUserProfile(updatedModel);
 
-    if (!mounted) return;
-    if (success) {
+      if (!mounted) return;
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Perfil actualizado correctamente'),
+              backgroundColor: Colors.green),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Error al actualizar el perfil'),
+              backgroundColor: Colors.red),
+        );
+      }
+    } on AppException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Perfil actualizado correctamente'),
-            backgroundColor: Colors.green),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Error al actualizar el perfil'),
+        SnackBar(
+            duration: Duration(seconds: 5),
+            content: Text(e.message),
             backgroundColor: Colors.red),
       );
     }
@@ -150,7 +156,7 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<UserPresentationModel>>(updateUserControllerProvider,
+    /*  ref.listen<AsyncValue<UserPresentationModel>>(updateUserControllerProvider,
         (previous, next) {
       // Ejemplo: podrías querer mostrar un snackbar específico en transiciones de error/datos
       // O si el controlador manejara estados específicos como 'updateSuccess'
@@ -159,7 +165,7 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
           SnackBar(content: Text('Error: ${next.error}')),
         );
       }
-    });
+    }); */
 
     final user = ref.watch(updateUserControllerProvider);
 
@@ -183,10 +189,17 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
           return SingleChildScrollView(
             child: Column(children: [
               const Padding(
-                padding: EdgeInsets.symmetric(vertical: 40),
-                child: Text(
-                  'Mi Perfil',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w300),
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: TitleSection(
+                  titleText: 'Mi Perfil',
+                ),
+              ),
+              const Text(
+                'Estimado usuario en esta sección puede actualizar sus datos ',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w300,
                 ),
               ),
               const SizedBox(width: 40),
@@ -277,12 +290,12 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'Datos guardados',
+                                    'Procesando datos ....',
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w700),
                                   ),
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: Colors.lightBlue,
                                 ),
                               );
                             }
@@ -312,7 +325,7 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -324,15 +337,19 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                     child: Column(
                       children: [
                         // Sección: Nueva clave
+                        const TitleSection(
+                          titleText: 'Generar Nueva clave',
+                        ),
+                        const SizedBox(height: 8),
                         const Text(
-                          'Nueva clave',
+                          'Estimado usuario en esta sección puede actualizar su clave o contraseña ',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
                         const SizedBox(height: 16),
-
                         TextFieldFormEsvilla(
                           controller: _oldPasswordController,
                           name: 'Clave antigua',

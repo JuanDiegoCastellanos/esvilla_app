@@ -7,7 +7,7 @@ abstract class PqrsRepository implements GenericRepository<PqrsEntity,CreatePqrs
   
   Future<PqrsEntity> generatePqrs(CreatePqrsRequestEntity request);
 
-  Future<PqrsEntity> getMyPqrs();
+  Future<PqrsEntity?> getMyPqrs();
 
   Future<List<PqrsEntity>> getPqrsByUser(String id);
 

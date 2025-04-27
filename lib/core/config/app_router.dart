@@ -77,7 +77,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final isAdmin = authState.isAdmin;
       final currentLocation = state.matchedLocation;
 
-      AppLogger.i("Redirección - Autenticado: $isAuthenticated | Ruta actual: $currentLocation | Admin: $isAdmin");
+      //AppLogger.i("Redirección - Autenticado: $isAuthenticated | Ruta actual: $currentLocation | Admin: $isAdmin");
       // 1. Si el usuario NO está autenticado
       if (!isAuthenticated) {
         // Permitir acceso a rutas públicas
@@ -94,10 +94,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return isAdmin ? AppRoutes.admin : AppRoutes.home;
       }
 
-      AppLogger.w('base route: ${getBaseRoute(currentLocation)}');
-      AppLogger.w('full path: ${state.fullPath}');
-      AppLogger.w('state location: ${state.fullPath}');
-      AppLogger.w('state matchedLocation: ${state.matchedLocation}');
+      //AppLogger.w('base route: ${getBaseRoute(currentLocation)}');
+      //AppLogger.w('full path: ${state.fullPath}');
+      //AppLogger.w('state location: ${state.fullPath}');
+      //AppLogger.w('state matchedLocation: ${state.matchedLocation}');
       // 3. Verificar permisos de administrador
       if (AppRoutes.adminRoutes.contains(getBaseRoute(currentLocation))) {
         if (!isAdmin) {

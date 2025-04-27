@@ -1,4 +1,3 @@
-//import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/utils/secure_storage.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_token_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,6 +42,16 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
     );
   }
 
+  Future<void> saveAccessToken(String accessToken) async {
+    await _storage.saveToken(accessToken);
+    state = AuthTokenState(
+      role: state.role,
+      accessToken: accessToken,
+      refreshToken: state.refreshToken,
+      expiration: state.expiration,
+    );
+  }
+
   Future<void> clearTokens() async {
     await _storage.clearToken();
     await _storage.clearRefreshToken();
@@ -53,7 +62,7 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
 
   /// Exponer un método para obtener el token actual almacenado
   Future<String?> getAccessToken() async {
-    if (state.accessToken != null){
+    if (state.accessToken != null) {
       return state.accessToken; // Si ya está cargado, devolverlo
     }
     final token =
@@ -67,6 +76,20 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
       );
     }
     return state.accessToken;
+  }
+
+  Future<String> getRefreshToken() async {
+    if (state.refreshToken != null) return state.refreshToken!;
+    final token = await _storage.getRefreshToken();
+    if (token != null) {
+      state = AuthTokenState(
+        accessToken: state.accessToken,
+        role: state.role,
+        refreshToken: token,
+        expiration: state.expiration,
+      );
+    }
+    return state.refreshToken!;
   }
 
   Future<String?> getRole() async {
@@ -88,16 +111,24 @@ class AuthTokenStateNotifier extends StateNotifier<AuthTokenState> {
   ///
   /// Verifica si el token actual esta cerca de expirar (1 dia antes de expirar)
   /// y devuelve true si esta cerca de expirar o false en caso contrario
-  bool validationToken() {
-    if (state.accessToken == null || state.expiration == null ) return false;
+  bool isTokenExpiringSoon() {
+    if (state.accessToken == null || state.expiration == null) return false;
     final expirationDate =
         DateTime.fromMillisecondsSinceEpoch(state.expiration!);
     return expirationDate.isBefore(DateTime.now()
-        .add(const Duration(minutes: 10))); // 1 dia antes de expirar
+        .add(const Duration(minutes: 5))); // 1 dia antes de expirar
   }
 
+  /// Checks if the current token is expired.
+  ///
+  /// This function retrieves the token's expiration time from storage and
+  /// compares it with the current time. Returns `true` if the token's
+  /// expiration time is earlier than the current time, indicating that
+  /// the token has expired; otherwise, returns `false`.
   Future<bool> isTokenExpired() async {
     final expiration = await _storage.getExpiration();
-    return expiration! < DateTime.now().millisecondsSinceEpoch;
+    if (expiration == null) return true;
+    final expirationDate = DateTime.fromMillisecondsSinceEpoch(expiration);
+    return expirationDate.isBefore(DateTime.now());
   }
 }

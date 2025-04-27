@@ -1,3 +1,5 @@
+import 'package:esvilla_app/core/utils/enums/pqrs_status_enum.dart';
+
 class PqrsEntity {
   final String id;
   final String subject;
@@ -7,10 +9,12 @@ class PqrsEntity {
   final String radicadorPhone;
   final String radicadorEmail;
   final String radicadorDocument;
-  final String status;
+  final PqrsStatusEnum status;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? closureDate;
+  final String? resolucion;
+  final String? resolverName;
 
   const PqrsEntity({
     required this.id,
@@ -24,7 +28,9 @@ class PqrsEntity {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
-    this.closureDate
+    this.closureDate,
+    this.resolucion,
+    this.resolverName
   });
 }
 

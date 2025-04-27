@@ -9,6 +9,8 @@ class UpdatePqrsRequest{
     final String? radicadorDocument;
     final String? status;
     final DateTime? closureDate;
+    final String? resolucion;
+    final String? resolverName;
 
     UpdatePqrsRequest({
       required this.id,
@@ -20,7 +22,9 @@ class UpdatePqrsRequest{
       this.radicadorEmail,
       this.radicadorDocument,
       this.status,
-      this.closureDate
+      this.closureDate,
+      this.resolucion,
+      this.resolverName
     });
 
   Map<String, dynamic> toJson() {
@@ -34,6 +38,8 @@ class UpdatePqrsRequest{
     if (radicadorDocument != null) map['documentoRadicador'] = radicadorDocument;
     if (status != null) map['estado'] = status;
     if (closureDate != null) map['fechaCierre'] = closureDate!.toIso8601String();
+    if (resolucion != null) map['resolucion'] = resolucion;
+    if (resolverName != null) map['nombreQuienResuelve'] = resolverName;
     return map;
   }
 }

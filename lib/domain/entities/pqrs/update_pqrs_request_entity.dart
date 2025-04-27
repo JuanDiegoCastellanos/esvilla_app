@@ -9,6 +9,8 @@ class UpdatePqrsRequestEntity {
   final String? radicadorDocument;
   final String? status;
   final DateTime? closureDate;
+  final String? resolucion;
+  final String? resolverName;
 
   const UpdatePqrsRequestEntity({
     required this.id,
@@ -21,5 +23,7 @@ class UpdatePqrsRequestEntity {
     this.radicadorDocument,
     this.status,
     this.closureDate,
+    this.resolucion,
+    this.resolverName,
   });
 }

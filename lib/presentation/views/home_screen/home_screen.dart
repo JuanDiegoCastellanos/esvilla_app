@@ -1,6 +1,6 @@
 import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
-import 'package:esvilla_app/presentation/providers/user/pages_navigation_bar_provider.dart';
+import 'package:esvilla_app/presentation/providers/pagination/pages_navigation_bar_provider.dart';
 import 'package:esvilla_app/presentation/views/home_screen/news_section_screen.dart';
 import 'package:esvilla_app/presentation/views/home_screen/payment_links_section_screen.dart';
 import 'package:esvilla_app/presentation/views/home_screen/pqrs_section_screen.dart';
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -46,10 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 120,
-                      child: const UserInfo()
-                      ),
+                    SizedBox(width: 120, child: const UserInfo()),
                     Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: GestureDetector(
@@ -95,60 +92,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return const PaymentLinksSectionScreen();
       case Pages.profile:
         return const ProfileSectionScreen();
-      }
+    }
   }
 
   Widget _buildHomeContent() {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 10,
-              bottom: 10,
-            ),
-            width: double.infinity,
-            child: const Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Bienvenido Usuario ',
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  WidgetSpan(child: Icon(
-                    Icons.person,
-                    color: Colors.red,
-                    ),),
-                  TextSpan(
-                    text: '\nAqui podras ver las noticias, novedades, notificaciones públicas, tu perfil personal de esvilla, horarios, links de pago y solicitar PQRS.',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '\n\nAgradecemos el respeto al momento de radicar un PQRS',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  WidgetSpan(child: Icon(Icons.document_scanner, color: Colors.green,))
-                  
-                ],
-              ),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-
           Container(
             padding: const EdgeInsets.only(
               left: 20,
@@ -165,6 +115,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
           ),
+          Container(
+            padding: const EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 10,
+              bottom: 10,
+            ),
+            width: double.infinity,
+            child: const Text(
+              'Estimado usuario en esta sección puede encontrar los horarios de recolección de basuras ',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+            ),
+          ),
           Column(
               children: mockSchedule.days
                   .map(
@@ -173,78 +136,78 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         //ref.read(goRouterProvider).pushNamed('schedule', extra: e);
                         // cambiar y aca mostrar mas bien un dialog con los horarios y los sectores
                         showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                        ),
-                        backgroundColor: Colors.blue.shade100,
-                        title: Row(
-                          children: [
-                            Text(
-                              e.name,
-                              style: const TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w500,  
-                                color: Colors.black
-                              ),
-                              ),
-                            const Spacer(),
-                            GestureDetector(
-                              onTap: () => ref.read(goRouterProvider).pop(),
-                              child: const Icon(
-                                Icons.close,
-                                size: 30,
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            backgroundColor: Colors.blue.shade100,
+                            title: Row(
+                              children: [
+                                Text(
+                                  e.name,
+                                  style: const TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black),
+                                ),
+                                const Spacer(),
+                                GestureDetector(
+                                  onTap: () => ref.read(goRouterProvider).pop(),
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 30,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            content: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              width: MediaQuery.of(context).size.width * 0.8,
+                              child: ListView(
+                                children: e.timeBySectors
+                                    .map(
+                                      (timeBySector) => Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Divider(
+                                            color: Colors.blue.shade800,
+                                            thickness: 2,
+                                          ),
+                                          Text(
+                                            timeBySector.hour,
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Wrap(
+                                            spacing: 10,
+                                            runSpacing: 10,
+                                            children: timeBySector.sectors
+                                                .map(
+                                                  (sector) => Chip(
+                                                    color: WidgetStateProperty
+                                                        .all<Color>(Colors.red),
+                                                    label: Text(
+                                                      sector.name,
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                  ),
+                                                )
+                                                .toList(),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                    .toList(),
                               ),
                             ),
-                          ],
-                        ),
-                        content: SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.5,
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          child: ListView(
-                            children: e.timeBySectors
-                                .map(
-                                  (timeBySector) => Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Divider(
-                                        color: Colors.blue.shade800,
-                                        thickness: 2,
-                                      ),
-                                      Text(
-                                        timeBySector.hour,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Wrap(
-                                        spacing: 10,
-                                        runSpacing: 10,
-                                        children: timeBySector.sectors
-                                            .map(
-                                              (sector) => Chip(
-                                                color: WidgetStateProperty.all<Color>(Colors.red),
-                                                label: Text(
-                                                  sector.name,
-                                                  style: TextStyle(
-                                                    color: Colors.white
-                                                  ),
-                                                  ),
-                                              ),
-                                            )
-                                            .toList(),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                .toList(),
                           ),
-                        ),
-                        ),
-                      );
+                        );
                       },
                       child: ScheduleCard(name: e.name),
                     ),

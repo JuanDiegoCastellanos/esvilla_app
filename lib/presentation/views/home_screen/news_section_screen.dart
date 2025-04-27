@@ -1,6 +1,7 @@
 import 'package:esvilla_app/core/utils/mocks/news_images.mock.dart';
 import 'package:esvilla_app/presentation/widgets/home/user/item_news.dart';
 import 'package:esvilla_app/presentation/widgets/home/user/news_section.dart';
+import 'package:esvilla_app/presentation/widgets/shared/title_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,127 +46,19 @@ class NewsSectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListView(children: [
-      Container(
-        padding: const EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 10,
-          bottom: 10,
+      TitleSection(titleText: 'Últimas Noticias o Informes'),
+      const Text(
+        'Infórmate de las noticias más recientes e informes públicos a los que el ciudadano puede acceder.\n '
+        '\nAprende sobre los impactos ambientales, consejos de reciclaje y manejo de residuos que te ayudarán a '
+        ' vivir de una manera más sostenible y a cuidar tu entorno.\n '
+        '\nDescubre cómo puedes contribuir a una comunidad más ecológica y responsable.',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w300,
         ),
-        width: double.infinity,
-        child: const Text(
-          'Ultimas Noticias',
-          style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Text(
-          textAlign: TextAlign.center,
-          'Noticias más importantes o destacadas',
-          style: TextStyle(
-            fontWeight: FontWeight.w300,
-            fontSize: 20
-          )
-          ),
       ),
       NewsSection(
-        onClick: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            isDismissible: true,
-            barrierColor: Colors.black.withOpacity(0.5),
-            builder: (context) {
-              return DraggableScrollableSheet(
-                // Define tamaños inicial, mínimo y máximo según lo que necesites.
-                initialChildSize: 0.5,
-                minChildSize: 0.3,
-                maxChildSize: 0.9,
-                builder: (context, scrollController) {
-                  return Container(
-                    // Agregamos una decoración para darle un look moderno.
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
-                          offset: Offset(0, -2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        // "Handle" para indicar que se puede arrastrar.
-                        Row(                          
-                          children: [
-                            // Handle centrado
-                            Expanded(
-                              child: Center(
-                                child: Container(
-                                  width: 40,
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade900,
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Botón de cierre
-                            IconButton(
-                              icon: const Icon(Icons.close),
-                              color: Colors.blue.shade900,
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                          ],
-                        ),
-                        Divider(
-                          endIndent: 20,
-                          indent: 20,
-                          color: Colors.grey,
-                          thickness: 1,
-                        ),
-                        // Contenido desplazable.
-                        Expanded(
-                          child: ListView(
-                            controller: scrollController,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            children: const [
-                              SizedBox(height: 8),
-                              Text(
-                                'Aquí se puede mostrar información adicional de la noticia seleccionada',
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                'Más detalles sobre la noticia, con información relevante para el usuario.',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                'Incluso puedes agregar más secciones, imágenes, gráficos o lo que necesites.',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              // Agrega más widgets o textos según lo requieras.
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
         newsList: itemsNews,
       ),
       Padding(
@@ -177,11 +70,10 @@ class NewsSectionScreen extends ConsumerWidget {
           child: Text(
             'Ver más',
             style: TextStyle(
-              color: Colors.blue.shade800,
-              fontSize: 18,
-              decoration: TextDecoration.underline,
-              decorationColor: Colors.blue.shade800
-            ),
+                color: Colors.blue.shade800,
+                fontSize: 18,
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.blue.shade800),
           ),
         ),
       ),

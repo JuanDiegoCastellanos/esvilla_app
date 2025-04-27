@@ -1,4 +1,4 @@
-import 'package:esvilla_app/presentation/providers/user/pages_navigation_bar_provider.dart';
+import 'package:esvilla_app/presentation/providers/pagination/pages_navigation_bar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

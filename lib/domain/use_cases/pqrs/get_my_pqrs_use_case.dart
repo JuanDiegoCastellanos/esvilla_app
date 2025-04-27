@@ -6,5 +6,5 @@ class GetMyPqrsUseCase {
 
   GetMyPqrsUseCase(this._repository);
 
-  Future<PqrsEntity> call() async => await _repository.getMyPqrs();
+  Future<PqrsEntity?> call() async => await _repository.getMyPqrs();
 }

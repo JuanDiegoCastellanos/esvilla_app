@@ -145,7 +145,7 @@ class AuthController extends StateNotifier<AuthState> {
       if (refreshToken == null) return null;
       // Implementar lógica de refresh token aquí
       // Verificar si el token esta cerca de expirar
-      final isCloseToExpire = _authTokenStateNotifier.validationToken();
+      final isCloseToExpire = _authTokenStateNotifier.isTokenExpiringSoon();
       if (isCloseToExpire) {
         // Si esta cerca de expirar, refrescar el token
         AppLogger.i(

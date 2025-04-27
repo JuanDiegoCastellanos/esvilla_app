@@ -93,9 +93,9 @@ class UserRemoteRepositoryImpl implements UserRepository {
           await userRemoteDataSource.updateMyInfo(updateRequestDto);
       final userEntity = UserMapper.toEntity(userModel);
       return userEntity;
-    } catch (e) {
+    } on AppException catch (e) {
       AppLogger.e('An error occurred: $e');
-      throw AppException(message: e.toString());
+      throw AppException(message: e.message);
     }
   }
 

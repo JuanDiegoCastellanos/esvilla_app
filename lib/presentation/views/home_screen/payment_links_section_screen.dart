@@ -1,5 +1,6 @@
 import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
+import 'package:esvilla_app/presentation/widgets/shared/title_section.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,15 +16,14 @@ class PaymentLinksSectionScreen extends ConsumerWidget {
         children: [
           const Padding(
             padding: EdgeInsets.only(top: 20),
-            child: Text(
-              'Link para pago de Servicios',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w300),
+            child: TitleSection(
+              titleText: 'Link para pago de Servicios',
             ),
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
             child: Text(
-              'A continuación están los links para dirigirse a las apps para pagar',
+              'A continuación están los links para dirigirse a las apps para realizar el pago de servicios: ',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
             ),
           ),

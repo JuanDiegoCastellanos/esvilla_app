@@ -18,6 +18,7 @@ class PqrsRemoteDataSource {
         data: request.toJson(),
       );
       AppLogger.i('Response Data: ${response.data}');
+      AppLogger.i('Response Status Code: ${response.statusCode}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return PqrsModel.fromMap(response.data);
@@ -116,27 +117,29 @@ class PqrsRemoteDataSource {
     }
   }
 
-  Future<PqrsModel> getMyPqrs() async {
+  Future<PqrsModel?> getMyPqrs() async {
+    final response = await _dio.get('/pqrs/my-pqrs');
+    AppLogger.i('Response Data: ${response.data}');
+    if (response.data == null || response.data == '') {
+      return null;
+    }
     try {
-      final response = await _dio.get(
-        '/pqrs/my-pqrs',
-      );
-      AppLogger.i('Response Data: ${response.data}');
-
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return PqrsModel.fromMap(response.data);
-      } else {
-        AppLogger.e(
-            'Failed to get My PQRS. Status: ${response.statusCode}, Body: ${response.data}');
-        throw Exception(
-            'Failed to get My PQRS. Status: ${response.statusCode}, Body: ${response.data}');
+        if (response.data != null && response.data != '') {
+          return PqrsModel.fromMap(response.data);
+        } else {
+          return null;
+        }
       }
+      AppLogger.e(
+          'Failed to get My PQRS. Status: ${response.statusCode}, Body: ${response.data}');
+      return null;
     } on DioException catch (e) {
       AppLogger.e('Dio error during get My PQRS: $e');
-      throw AppException.fromDioExceptionType(e.type);
+      throw AppException(code: -11, message: e.message ?? 'Error de red');
     } catch (e) {
       AppLogger.e('Unexpected error during get My PQRS: $e');
-      throw AppException(code: -1, message: 'Unexpected error occurred');
+      throw AppException(code: -1, message: 'Unexpected error occurred:  ${e.toString()}');
     }
   }
 

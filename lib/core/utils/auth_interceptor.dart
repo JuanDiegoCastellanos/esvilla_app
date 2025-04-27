@@ -23,31 +23,43 @@ class AuthInterceptor extends Interceptor {
     ErrorInterceptorHandler handler,
   ) async {
     if (err.response?.statusCode == 401) {
-      // Lee el refresh token actual del estado
-      final refreshToken = _ref.read(authTokenProvider).refreshToken;
-
-      if (refreshToken != null) {
-        // Usa el servicio para refrescar el token
-        final data = await _ref
-            .read(refreshTokenServiceProvider)
-            .refreshToken(refreshToken);
-        final newToken = data.accessToken;
-        // Actualizar el token en storage/estado mediante tu lógica (por ejemplo, usando AuthController)
-        await _ref.read(authTokenProvider.notifier).saveTokens(
-            accessToken: data.accessToken,
-            refreshToken: data.refreshToken,
-            expiresIn: data.expiresIn,
-            role: data.role
-          );
-        // Reintentar la solicitud original
-        err.requestOptions.headers['Authorization'] = 'Bearer $newToken';
-        try {
-          final response = await dio.fetch(err.requestOptions);
-          return handler.resolve(response);
-        } catch (e) {
+      try {
+        final refreshToken =
+            await _ref.read(authTokenProvider.notifier).getRefreshToken();
+        if (refreshToken.isEmpty) {
+          AppLogger.e("No refresh token available");
           return handler.next(err);
         }
-            }
+
+        final tokenResponse = await _ref
+            .read(refreshTokenServiceProvider)
+            .refreshToken(refreshToken);
+
+        await _ref.read(authTokenProvider.notifier).saveTokens(
+            accessToken: tokenResponse.accessToken,
+            refreshToken: tokenResponse.refreshToken,
+            expiresIn: tokenResponse.expiresIn,
+            role: tokenResponse.role);
+        final options = Options(
+          method: err.requestOptions.method,
+          headers: {
+            ...err.requestOptions.headers,
+            'Authorization': 'Bearer ${tokenResponse.accessToken}'
+          },
+        );
+        final response = await dio.request(
+          err.requestOptions.path,
+          options: options,
+          data: err.requestOptions.data,
+          queryParameters: err.requestOptions.queryParameters,
+        );
+        // Si la solicitud fue exitosa, resolvemos el handler
+        return handler.resolve(response);
+      } catch (e) {
+        AppLogger.e("Error refreshing token ||||||||||: $e");
+        // Si hay cualquier error en el proceso de refresh, continuamos con el error original
+        return handler.next(err);
+      }
     }
     _logError(err);
     handler.next(err);
@@ -69,6 +81,39 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    // Verificamos si el token está por expirar antes de hacer la solicitud
+    final tokenState = _ref.read(authTokenProvider);
+    if (tokenState.accessToken != null) {
+      final isExpiringSoon =
+          _ref.read(authTokenProvider.notifier).isTokenExpiringSoon();
+
+      if (isExpiringSoon) {
+        try {
+          final refreshToken =
+              await _ref.read(authTokenProvider.notifier).getRefreshToken();
+          final tokenResponse = await _ref
+              .read(refreshTokenServiceProvider)
+              .refreshToken(refreshToken);
+          // Guardamos los nuevos tokens
+          await _ref.read(authTokenProvider.notifier).saveTokens(
+              accessToken: tokenResponse.accessToken,
+              refreshToken: tokenResponse.refreshToken,
+              expiresIn: tokenResponse.expiresIn,
+              role: tokenResponse.role);
+
+          // Usamos el nuevo token para esta solicitud
+          options.headers['Authorization'] =
+              'Bearer ${tokenResponse.accessToken}';
+                } catch (e) {
+          // Si hay un error al refrescar, usamos el token actual
+          AppLogger.w("Error refreshing token proactively: $e");
+          options.headers['Authorization'] = 'Bearer ${tokenState.accessToken}';
+        }
+      }else{
+        // Si no está por expirar, usamos el token actual
+        options.headers['Authorization'] = 'Bearer ${tokenState.accessToken}';
+      }
+    }
     // Lógica de autenticación
     final token = _ref.read(authTokenProvider).accessToken;
     if (token != null) {
@@ -81,7 +126,7 @@ class AuthInterceptor extends Interceptor {
   /// Registra un error en el logger, con el código de estado HTTP y el
   /// mensaje de error. Si hay datos de error, también se registran.
   void _logError(DioException err) {
-    AppLogger.e("❌ ERROR[${err.response?.statusCode}] => ${err.message}");
+    //AppLogger.e("❌ ERROR[${err.response?.statusCode}] => ${err.message}");
     if (err.response?.data != null) {
       AppLogger.e("📦 Error Data: ${err.response?.data}");
     }

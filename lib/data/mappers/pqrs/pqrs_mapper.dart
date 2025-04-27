@@ -16,9 +16,11 @@ class PqrsMapper {
         radicadorEmail: model.radicadorEmail,
         radicadorDocument: model.radicadorDocument,
         status: model.status,
-        closureDate: model.closureDate,
         createdAt: model.createdAt,
         updatedAt: model.updatedAt,
+        closureDate: model.closureDate,
+        resolucion: model.resolucion,
+        resolverName: model.resolverName
       );
   static PqrsModel toModel(PqrsEntity entity) => PqrsModel(
         id: entity.id,
@@ -30,9 +32,11 @@ class PqrsMapper {
         radicadorEmail: entity.radicadorEmail,
         radicadorDocument: entity.radicadorDocument,
         status: entity.status,
-        closureDate: entity.closureDate,
         createdAt: entity.createdAt,
         updatedAt: entity.updatedAt,
+        closureDate: entity.closureDate,
+        resolucion: entity.resolucion,
+        resolverName: entity.resolverName
       );
 
   static List<PqrsEntity> toEntityList(List<PqrsModel> models) =>
@@ -58,6 +62,8 @@ class PqrsMapper {
           radicadorEmail: entity.radicadorEmail,
           radicadorDocument: entity.radicadorDocument,
           status: entity.status,
-          closureDate: entity.closureDate
+          closureDate: entity.closureDate,
+          resolucion: entity.resolucion,
+          resolverName: entity.resolverName
           );
 }

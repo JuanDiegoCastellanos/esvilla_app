@@ -175,11 +175,11 @@ class UsersRemoteDataSource {
             'Failed to update the user info. Status: ${response.statusCode}, Body: ${response.data}');
       }
     } on DioException catch (e) {
-      AppLogger.e('Dio error during update the user info: $e');
-      throw AppException.fromDioExceptionType(e.type);
+      AppLogger.e('Dio error during update the user info: ${e.response?.data}');
+      throw AppException(code:409, message: e.response?.data['message']['message']);
     } catch (e) {
-      AppLogger.e('Unexpected error during update the user info: $e');
-      throw AppException(code: -1, message: 'Unexpected error occurred');
+      //AppLogger.e('Unexpected error during update the user info: $e');
+      throw AppException(code: -1, message: '$e');
     }
   }
 
