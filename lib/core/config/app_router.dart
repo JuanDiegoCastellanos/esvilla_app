@@ -1,10 +1,10 @@
 import 'package:esvilla_app/core/config/app_logger.dart';
-import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_notifier.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_token_state_notifier.dart';
+import 'package:esvilla_app/presentation/providers/user/user_controller_provider.dart';
 import 'package:esvilla_app/presentation/views/admin/edit_user_screen.dart';
 import 'package:esvilla_app/presentation/views/admin/list_users_screen.dart';
-import 'package:esvilla_app/presentation/views/schedule_screen.dart/schedule_screen.dart';
 import 'package:esvilla_app/presentation/views/screens.dart';
-import 'package:esvilla_app/presentation/widgets/home/user/trash_recollection_schedule.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +16,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String schedule = '/schedule';
-  static const String adminListUsers= 'admin-users';
+  static const String adminListUsers = 'admin-users';
   static const String adminEditUser = 'edit-user';
 
   // Lista de rutas públicas que no requieren autenticación
@@ -27,11 +27,7 @@ class AppRoutes {
   };
 
   // Lista de rutas administrativas
-  static final adminRoutes = <String>{
-    admin,
-    adminListUsers,
-    adminEditUser
-  };
+  static final adminRoutes = <String>{admin, adminListUsers, adminEditUser};
 
   // Lista de rutas que requieren autenticación
   static final authenticatedRoutes = <String>{
@@ -50,12 +46,37 @@ String getBaseRoute(String path) {
 
 class GoRouterNotifier extends ChangeNotifier {
   final Ref ref;
+  bool _isAdmin = false;
+  bool _isAuthenticated = false;
   GoRouterNotifier(this.ref) {
     ref.listen(authControllerProvider, (previous, next) {
-      if (previous?.isAuthenticated != next.isAuthenticated) {
+      final prevAuth = previous?.isAuthenticated ?? false;
+      final prevAdmin = previous?.isAdmin ?? false;
+      if (prevAuth != next.isAuthenticated || prevAdmin != next.isAdmin) {
+        _isAuthenticated = next.isAuthenticated;
+        _isAdmin = next.isAdmin;
         AppLogger.i(
             "Cambio detectado en autenticación: isAuthenticated = ${next.isAuthenticated}");
         notifyListeners(); // Notifica cuando cambia la autenticación
+      }
+    });
+
+    ref.listen(userControllerProvider, (previous, next) {
+      final prevRole = previous?.role;
+      final newRole = next.role;
+      
+      // Check if role changed to/from admin
+      if (prevRole != newRole) {
+        final isNowAdmin = newRole?.toLowerCase() == 'admin';
+        if (_isAdmin != isNowAdmin) {
+          _isAdmin = isNowAdmin;
+          
+          // Update auth state to reflect new admin status
+          ref.read(authControllerProvider).copyWith(isAdmin: isNowAdmin);
+          
+          AppLogger.i("Cambio detectado en rol de usuario: role = $newRole, isAdmin = $_isAdmin");
+          notifyListeners();
+        }
       }
     });
   }
@@ -68,16 +89,29 @@ final goRouterNotifierProvider = Provider<GoRouterNotifier>((ref) {
 final goRouterProvider = Provider<GoRouter>((ref) {
   final goRouterNotifier = ref.watch(goRouterNotifierProvider);
   ref.read(authControllerProvider.notifier).checkAuthentication();
+  //AppLogger.i("Datos : ${ref.read(authControllerProvider).token}");
   return GoRouter(
     refreshListenable: goRouterNotifier, // Aquí usamos ChangeNotifier
     debugLogDiagnostics: true,
-    redirect: (context, state) {
+    redirect: (context, state) async {
       final authState = ref.read(authControllerProvider);
       final isAuthenticated = authState.isAuthenticated;
       final isAdmin = authState.isAdmin;
       final currentLocation = state.matchedLocation;
 
-      //AppLogger.i("Redirección - Autenticado: $isAuthenticated | Ruta actual: $currentLocation | Admin: $isAdmin");
+      if (isAuthenticated) {
+        // Periodically check user profile to detect role changes
+        ref.read(userControllerProvider.notifier).getMyProfileInfo();
+      }
+
+      final isTokenExpired =
+          ref.read(authTokenStateNotifierProvider.notifier).isTokenExpired();
+      // Si el token expiró aunque el estado diga autenticado
+      if (isAuthenticated && isTokenExpired) {
+        await ref.read(authControllerProvider.notifier).logout();
+        return AppRoutes.login;
+      }
+      AppLogger.i("Redirección - Autenticado: $isAuthenticated | Ruta actual: $currentLocation | Admin: $isAdmin");
       // 1. Si el usuario NO está autenticado
       if (!isAuthenticated) {
         // Permitir acceso a rutas públicas
@@ -142,29 +176,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
-        path: AppRoutes.admin,
-        name: 'admin',
-        builder: (context, state) => const AdminHome(),
-        routes: <GoRoute>[
-          GoRoute(
-            path: AppRoutes.adminListUsers,
-            name: 'adminListUsers',
-            builder: (context, state) => const ListUsersScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.adminEditUser,
-            name: 'adminEditUser',
-            builder: (context, state) => EditUserScreen(user: state.extra),
-          ),
-        ]
-      ),
-      GoRoute(
-        path: AppRoutes.schedule,
-        name: 'schedule',
-        builder: (context, state) => ScheduleScreen(
-          daySchedule: state.extra as DaySchedule,
-        ),
-      ),
+          path: AppRoutes.admin,
+          name: 'admin',
+          builder: (context, state) => const AdminHome(),
+          routes: <GoRoute>[
+            GoRoute(
+              path: AppRoutes.adminListUsers,
+              name: 'adminListUsers',
+              builder: (context, state) => const ListUsersScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.adminEditUser,
+              name: 'adminEditUser',
+              builder: (context, state) => EditUserScreen(user: state.extra),
+            ),
+          ]),
     ],
   );
 });

@@ -1,6 +1,8 @@
 import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/data/datasources/announcements/announcements_remote_data_source.dart';
 import 'package:esvilla_app/data/mappers/announcements/announcements_mapper.dart';
+import 'package:esvilla_app/data/models/announcements/announcements_query_params.dart';
+import 'package:esvilla_app/data/models/announcements/paginated_reponse.dart';
 import 'package:esvilla_app/domain/entities/announcements/announcements_entity.dart';
 import 'package:esvilla_app/domain/entities/announcements/create_announcements_entity.dart';
 import 'package:esvilla_app/domain/entities/announcements/update_announcements_entity.dart';
@@ -69,74 +71,96 @@ class AnnouncementsRepositoryImpl implements AnnouncementsRepository {
       throw AppException(message: e.toString());
     }
   }
-  
+
   @override
-  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenCreationDates(String startDate, String endDate) async {
+  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenCreationDates(
+      String startDate, String endDate) async {
     try {
-      final request = await _announcementsRemoteDataSource.getAnnouncementsByCreationDate(startDate, endDate);
+      final request = await _announcementsRemoteDataSource
+          .getAnnouncementsByCreationDate(startDate, endDate);
       return AnnouncementsMapper.toEntityList(request);
     } catch (e) {
       throw AppException(message: e.toString());
     }
   }
-  
+
   @override
-  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenPublishDates(String startDate, String endDate) async {
+  Future<List<AnnouncementsEntity>> getAnnouncementsBetweenPublishDates(
+      String startDate, String endDate) async {
     try {
-      final request= await _announcementsRemoteDataSource.getAnnouncementsByPublishDate(startDate, endDate);
+      final request = await _announcementsRemoteDataSource
+          .getAnnouncementsByPublishDate(startDate, endDate);
       return AnnouncementsMapper.toEntityList(request);
     } catch (e) {
       throw AppException(message: e.toString());
     }
   }
-  
+
   @override
   Future<List<AnnouncementsEntity>> getAnnouncementsByUser(String id) async {
     try {
-      final request = await _announcementsRemoteDataSource.getAnnouncementsByUser(id);
+      final request =
+          await _announcementsRemoteDataSource.getAnnouncementsByUser(id);
       return AnnouncementsMapper.toEntityList(request);
     } catch (e) {
       throw AppException(message: e.toString());
     }
   }
-  
+
   @override
-  Future<List<AnnouncementsEntity>> getMyAnnouncements()async {
+  Future<List<AnnouncementsEntity>> getMyAnnouncements() async {
     try {
       final request = await _announcementsRemoteDataSource.getMyAnnouncements();
       return AnnouncementsMapper.toEntityList(request);
     } catch (e) {
-      throw AppException(message: e.toString()); 
+      throw AppException(message: e.toString());
     }
   }
-  
+
   @override
-  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenCreationDates(String startDate, String endDate) async {
+  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenCreationDates(
+      String startDate, String endDate) async {
     try {
-      final request = await _announcementsRemoteDataSource.getMyAnnouncementsByCreationDate(startDate, endDate);
+      final request = await _announcementsRemoteDataSource
+          .getMyAnnouncementsByCreationDate(startDate, endDate);
       return AnnouncementsMapper.toEntityList(request);
     } catch (e) {
       throw AppException(message: e.toString());
     }
-    
   }
-  
+
   @override
-  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenPublishDates(String startDate, String endDate) async {
+  Future<List<AnnouncementsEntity>> getMyAnnouncementsBetweenPublishDates(
+      String startDate, String endDate) async {
     try {
-      final request = await _announcementsRemoteDataSource.getMyAnnouncementsByPublicationDate(startDate, endDate);
+      final request = await _announcementsRemoteDataSource
+          .getMyAnnouncementsByPublicationDate(startDate, endDate);
       return AnnouncementsMapper.toEntityList(request);
     } catch (e) {
       throw AppException(message: e.toString());
     }
-    
   }
-  
+
   @override
   Future<AnnouncementsEntity> publishAnnouncement(String id) async {
     try {
-      final request =  await _announcementsRemoteDataSource.publishAnnouncement(id);
+      final request =
+          await _announcementsRemoteDataSource.publishAnnouncement(id);
       return AnnouncementsMapper.toEntity(request);
+    } catch (e) {
+      throw AppException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<PaginatedResponse<AnnouncementsEntity>> getAnnouncementsWithPagination(
+      AnnouncementsQueryParams queryParams) async {
+    try {
+      final response = await _announcementsRemoteDataSource
+          .getAnnouncementsWithPagination(queryParams);
+      return PaginatedResponse(
+          data: AnnouncementsMapper.toEntityList(response.data),
+          meta: response.meta);
     } catch (e) {
       throw AppException(message: e.toString());
     }

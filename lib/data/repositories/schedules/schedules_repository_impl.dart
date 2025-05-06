@@ -1,13 +1,11 @@
 import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/data/datasources/schedules/schedules_remote_data_source.dart';
 import 'package:esvilla_app/data/mappers/schedules/schedules_mapper.dart';
-import 'package:esvilla_app/data/mappers/sector/sector_mapper.dart';
 import 'package:esvilla_app/domain/entities/schedules/add_sectors_request_entity.dart';
 import 'package:esvilla_app/domain/entities/schedules/create_schedule_request_entity.dart';
 import 'package:esvilla_app/domain/entities/schedules/schedule_entity.dart';
 import 'package:esvilla_app/domain/entities/schedules/update_schedule_request_entity.dart';
 import 'package:esvilla_app/domain/entities/schedules/update_sectors_schedule_request_entity.dart';
-import 'package:esvilla_app/domain/entities/sectors/sector_entity.dart';
 import 'package:esvilla_app/domain/repositories/schedules_repository.dart';
 
 class SchedulesRepositoryImpl implements SchedulesRepository{
@@ -90,10 +88,10 @@ class SchedulesRepositoryImpl implements SchedulesRepository{
   }
 
   @override
-  Future<List<SectorEntity>> getSectorsByScheduleId(String id) async {
+  Future<List<String>> getSectorsByScheduleId(String id) async {
     try{
       final response = await _schedulesRemoteDataSource.getSectorsByScheduleID(id);
-      return SectorMapper.toEntityList(response);
+      return response;
     }catch(e){
       throw AppException(message: e.toString());
     }

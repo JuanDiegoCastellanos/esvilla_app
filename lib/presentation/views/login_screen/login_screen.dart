@@ -1,7 +1,7 @@
 import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/core/constants/app_texts.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
-import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_notifier.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +18,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isObscure = true;
 
   @override
   void dispose() {
@@ -29,56 +30,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _login() async {
     FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
-
-    if (_emailController.text.trim().isNotEmpty &&
-        _passwordController.text.trim().isNotEmpty) {
-      try {
-        await ref.read(authControllerProvider.notifier).login(
-              _emailController.text.trim(),
-              _passwordController.text.trim(),
-            );
+      if (_emailController.text.trim().isNotEmpty &&
+          _passwordController.text.trim().isNotEmpty) {
+        try {
+          await ref.read(authControllerProvider.notifier).login(
+                _emailController.text.trim(),
+                _passwordController.text.trim(),
+              );
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                '¡Bienvenido!',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } on AppException catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text(
+                  e.code == 401 ? 'Email o contraseña incorrectos' : e.message,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              '¡Bienvenido!',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } on AppException catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
             content: Center(
               child: Text(
-                e.code == 401 ? 'Email o contraseña incorrectos' : e.message,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                'Los campos son obligatorios',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ),
+            duration: Duration(seconds: 4),
             backgroundColor: Colors.red,
           ),
         );
       }
-    } else {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Center(
-            child: Text(
-              'Los campos son obligatorios',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-          ),
-          duration: Duration(seconds: 4),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
     }
   }
+
   String? _validarCampo(String? value, String campo) {
     if (value == null || value.isEmpty) {
       return 'Por favor ingresa $campo';
@@ -134,6 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: TextFieldFormEsvilla(
                         name: 'Documento de identidad o Email',
+                        maxLength: 50,
                         controller: _emailController,
                         inputType: TextInputType.text,
                         validator: (value) => _validarCampo(value, 'Documento'),
@@ -146,8 +148,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         name: 'Clave',
                         controller: _passwordController,
                         inputType: TextInputType.visiblePassword,
-                        obscureText: true,
+                        obscureText: _isObscure,
+                        maxLength: 30,
+                        minLength: 8,
                         validator: (value) => _validarCampo(value, 'Clave'),
+                        suffixIcon: IconButton(
+                            color: Colors.blue.shade300,
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            },
+                            icon: Icon(Icons.remove_red_eye)),
                       ),
                     ),
                     const SizedBox(height: 30),

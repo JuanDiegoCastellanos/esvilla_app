@@ -221,6 +221,7 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                       TextFieldFormEsvilla(
                         name: 'Nombre',
                         controller: _nameController,
+                        maxLength: 40,
                         inputType: TextInputType.name,
                         validator: (value) => _validarCampo(value, 'un nombre'),
                       ),

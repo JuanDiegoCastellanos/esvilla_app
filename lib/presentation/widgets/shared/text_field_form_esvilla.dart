@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
 class TextFieldFormEsvilla extends StatelessWidget {
+  
+  final TextEditingController controller;
+  final String name;
+  final Color borderColor;
+  final bool obscureText;
+  final TextInputType? inputType;
+  final String? Function(String?)? validator;
+  final int minLength;
+  final int maxLength;
+  final Widget? suffixIcon;
+
   const TextFieldFormEsvilla(
       {super.key,
       required this.name,
@@ -10,16 +21,9 @@ class TextFieldFormEsvilla extends StatelessWidget {
       this.borderColor = const Color(0xFF4F78FF),
       this.validator,
       this.minLength = 8,
-      this.maxLength = 20});
-
-  final TextEditingController controller;
-  final String name;
-  final Color borderColor;
-  final bool obscureText;
-  final TextInputType? inputType;
-  final String? Function(String?)? validator;
-  final int minLength;
-  final int maxLength;
+      this.maxLength = 20,
+      this.suffixIcon,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +56,11 @@ class TextFieldFormEsvilla extends StatelessWidget {
               width: 1,
             ),
           ),
+          suffixIcon: suffixIcon
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Este campo es requerido';
+          return '$name es requerido';
         }
         if (value.length < minLength) {
           return 'El campo debe tener al menos $minLength caracteres';

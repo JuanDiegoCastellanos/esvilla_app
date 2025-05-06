@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/data/models/announcements/announcements_model.dart';
+import 'package:esvilla_app/data/models/announcements/announcements_query_params.dart';
 import 'package:esvilla_app/data/models/announcements/create_announcement_request.dart';
+import 'package:esvilla_app/data/models/announcements/paginated_reponse.dart';
 import 'package:esvilla_app/data/models/announcements/update_announcements_request.dart';
 
 class AnnouncementsRemoteDataSource {
@@ -32,6 +34,35 @@ class AnnouncementsRemoteDataSource {
       } else {
         AppLogger.e(
             'Failed to get announcements. Status: ${response.statusCode}, Body: ${response.data}');
+
+        throw Exception(
+            'Failed to get announcements. Status: ${response.statusCode}, Body: ${response.data}');
+      }
+    } on DioException catch (e) {
+      AppLogger.e('Dio error during get announcements: $e');
+      throw AppException.fromDioExceptionType(e.type);
+    } catch (e) {
+      AppLogger.e('Unexpected error during get announcements: $e');
+      throw AppException(code: -1, message: 'Unexpected error occurred');
+    }
+  }
+
+  Future<PaginatedResponse<AnnouncementModel>> getAnnouncementsWithPagination(AnnouncementsQueryParams queryParams) async {
+    try {
+      final response = await _dio.get(
+        '/announcements',
+        queryParameters: queryParams.toMap(),
+      );
+      AppLogger.i('Response Data: ${response.data}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return PaginatedResponse<AnnouncementModel>.fromJson(
+          response.data,
+          (json) => AnnouncementModel.fromMap(json),
+          );
+      } else {
+        AppLogger.e(
+            'Failed to get announcements--Logger ${response.statusCode}, Body: ${response.data}');
 
         throw Exception(
             'Failed to get announcements. Status: ${response.statusCode}, Body: ${response.data}');

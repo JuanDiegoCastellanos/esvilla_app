@@ -1,3 +1,5 @@
+import 'package:esvilla_app/data/models/announcements/announcements_query_params.dart';
+import 'package:esvilla_app/data/models/announcements/paginated_reponse.dart';
 import 'package:esvilla_app/domain/entities/announcements/announcements_entity.dart';
 import 'package:esvilla_app/domain/entities/announcements/create_announcements_entity.dart';
 import 'package:esvilla_app/domain/entities/announcements/update_announcements_entity.dart';
@@ -17,4 +19,6 @@ abstract class AnnouncementsRepository implements GenericRepository<Announcement
   Future<List<AnnouncementsEntity>> getAnnouncementsBetweenPublishDates(String startDate, String endDate);
 
   Future<AnnouncementsEntity> publishAnnouncement(String id);
+
+  Future<PaginatedResponse<AnnouncementsEntity>> getAnnouncementsWithPagination(AnnouncementsQueryParams queryParams);
 }

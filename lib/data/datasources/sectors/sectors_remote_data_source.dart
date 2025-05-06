@@ -26,9 +26,6 @@ class SectorsRemoteDataSource {
         throw Exception(
             'Failed to get sectors. Status: ${response.statusCode}, Body: ${response.data}');
       }
-    } on DioException catch (e) {
-      AppLogger.e('Dio error during get sectors: $e');
-      throw AppException.fromDioExceptionType(e.type);
     } catch (e) {
       AppLogger.e('Unexpected error during get sectors: $e');
       throw AppException(code: -1, message: 'Unexpected error occurred');
@@ -50,11 +47,7 @@ class SectorsRemoteDataSource {
         throw Exception(
             'Failed to get sector. Status: ${response.statusCode}, Body: ${response.data}');
       }
-    } on DioException catch (e) {
-      AppLogger.e('Dio error during get sector: $e');
-      throw AppException.fromDioExceptionType(e.type);
     } catch (e) {
-      AppLogger.e('Unexpected error during get sector: $e');
       throw AppException(code: -1, message: 'Unexpected error occurred');
     }
   }

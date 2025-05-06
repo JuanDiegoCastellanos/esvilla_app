@@ -1,4 +1,4 @@
-import 'package:esvilla_app/presentation/providers/auth/auth_controller_provider.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_notifier.dart';
 import 'package:esvilla_app/presentation/providers/user/user_controller_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
