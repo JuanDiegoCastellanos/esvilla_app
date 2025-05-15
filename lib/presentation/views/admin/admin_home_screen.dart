@@ -8,13 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdminHome extends ConsumerWidget {
   const AdminHome({super.key});
 
-  _showDialogInProgress(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text('Esta etapa de desarrollo, muy pronto...'),
-      ),
-    );
-  }
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     
@@ -48,7 +41,7 @@ class AdminHome extends ConsumerWidget {
         cardText: 'PQRS',
       ),
       CardHome(
-        onTap: () => _showDialogInProgress(context),
+        onTap: () => goRouter.goNamed('adminListSchedules'),
         cardIcon: Image.asset(
                   'assets/img/admin/zona-horaria.png',
                   width: 70,
@@ -57,7 +50,7 @@ class AdminHome extends ConsumerWidget {
         cardText: 'Horarios',
       ),
       CardHome(
-        onTap: () => _showDialogInProgress(context),
+        onTap: () => goRouter.goNamed('adminListSectors'),
         cardIcon: Image.asset(
                   'assets/img/admin/ubicacion.png',
                   width: 70,

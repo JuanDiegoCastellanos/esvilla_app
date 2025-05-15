@@ -3,12 +3,18 @@ import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_no
 import 'package:esvilla_app/presentation/providers/auth/auth_token_state_notifier.dart';
 import 'package:esvilla_app/presentation/providers/user/user_controller_provider.dart';
 import 'package:esvilla_app/presentation/views/admin/add_announcements_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/add_schedules_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/add_sector_screen.dart';
 import 'package:esvilla_app/presentation/views/admin/add_user_screen.dart';
 import 'package:esvilla_app/presentation/views/admin/edit_announcements_screen.dart';
 import 'package:esvilla_app/presentation/views/admin/edit_pqrs_creen.dart';
+import 'package:esvilla_app/presentation/views/admin/edit_schedule_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/edit_sector_screen.dart';
 import 'package:esvilla_app/presentation/views/admin/edit_user_screen.dart';
 import 'package:esvilla_app/presentation/views/admin/list_announcements_screen.dart';
 import 'package:esvilla_app/presentation/views/admin/list_pqrs_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/list_schedules_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/list_sectors_screen.dart';
 import 'package:esvilla_app/presentation/views/admin/list_users_screen.dart';
 import 'package:esvilla_app/presentation/views/screens.dart';
 import 'package:flutter/foundation.dart';
@@ -30,6 +36,12 @@ class AppRoutes {
   static const String adminCreateAnnouncement = 'create-announcement';
   static const String adminListPqrs = 'admin-pqrs';
   static const String adminEditPqrs = 'edit-pqrs';
+  static const String adminListSchedules = 'admin-schedules';
+  static const String adminEditSchedule = 'edit-schedule';
+  static const String adminCreateSchedule = 'create-schedule';
+  static const String adminListSectors = 'admin-sectors';
+  static const String adminEditSector = 'edit-sector';
+  static const String adminCreateSector = 'create-sector';
   // Lista de rutas públicas que no requieren autenticación
   static final publicRoutes = <String>{
     splash,
@@ -48,6 +60,12 @@ class AppRoutes {
     adminCreateAnnouncement,
     adminListPqrs,
     adminEditPqrs,
+    adminListSchedules,
+    adminEditSchedule,
+    adminCreateSchedule,
+    adminListSectors,
+    adminEditSector,
+    adminCreateSector
   };
 
   // Lista de rutas que requieren autenticación
@@ -253,6 +271,38 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               name: 'adminEditPqrs',
               builder: (context, state) => EditPqrsScreen(
                   pqrs: state.extra),
+            ),
+            GoRoute(
+              path: AppRoutes.adminListSchedules,
+              name: 'adminListSchedules',
+              builder: (context, state) => ListSchedulesScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.adminEditSchedule,
+              name: 'adminEditSchedule',
+              builder: (context, state) => EditScheduleScreen(
+                  schedule: state.extra),
+            ),
+            GoRoute(
+              path: AppRoutes.adminCreateSchedule,
+              name: 'adminCreateSchedule',
+              builder: (context, state) => AddSchedulesScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.adminListSectors,
+              name: 'adminListSectors',
+              builder: (context, state) => ListSectorsScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.adminEditSector,
+              name: 'adminEditSector',
+              builder: (context, state) => EditSectorScreen(
+                  sector: state.extra),
+              ),
+            GoRoute(
+              path: AppRoutes.adminCreateSector,
+              name: 'adminCreateSector',
+              builder: (context, state) => AddSectorScreen(),
             ),
             
           ]),
