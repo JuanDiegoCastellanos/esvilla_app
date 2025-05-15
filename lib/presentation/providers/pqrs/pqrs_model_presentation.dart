@@ -1,6 +1,7 @@
 import 'package:esvilla_app/core/utils/enums/pqrs_status_enum.dart';
 import 'package:esvilla_app/domain/entities/pqrs/create_pqrs_request_entity.dart';
 import 'package:esvilla_app/domain/entities/pqrs/pqrs_entity.dart';
+import 'package:esvilla_app/domain/entities/pqrs/update_pqrs_request_entity.dart';
 
 class PqrsModelPresentation {
   final String? id;
@@ -17,6 +18,7 @@ class PqrsModelPresentation {
   final DateTime? closureDate;
   final bool isLoading;
   final String? error;
+  final String? resolution;
 
   PqrsModelPresentation({
     this.id,
@@ -33,6 +35,7 @@ class PqrsModelPresentation {
     this.closureDate,
     this.isLoading = false,
     this.error,
+    this.resolution,
   });
 
   PqrsModelPresentation copyWith({
@@ -83,8 +86,40 @@ class PqrsModelPresentation {
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       closureDate: entity.closureDate,
+      resolution: entity.resolution
     );
   }
+
+  
+  static List<PqrsModelPresentation> toPresentationModelList(
+      List<PqrsEntity> pqrsList) {
+    return pqrsList.map((pqrs) => PqrsModelPresentation.fromEntity(pqrs)).toList();
+  }
+
+  static CreatePqrsRequestEntity toCreateEntity(PqrsModelPresentation model) {
+    return CreatePqrsRequestEntity(
+      subject: model.subject ?? '',
+      description: model.description ?? '',
+      status: model.status?.name ?? '',
+    );
+  }
+
+  static UpdatePqrsRequestEntity toUpdateEntity(PqrsModelPresentation model) {
+    return UpdatePqrsRequestEntity(
+      id: model.id!,
+      subject: model.subject,
+      description: model.description,
+      radicadorId: model.radicadorId,
+      radicadorName: model.radicadorName,
+      radicadorPhone: model.radicadorPhone,
+      radicadorEmail: model.radicadorEmail,
+      radicadorDocument: model.radicadorDocument,
+      status: model.status?.name,
+      closureDate: model.closureDate,
+      resolution: model.resolution
+    );
+  }
+
 
   static CreatePqrsRequestEntity toCreateRequestEntity(
       PqrsModelPresentation newPrs) {

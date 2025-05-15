@@ -27,7 +27,7 @@ class AnnouncementsRemoteDataSource {
       AppLogger.i('Response Data: ${response.data}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final List<dynamic> responseData = response.data;
+        final dynamic responseData = response.data['data'];
         return responseData
             .map((item) => AnnouncementModel.fromMap(item))
             .toList();

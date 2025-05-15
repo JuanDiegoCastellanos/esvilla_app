@@ -9,7 +9,7 @@ class AnnouncementsListStateNotifierProvider
     extends StateNotifier<AsyncValue<PaginatedResponse<AnnouncementsEntity>>> {
   final GetAllWithPaginationUseCase getAllWithPaginationUseCase;
   int _currentPage = 1;
-  final int _limit = 10;
+  final int _limit = 20;
   String _sortBy = 'createdAt';
   String _sortOrder = 'desc';
   DateTime? _startDate;
@@ -79,12 +79,12 @@ class AnnouncementsListStateNotifierProvider
     loadInitialNews();
   }
   
-  void clearFilters() {
+  Future<void> clearFilters() async {
     _sortBy = 'createdAt';
     _sortOrder = 'desc';
     _startDate = null;
     _endDate = null;
-    loadInitialNews();
+    await loadInitialNews();
   }
 }
 

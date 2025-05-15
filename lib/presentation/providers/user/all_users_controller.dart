@@ -1,7 +1,10 @@
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/domain/use_cases/user/get_all_users_use_case.dart';
-import 'package:esvilla_app/presentation/providers/user/get_user_by_id_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/create_user_use_case_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/delete_user_by_id_use_case_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/update_user_use_case_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/user_controller_provider.dart';
 import 'package:esvilla_app/presentation/providers/user/user_model_presentation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,8 +19,14 @@ class AllUsersController extends StateNotifier<List<UserPresentationModel>> {
   Future<void> loadUsers() async {
     try {
       final listUserEntities = await _getAllUsersUseCase();
-      AppLogger.i('listUserEntities------>: $listUserEntities');
-      state = listUserEntities.map(UserPresentationModel.fromEntity).toList();
+      final currentUser = _ref.read(userControllerProvider).value;
+      //remove the current user
+      final filteredUsers = listUserEntities.where((user) => 
+      user.id != currentUser!.id &&
+      user.email != currentUser.email
+      ).toList();
+
+      state = filteredUsers.map(UserPresentationModel.fromEntity).toList();
     } catch (e) {
       AppLogger.e(e.toString());
       throw AppException(message: e.toString());
@@ -27,34 +36,38 @@ class AllUsersController extends StateNotifier<List<UserPresentationModel>> {
   // Método para eliminar un usuario por su ID
   Future<void> removeUser(String userId) async {
     try {
-      // primero encuentro el usuario que va ser eliminado
-      final UserPresentationModel loadedUser = await _ref
-          .read(getUserByIdProvider(userId))
-          .when(
-              data: (user) => user,
-              error: (error, stackTrace) => UserPresentationModel.empty()
-                  .copyWith(error: error.toString()),
-              loading: () => UserPresentationModel.empty().copyWith(isLoading: true));
 
-      if (loadedUser.id!.isEmpty) {
-        throw AppException(message: 'User not found');
-      }
-      // valido que no sea el mio
-      // TODO: implementar
-
-      // finalmente lo elimino
-      //_ref.read(deleteUserByIduseCase)
-
+      await _ref.read(deleteUserByIdUseCaseProvider).call(userId);
+      await loadUsers();
     } catch (e) {
       AppLogger.e(e.toString());
       throw AppException(message: e.toString());
     }
-    state = state.where((user) => user.id != userId).toList();
   }
 
   // Método para actualizar un usuario existente
-  void updateUser(UserPresentationModel updatedUser) {
-    // TODO: implementar
+  Future<void> updateUser(UserPresentationModel updatedUser) async {
+    try {
+      await _ref.read(updateUserUseCaseProvider).call(updatedUser.id!, UserPresentationModel.toUpdateUserRequestEntity(updatedUser));
+    } catch (e) {
+      AppLogger.e(e.toString());
+      throw AppException(message: e.toString());
+    }
   }
+
+  Future<bool> addUser(UserPresentationModel user) async {
+    try {
+      final userCreated  = await _ref.read(createUserUseCaseProvider).call(UserPresentationModel.toCreateUserRequestEntity(user));
+      if (userCreated.id != '' || userCreated.name != '' || userCreated.email != '') {
+        await loadUsers();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      AppLogger.e(e.toString());
+      throw AppException(message: e.toString());
+    }
+  } 
 }
 

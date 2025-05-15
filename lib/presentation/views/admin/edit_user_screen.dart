@@ -1,8 +1,13 @@
+import 'package:esvilla_app/core/config/app_router.dart';
+import 'package:esvilla_app/domain/entities/user/user_entity.dart';
+import 'package:esvilla_app/presentation/providers/user/all_users_controller_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/user_model_presentation.dart';
 import 'package:esvilla_app/presentation/views/screens.dart';
+import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_box.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
+import 'package:esvilla_app/presentation/widgets/shared/title_section.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EditUserScreen extends ConsumerStatefulWidget {
@@ -23,28 +28,10 @@ class _EditUserScreenState extends ConsumerState<EditUserScreen> {
             child: Column(
               children: [
                 const EsvillaAppBar(),
-                const Row(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Editar usuario: ',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                TitleSection(
+                  titleText: 'Editar Usuario',
+                  ),
+                const SizedBox(height: 16),
                 EditUserForm(
                   user: widget.user,
                 ),
@@ -55,22 +42,135 @@ class _EditUserScreenState extends ConsumerState<EditUserScreen> {
   }
 }
 
-class EditUserForm extends StatelessWidget {
+class EditUserForm extends ConsumerStatefulWidget {
   final dynamic user;
-  EditUserForm({
+
+  const EditUserForm({
     super.key,
     required this.user,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final nameController = TextEditingController();
-    final documentController = TextEditingController();
-    final emailController = TextEditingController();
-    final phoneController = TextEditingController();
-    final addressController = TextEditingController();
+  ConsumerState<EditUserForm> createState() => _EditUserFormState();
+}
 
+class _EditUserFormState extends ConsumerState<EditUserForm> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController documentController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late final UserEntity user;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = widget.user.name ?? '';
+    documentController.text = widget.user.documentNumber ?? '';
+    emailController.text = widget.user.email ?? '';
+    phoneController.text = widget.user.phone ?? '';
+    addressController.text = widget.user.mainAddress ?? '';
+    user = UserPresentationModel.toEntity(widget.user);
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    documentController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    addressController.dispose();
+    super.dispose();
+  }
+
+  void resetPassword() {
+    //ref.read(allUsersControllerProvider.notifier).resetPassword(widget.user.id);
+    //todo: reset password
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Center(
+            child: const Text(
+              'Contraseña restaurada!',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  }
+
+  void updateUser() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final name = nameController.text;
+        final documentNumber = documentController.text;
+        final email = emailController.text;
+        final phone = phoneController.text;
+        final mainAddress = addressController.text;
+
+        final userUpdated = UserEntity(
+          id: widget.user.id,
+          name: name,
+          documentNumber: documentNumber,
+          email: email,
+          phone: phone,
+          mainAddress: mainAddress,
+          password: widget.user.password,
+          role: widget.user.role,
+        );
+
+        if (userUpdated != widget.user) {
+          await ref.read(allUsersControllerProvider.notifier).updateUser(UserPresentationModel.fromEntity(userUpdated));
+          
+        }else{
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text(
+                  'User not updated',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: const Text(
+                  'Usuario actualizado!',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Error actualizando usuario',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -92,7 +192,7 @@ class EditUserForm extends StatelessWidget {
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
-                  child: newInputField(context, nameController, user['name']),
+                  child: newInputField(context, nameController, 'Nombre'),
                 ),
               ),
             ],
@@ -106,9 +206,9 @@ class EditUserForm extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.only(right: 20, left: 10),
                   child: Text(
-                    'Documento :',
+                    'Documento:',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -119,7 +219,8 @@ class EditUserForm extends StatelessWidget {
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
-                  child: newInputField(context, documentController, user['email']),
+                  child:
+                      newInputField(context, documentController, 'Documento'),
                 ),
               ),
             ],
@@ -191,32 +292,10 @@ class EditUserForm extends StatelessWidget {
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                  child:
-                      newInputField(context, addressController, 'Direccion Principal'),
+                  child: newInputField(
+                      context, addressController, 'Direccion Principal'),
                 ),
               ),
-              /*  Padding(
-                  padding: EdgeInsets.only(right: 20, left: 10),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minWidth: double.infinity,
-                    ),
-                    child: Text(
-                      'Direccion Principal',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                    ),
-                  )),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
-                child:
-                    newInputField(context, controller, 'Direccion Principal'),
-              ), */
             ],
           ),
           const SizedBox(
@@ -228,33 +307,45 @@ class EditUserForm extends StatelessWidget {
               color: Colors.white,
               size: 40,
             ),
-            onPressed: () {},
+            onPressed: () => resetPassword(),
             label: const Text(
               'Resetear Clave',
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.cyan.shade300),
-              minimumSize: const MaterialStatePropertyAll(Size(200, 50)),
+              backgroundColor: WidgetStateProperty.all(Colors.orange),
+              minimumSize: const WidgetStatePropertyAll(Size(300, 50)),
             ),
           ),
           const SizedBox(
             height: 50,
           ),
-          ElevatedButton.icon(
-            icon: const Icon(
-              Icons.save,
-              size: 30,
-              color: Colors.white,
-            ),
-            onPressed: () {},
-            label: const Text(
-              'Guardar Cambios',
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            ),
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.lightGreen),
-              minimumSize: const MaterialStatePropertyAll(Size(200, 50)),
+          ButtonRectangular(
+            onPressedFunction: () {
+              if (_formKey.currentState!.validate()) {
+                updateUser();
+                Future.delayed(const Duration(seconds: 2)).then((value) => ref.read(goRouterProvider).pop());
+              }
+            },
+            size: const WidgetStatePropertyAll(Size(300, 50)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.save,
+                  size: 32,
+                  color: Colors.white,
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      'Guardar Cambios',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
         ],
@@ -263,31 +354,15 @@ class EditUserForm extends StatelessWidget {
   }
 
   SizedBox newInputField(
-      BuildContext context, TextEditingController controller, String textValue,
+      BuildContext context, TextEditingController controller, String name,
       {Validator? validator}) {
     return SizedBox(
-      height: 40,
+      height: 65,
       width: MediaQuery.of(context).size.width * 0.6,
-      child: TextFormField(
+      child: TextFieldFormEsvilla(
+          name: name,
+          inputType: TextInputType.text,
           controller: controller,
-          textAlignVertical: TextAlignVertical.bottom,
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: Colors.blue, //Color(0xFF4F78FF),
-                width: 1,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: Colors.blue, //Color(0xFF4F78FF),
-                width: 1,
-              ),
-            ),
-            hintText: textValue,
-          ),
           validator: validator),
     );
   }
@@ -303,6 +378,7 @@ class LabelText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
+      textAlign: TextAlign.left,
       text,
       style: const TextStyle(fontSize: 16),
       maxLines: 2,

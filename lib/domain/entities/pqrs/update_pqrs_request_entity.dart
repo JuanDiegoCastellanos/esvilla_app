@@ -9,7 +9,7 @@ class UpdatePqrsRequestEntity {
   final String? radicadorDocument;
   final String? status;
   final DateTime? closureDate;
-  final String? resolucion;
+  final String? resolution;
   final String? resolverName;
 
   const UpdatePqrsRequestEntity({
@@ -23,7 +23,7 @@ class UpdatePqrsRequestEntity {
     this.radicadorDocument,
     this.status,
     this.closureDate,
-    this.resolucion,
+    this.resolution,
     this.resolverName,
   });
 }

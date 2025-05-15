@@ -2,27 +2,33 @@ import 'package:flutter/material.dart';
 
 class TextFieldFormEsvilla extends StatelessWidget {
   
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String name;
   final Color borderColor;
   final bool obscureText;
   final TextInputType? inputType;
   final String? Function(String?)? validator;
   final int minLength;
-  final int maxLength;
+  final int? maxLength;
+  final int minLines;
+  final int? maxLines;
   final Widget? suffixIcon;
+  final Function(String)? onChanged;
 
   const TextFieldFormEsvilla(
       {super.key,
       required this.name,
-      required this.controller,
+      this.controller,
       required this.inputType,
       this.obscureText = false,
       this.borderColor = const Color(0xFF4F78FF),
       this.validator,
-      this.minLength = 8,
-      this.maxLength = 20,
+      this.minLength = 6,
+      this.maxLength = 25,
+      this.minLines = 1,
+      this.maxLines = 1,
       this.suffixIcon,
+      this.onChanged
       });
 
   @override
@@ -30,6 +36,9 @@ class TextFieldFormEsvilla extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: inputType,
+      maxLength: maxLength,
+      maxLines: maxLines,
+      minLines: minLines,
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
@@ -67,8 +76,8 @@ class TextFieldFormEsvilla extends StatelessWidget {
         }
         return validator?.call(value);
       },
+      onChanged: (value) => onChanged?.call(value),
       obscureText: obscureText,
-      maxLength: maxLength,
       onEditingComplete: () => FocusScope.of(context).unfocus(),
     );
   }

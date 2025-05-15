@@ -1,3 +1,4 @@
+import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/core/constants/app_texts.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_notifier.dart';
@@ -21,6 +22,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _passwordAgainController = TextEditingController();
   final _direccionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool obscurePwd1 = true;
+  bool obscurePwd2 = true;
+
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -36,7 +41,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _register() async {
     // Oculta el teclado
     FocusScope.of(context).unfocus();
-    if(_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
     final name = _nameController.text.trim();
     final document = _documentController.text.trim();
     final email = _emailController.text.trim();
@@ -113,7 +118,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
-    bool obscurePwd = true;
+    
     return Scaffold(
         body: Container(
       decoration: const BoxDecoration(
@@ -148,42 +153,61 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      newInputField(_nameController, 'Nombre Completo', 60, 6, null,
-                          _validarCampo),
-                      const SizedBox(height: 20),
-                  
-                      newInputField(_documentController, 'Documento', 20, 10, null,
-                          _validarCampo),
-                      const SizedBox(height: 20),
-                  
-                      newInputField(_emailController, 'Correo electronico', 30, 6,
+                      newInputField(_nameController, 'Nombre Completo', 60, 6,
                           null, _validarCampo),
                       const SizedBox(height: 20),
-                  
-                      newInputField(_telefonoController, 'Telefono', 10, 10, null,
-                          _validarCampo),
+                      newInputField(_documentController, 'Documento', 20, 10,
+                          null, _validarCampo),
                       const SizedBox(height: 20),
-                  
-                      newInputField(_direccionController, 'Direccion', 60, 6, null,
-                          _validarCampo),
+                      newInputField(_emailController, 'Correo electronico', 30,
+                          6, null, _validarCampo),
                       const SizedBox(height: 20),
-                  
-                      newInputField(_passwordController, 'Contraseña', 30, 8,
-                          suffixIconBehaviour(obscurePwd), _validarCampo,
-                          obscure: obscurePwd),
+                      newInputField(_telefonoController, 'Telefono', 10, 10,
+                          null, _validarCampo),
                       const SizedBox(height: 20),
-                  
-                      newInputField(_passwordAgainController, 'Repetir Contraseña', 30,
-                          8, suffixIconBehaviour(obscurePwd), _validarCampo,
-                          obscure: obscurePwd),
+                      newInputField(_direccionController, 'Direccion', 60, 6,
+                          null, _validarCampo),
+                      const SizedBox(height: 20),
+                      newInputField(
+                          _passwordController,
+                          'Contraseña',
+                          30,
+                          8,
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  obscurePwd1 = !obscurePwd1;
+                                  AppLogger.d('obscureField: $obscurePwd1');
+                                });
+                              },
+                              icon: Icon(Icons.remove_red_eye)),
+                          _validarCampo,
+                          obscure: obscurePwd1),
+                      const SizedBox(height: 20),
+                      newInputField(
+                          _passwordAgainController,
+                          'Repetir Contraseña',
+                          30,
+                          8,
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  obscurePwd2 = !obscurePwd2;
+                                  AppLogger.d('obscureField: $obscurePwd2');
+                                });
+                              },
+                              icon: Icon(Icons.remove_red_eye)),
+                          _validarCampo,
+                          obscure: obscurePwd2),
                       const SizedBox(height: 30),
-                  
                       ElevatedButton(
                         style: ButtonStyle(
-                          fixedSize: WidgetStateProperty.all(const Size(233, 50)),
+                          fixedSize:
+                              WidgetStateProperty.all(const Size(233, 50)),
                           backgroundColor: WidgetStateColor.resolveWith(
                               (states) => const Color.fromRGBO(47, 39, 125, 1)),
-                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          shape:
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(18.0),
                             ),
@@ -226,16 +250,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ),
       ),
     ));
-  }
-
-  Widget? suffixIconBehaviour(bool obscureField) {
-    return IconButton(
-        onPressed: () {
-          setState(() {
-            obscureField = !obscureField;
-          });
-        },
-        icon: Icon(Icons.remove_red_eye));
   }
 
   Widget newInputField(

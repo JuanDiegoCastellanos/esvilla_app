@@ -1,7 +1,7 @@
 import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/core/constants/app_texts.dart';
-import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_notifier.dart';
+import 'package:esvilla_app/presentation/providers/auth/auth_state.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
 import 'package:flutter/material.dart';
@@ -30,53 +30,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _login() async {
     FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
-      if (_emailController.text.trim().isNotEmpty &&
-          _passwordController.text.trim().isNotEmpty) {
-        try {
-          await ref.read(authControllerProvider.notifier).login(
-                _emailController.text.trim(),
-                _passwordController.text.trim(),
-              );
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                '¡Bienvenido!',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-              backgroundColor: Colors.green,
-            ),
+      await ref.read(authControllerProvider.notifier).login(
+            _emailController.text.trim(),
+            _passwordController.text.trim(),
           );
-        } on AppException catch (e) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Center(
-                child: Text(
-                  e.code == 401 ? 'Email o contraseña incorrectos' : e.message,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-              ),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      } else {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Center(
-              child: Text(
-                'Los campos son obligatorios',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-            ),
-            duration: Duration(seconds: 4),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
     }
   }
 
@@ -90,6 +47,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+
+    ref.listen<AuthState>(authControllerProvider, (prev, next) {
+      // Si cambió el mensaje de error, muéstralo
+    if (next.error != null && next.error != prev?.error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(milliseconds: 500),
+          content: Text(next.error!),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
+    // Si pasó de loading a autenticado con éxito, muestro bienvenida
+    final wasLoading = prev?.isLoading ?? false;
+    if (wasLoading && next.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(milliseconds: 500),
+          content: Text('¡Bienvenido!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+    });
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(

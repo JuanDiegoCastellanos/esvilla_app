@@ -1,3 +1,4 @@
+import 'package:esvilla_app/domain/entities/user/create_user_request_entity.dart';
 import 'package:esvilla_app/domain/entities/user/update_user_request_entity.dart';
 import 'package:esvilla_app/domain/entities/user/user_entity.dart';
 
@@ -72,6 +73,18 @@ class UserPresentationModel {
     );
   }
 
+  static CreateUserRequestEntity toCreateUserRequestEntity(UserPresentationModel entity) {
+    return CreateUserRequestEntity(
+      name: entity.name!,
+      email:  entity.email!,
+      documentNumber:  entity.documentNumber!,
+      phone: entity.phone!,
+      password: entity.password!,
+      mainAddress: entity.mainAddress!,
+      role: entity.role!,
+    );
+  }
+
 
   UserPresentationModel.empty() : this(null, null, null, null, null,null, null, null, false, null);
 
@@ -98,6 +111,32 @@ class UserPresentationModel {
       role ?? this.role,
       isLoading ?? this.isLoading,
       error ?? this.error,
+    );
+  }
+  
+  factory UserPresentationModel.partly({
+    String? id,
+    String? name,
+    String? email,
+    String? documentNumber,
+    String? phone,
+    String? password,
+    String? mainAddress,
+    String? role,
+    bool isLoading = false,
+    String? error,
+  }) {
+    return UserPresentationModel(
+      id,
+      name,
+      email,
+      documentNumber,
+      phone,
+      password,
+      mainAddress,
+      role,
+      isLoading,
+      error,
     );
   }
 }

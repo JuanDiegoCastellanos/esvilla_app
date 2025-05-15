@@ -19,7 +19,7 @@ class PqrsMapper {
         createdAt: model.createdAt,
         updatedAt: model.updatedAt,
         closureDate: model.closureDate,
-        resolucion: model.resolucion,
+        resolution: model.resolucion,
         resolverName: model.resolverName
       );
   static PqrsModel toModel(PqrsEntity entity) => PqrsModel(
@@ -35,7 +35,7 @@ class PqrsMapper {
         createdAt: entity.createdAt,
         updatedAt: entity.updatedAt,
         closureDate: entity.closureDate,
-        resolucion: entity.resolucion,
+        resolucion: entity.resolution,
         resolverName: entity.resolverName
       );
 
@@ -63,7 +63,7 @@ class PqrsMapper {
           radicadorDocument: entity.radicadorDocument,
           status: entity.status,
           closureDate: entity.closureDate,
-          resolucion: entity.resolucion,
+          resolucion: entity.resolution,
           resolverName: entity.resolverName
           );
 }

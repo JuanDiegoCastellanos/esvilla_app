@@ -13,7 +13,7 @@ class PqrsEntity {
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? closureDate;
-  final String? resolucion;
+  final String? resolution;
   final String? resolverName;
 
   const PqrsEntity({
@@ -29,7 +29,7 @@ class PqrsEntity {
     required this.createdAt,
     required this.updatedAt,
     this.closureDate,
-    this.resolucion,
+    this.resolution,
     this.resolverName
   });
 }

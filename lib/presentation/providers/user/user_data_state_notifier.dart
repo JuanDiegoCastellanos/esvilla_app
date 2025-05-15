@@ -8,10 +8,10 @@ class UserDataStateNotifier extends StateNotifier<UserState> {
 
   UserDataStateNotifier(this._storage) : super(const UserState.empty()) {
     // Cargar el token o tokens
-    _loadTokens();
+    loadTokens();
   }
 
-  Future<void> _loadTokens() async {
+  Future<void> loadTokens() async {
     final name = await _storage.getASimpleToken('NAME');
     final email = await _storage.getASimpleToken('EMAIL');
     final documentNumber = await _storage.getASimpleToken('DOCUMENT_NUMBER');
@@ -61,7 +61,7 @@ class UserDataStateNotifier extends StateNotifier<UserState> {
     state = const UserState.empty();
   }
 
-   Future<String?> getRole() async {
+  Future<String?> getRole() async {
     if (state.role != null) return state.role; // Si ya está cargado, devolverlo
     final role = await _storage
         .getASimpleToken('ROLE'); // Volver a consultar si es necesario

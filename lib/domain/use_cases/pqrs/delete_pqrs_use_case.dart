@@ -1,3 +1,4 @@
+import 'package:esvilla_app/domain/entities/pqrs/pqrs_entity.dart';
 import 'package:esvilla_app/domain/repositories/pqrs_repository.dart';
 
 class DeletePqrsUseCase {
@@ -5,5 +6,6 @@ class DeletePqrsUseCase {
 
   DeletePqrsUseCase(this.repository);
 
-  Future<void> call(String id) async => await repository.delete(id);
+  Future<PqrsEntity> call(String id) async => await repository.delete(id);
+  
 }

@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdminHome extends ConsumerWidget {
   const AdminHome({super.key});
 
-
   _showDialogInProgress(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
     const SnackBar(
@@ -23,30 +22,48 @@ class AdminHome extends ConsumerWidget {
     final List<CardHome> homeItems = <CardHome>[
       CardHome(
         onTap: () => goRouter.goNamed('adminListUsers'),
-        cardIcon: Icons.person,
+        cardIcon: Image.asset(
+                  'assets/img/admin/multitud.png',
+                  width: 70,
+                  height: 70,
+                  ),
         cardText: 'Usuarios',
       ),
       CardHome(
-        onTap: () => _showDialogInProgress(context),
-        cardIcon: Icons.newspaper_sharp,
+        onTap: () => goRouter.goNamed('adminListAnnouncements'),
+        cardIcon: Image.asset(
+                  'assets/img/admin/periodico.png',
+                  width: 70,
+                  height: 70,
+                  ),
         cardText: 'Anuncios',
       ),
       CardHome(
-        onTap: () => _showDialogInProgress(context),
-        cardIcon: Icons.video_call_sharp,
-        cardText: 'Reuniones',
+        onTap: () => goRouter.goNamed('adminListPqrs'),
+        cardIcon: Image.asset(
+                  'assets/img/admin/atencion-al-cliente.png',
+                  width: 70,
+                  height: 70,
+                  ),
+        cardText: 'PQRS',
       ),
       CardHome(
         onTap: () => _showDialogInProgress(context),
-        cardIcon: Icons.upload,
-        cardText: 'Cargar Datos',
-        cardColor: Colors.grey,
+        cardIcon: Image.asset(
+                  'assets/img/admin/zona-horaria.png',
+                  width: 70,
+                  height: 70,
+                  ),
+        cardText: 'Horarios',
       ),
       CardHome(
         onTap: () => _showDialogInProgress(context),
-        cardIcon: Icons.receipt_long_outlined,
-        cardText: 'Facturas',
-        cardColor: Colors.grey,
+        cardIcon: Image.asset(
+                  'assets/img/admin/ubicacion.png',
+                  width: 70,
+                  height: 70,
+                  ),
+        cardText: 'Sectores',
       ),
     ];
     return Scaffold(

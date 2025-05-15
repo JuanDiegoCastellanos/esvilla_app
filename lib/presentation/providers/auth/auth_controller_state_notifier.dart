@@ -8,12 +8,14 @@ import 'package:esvilla_app/presentation/providers/auth/auth_token_state_notifie
 import 'package:esvilla_app/presentation/providers/auth/auth_state.dart';
 import 'package:esvilla_app/presentation/providers/auth/login_use_case_provider.dart';
 import 'package:esvilla_app/presentation/providers/auth/register_use_case_provider.dart';
+import 'package:esvilla_app/presentation/providers/user/user_data_state_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthController extends StateNotifier<AuthState> {
   final LoginUseCase _loginUseCase;
   final RegisterUseCase _registerUseCase;
   final AuthTokenStateNotifier _authTokenStateNotifier;
+  final UserDataStateNotifier _userDataStateNotifier;
   final Ref _ref;
 
   // Variable para evitar refresh simultáneos
@@ -23,6 +25,7 @@ class AuthController extends StateNotifier<AuthState> {
     this._loginUseCase,
     this._registerUseCase,
     this._authTokenStateNotifier,
+    this._userDataStateNotifier,
     this._ref,
   ) : super(AuthState(token: '')) {
     //checkAuthentication();
@@ -32,17 +35,17 @@ class AuthController extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final response = await _loginUseCase(email, password);
-      //AppLogger.i("Login response: ${response.accessToken} - ${response.role}");
 
       if (response.accessToken.isEmpty) {
         throw Exception("Token vacío, login fallido");
       }
 
-      //final timeExpiration = DateTime.now().add(Duration(seconds: response.expiration));
       final expirationTime = DateTime.now()
           .add(Duration(seconds: response.expiration))
           .millisecondsSinceEpoch;
 
+      await _authTokenStateNotifier.clearTokens();
+      await _userDataStateNotifier.clearTokens();
       await _authTokenStateNotifier.saveTokens(
         role: response.role,
         accessToken: response.accessToken,
@@ -50,23 +53,27 @@ class AuthController extends StateNotifier<AuthState> {
         expiresIn: expirationTime,
       );
       state = AuthState(
-        token: response.accessToken,
-        isAdmin: response.role == 'admin',
-        isAuthenticated: true
-      );
-      //AppLogger.i("AuthState : $state.isAdmin: ${state.isAdmin} - ${state.token}");
+          token: response.accessToken,
+          isAdmin: response.role == 'admin',
+          isAuthenticated: true,
+          isLoading: false,
+          error: null);
     } on AppException catch (e) {
-      state = state.copyWith(error: e.message);
-      //AppLogger.e("Login failed: ${e.message}");
-      rethrow;
-    } finally {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(
+        isLoading: false,
+        error: e.code == 401 ? 'Email o contraseña incorrectos' : e.message,
+      );
     }
   }
 
   Future<void> register(String name, String document, String email,
       String phone, String password, String direccion) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = AuthState(
+        isLoading: true,
+        error: null,
+        isAdmin: false,
+        isAuthenticated: false,
+        token: '');
     try {
       final response = await _registerUseCase(RegisterRequestEntity(
           name: name,
@@ -75,14 +82,13 @@ class AuthController extends StateNotifier<AuthState> {
           phone: phone,
           password: password,
           direccion: direccion));
-      //hacer login si el accessToken es
-
-      //AppLogger.i("Response response: ${response.accessToken} - ${response.role}");
 
       final expirationTime = DateTime.now()
           .add(Duration(seconds: response.expiration))
           .millisecondsSinceEpoch;
 
+      await _authTokenStateNotifier.clearTokens();
+      await _userDataStateNotifier.clearTokens();
       await _authTokenStateNotifier.saveTokens(
         role: response.role,
         accessToken: response.accessToken,
@@ -91,12 +97,11 @@ class AuthController extends StateNotifier<AuthState> {
       );
 
       state = AuthState(
-        token: response.accessToken,
-        isAdmin: response.role == 'admin',
-        isAuthenticated: true
-      );
-
-      //AppLogger.i("AuthState : $state.isAdmin: ${state.isAdmin} - ${state.token}");
+          token: response.accessToken,
+          isLoading: false,
+          error: null,
+          isAdmin: response.role == 'admin',
+          isAuthenticated: true);
     } on AppException catch (e) {
       state = state.copyWith(error: e.message);
       AppLogger.e("Login failed: ${e.message}");
@@ -124,6 +129,7 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<void> logout() async {
     await _authTokenStateNotifier.clearTokens();
+    await _userDataStateNotifier.clearTokens();
     state = AuthState(token: '', isAuthenticated: false);
   }
 
@@ -164,10 +170,9 @@ class AuthController extends StateNotifier<AuthState> {
 
       // 4. Actualizar AuthState
       state = state.copyWith(
-        token: newTokens.accessToken,
-        isAdmin: newTokens.role == 'admin',
-        isAuthenticated: true
-      );
+          token: newTokens.accessToken,
+          isAdmin: newTokens.role == 'admin',
+          isAuthenticated: true);
 
       return newTokens.accessToken;
     } catch (e) {
@@ -198,9 +203,10 @@ final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
   (ref) {
     final registerUserCase = ref.watch(registerUseCaseProvider);
     final loginUseCase = ref.watch(loginUseCaseProvider);
+    final userDataSN = ref.watch(userDataProvider.notifier);
     final authTokenStateNotifier =
         ref.watch(authTokenStateNotifierProvider.notifier);
-    return AuthController(
-        loginUseCase, registerUserCase, authTokenStateNotifier, ref);
+    return AuthController(loginUseCase, registerUserCase,
+        authTokenStateNotifier, userDataSN, ref);
   },
 );

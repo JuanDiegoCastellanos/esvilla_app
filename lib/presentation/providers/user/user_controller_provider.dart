@@ -7,31 +7,36 @@ import 'package:esvilla_app/presentation/providers/user/user_data_state_notifier
 import 'package:esvilla_app/presentation/providers/user/get_my_user_profile_use_case_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserController extends StateNotifier<UserState> {
+class UserController extends StateNotifier<AsyncValue<UserState>> {
   final GetMyProfileUseCase _getMyProfileUseCase;
   final UserDataStateNotifier _userDataStateNotifier;
 
   UserController(
     this._getMyProfileUseCase,
     this._userDataStateNotifier,
-    ):super(const UserState.empty());
+    ):super(AsyncValue.loading());
 
   Future<void> getMyProfileInfo() async {
-      state = const UserState.empty().copyWith(
-        isLoading: true
-      );
+    state = const AsyncValue.loading();
     try {
      // si hay algo almacenado, usarlo
+      await _userDataStateNotifier.loadTokens();
+      final user = _userDataStateNotifier.state;
+      if (user.name != null && user.email != null && user.documentNumber != null && user.phone != null && user.mainAddress != null && user.role != null) {
+        state = AsyncValue.data(user);
+        return;
+      }
       final response = await _getMyProfileUseCase();
       AppLogger.i("GetUserProfileInfo response: ${response.toString()}");
-      state = state.copyWith(
-        name: response.name,
-        email: response.email,
-        documentNumber: response.documentNumber,
-        phone: response.phone,
-        mainAddress: response.mainAddress,
-        role: response.role,
-        isLoading: false
+      state = AsyncValue.data(
+        UserState(
+          name: response.name,
+          email: response.email,
+          documentNumber: response.documentNumber,
+          phone: response.phone,
+          mainAddress: response.mainAddress,
+          role: response.role
+        )
       );
       _userDataStateNotifier.saveTokens(
         userName: response.name,
@@ -42,16 +47,18 @@ class UserController extends StateNotifier<UserState> {
         role: response.role
       );
 
-      } on AppException catch (e) {
-      AppLogger.e("GetUserProfileInfo failed: ${e.message}");
+      } on AppException catch (e, t) {
+      AppLogger.e("GetUserProfileInfo failed: ${e.message}  - $t");
+      state = AsyncValue.error(e, t);
     } finally {
-      state = state.copyWith(isLoading: false);
+      if (state is AsyncLoading<UserState>) {
+        state = const AsyncValue.data(UserState.empty());
+      }
     }
-
   }
 
 }
-final userControllerProvider = StateNotifierProvider<UserController, UserState>(
+final userControllerProvider = StateNotifierProvider<UserController, AsyncValue<UserState>>(
   (ref) {
     final getMyProfileUseCaseProvider = ref.watch(getMyProfileInfoUseCaseProvider);
     final userDataStateNotifier = ref.watch(userDataProvider.notifier);

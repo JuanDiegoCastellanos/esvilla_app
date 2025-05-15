@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CardHome extends StatelessWidget {
   final String cardText;
-  final IconData cardIcon;
+  final Widget cardIcon;
   final Color cardColor;
   final VoidCallback onTap;
 
@@ -38,11 +38,7 @@ class CardHome extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  cardIcon,
-                  size: MediaQuery.of(context).size.width * 0.16,
-                  color: Colors.white,
-                ),
+                cardIcon,
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),

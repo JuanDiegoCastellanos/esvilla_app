@@ -2,7 +2,13 @@ import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_notifier.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_token_state_notifier.dart';
 import 'package:esvilla_app/presentation/providers/user/user_controller_provider.dart';
+import 'package:esvilla_app/presentation/views/admin/add_announcements_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/add_user_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/edit_announcements_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/edit_pqrs_creen.dart';
 import 'package:esvilla_app/presentation/views/admin/edit_user_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/list_announcements_screen.dart';
+import 'package:esvilla_app/presentation/views/admin/list_pqrs_screen.dart';
 import 'package:esvilla_app/presentation/views/admin/list_users_screen.dart';
 import 'package:esvilla_app/presentation/views/screens.dart';
 import 'package:flutter/foundation.dart';
@@ -18,7 +24,12 @@ class AppRoutes {
   static const String schedule = '/schedule';
   static const String adminListUsers = 'admin-users';
   static const String adminEditUser = 'edit-user';
-
+  static const String adminCreateUser = 'create-user';
+  static const String adminListAnnouncements = 'admin-announcements';
+  static const String adminEditAnnouncement = 'edit-announcement';
+  static const String adminCreateAnnouncement = 'create-announcement';
+  static const String adminListPqrs = 'admin-pqrs';
+  static const String adminEditPqrs = 'edit-pqrs';
   // Lista de rutas públicas que no requieren autenticación
   static final publicRoutes = <String>{
     splash,
@@ -27,7 +38,17 @@ class AppRoutes {
   };
 
   // Lista de rutas administrativas
-  static final adminRoutes = <String>{admin, adminListUsers, adminEditUser};
+  static final adminRoutes = <String>{
+    admin,
+    adminListUsers,
+    adminEditUser,
+    adminCreateUser,
+    adminListAnnouncements,
+    adminEditAnnouncement,
+    adminCreateAnnouncement,
+    adminListPqrs,
+    adminEditPqrs,
+  };
 
   // Lista de rutas que requieren autenticación
   static final authenticatedRoutes = <String>{
@@ -47,13 +68,11 @@ String getBaseRoute(String path) {
 class GoRouterNotifier extends ChangeNotifier {
   final Ref ref;
   bool _isAdmin = false;
-  bool _isAuthenticated = false;
   GoRouterNotifier(this.ref) {
     ref.listen(authControllerProvider, (previous, next) {
       final prevAuth = previous?.isAuthenticated ?? false;
       final prevAdmin = previous?.isAdmin ?? false;
       if (prevAuth != next.isAuthenticated || prevAdmin != next.isAdmin) {
-        _isAuthenticated = next.isAuthenticated;
         _isAdmin = next.isAdmin;
         AppLogger.i(
             "Cambio detectado en autenticación: isAuthenticated = ${next.isAuthenticated}");
@@ -62,20 +81,32 @@ class GoRouterNotifier extends ChangeNotifier {
     });
 
     ref.listen(userControllerProvider, (previous, next) {
-      final prevRole = previous?.role;
-      final newRole = next.role;
-      
-      // Check if role changed to/from admin
-      if (prevRole != newRole) {
-        final isNowAdmin = newRole?.toLowerCase() == 'admin';
-        if (_isAdmin != isNowAdmin) {
-          _isAdmin = isNowAdmin;
-          
-          // Update auth state to reflect new admin status
-          ref.read(authControllerProvider).copyWith(isAdmin: isNowAdmin);
-          
-          AppLogger.i("Cambio detectado en rol de usuario: role = $newRole, isAdmin = $_isAdmin");
-          notifyListeners();
+      if (next.isLoading) {
+        return;
+      }
+      if (previous != null &&
+          !previous.isLoading &&
+          !previous.hasError &&
+          !next.isLoading &&
+          !next.hasError) {
+        final prevUserState = previous.value;
+        final nextUserState = next.value;
+
+        if (prevUserState?.role != nextUserState?.role) {
+          AppLogger.i(
+              "Cambio detectado en rol de usuario: role = ${nextUserState?.role}");
+
+          // Actualizamos _isAdmin basado en el nuevo rol
+          final isNowAdmin = nextUserState?.role?.toLowerCase() == 'admin';
+          if (_isAdmin != isNowAdmin) {
+            _isAdmin = isNowAdmin;
+
+            // Actualizar el estado de autenticación para reflejar el nuevo estado de admin
+            ref.read(authControllerProvider).copyWith(isAdmin: _isAdmin);
+
+            AppLogger.i("Cambio de isAdmin: $_isAdmin");
+            notifyListeners();
+          }
         }
       }
     });
@@ -111,7 +142,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         await ref.read(authControllerProvider.notifier).logout();
         return AppRoutes.login;
       }
-      AppLogger.i("Redirección - Autenticado: $isAuthenticated | Ruta actual: $currentLocation | Admin: $isAdmin");
+      AppLogger.i(
+          "Redirección - Autenticado: $isAuthenticated | Ruta actual: $currentLocation | Admin: $isAdmin");
       // 1. Si el usuario NO está autenticado
       if (!isAuthenticated) {
         // Permitir acceso a rutas públicas
@@ -190,6 +222,39 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               name: 'adminEditUser',
               builder: (context, state) => EditUserScreen(user: state.extra),
             ),
+            GoRoute(
+              path: AppRoutes.adminCreateUser,
+              name: 'adminCreateUser',
+              builder: (context, state) => AddUserScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.adminListAnnouncements,
+              name: 'adminListAnnouncements',
+              builder: (context, state) => const ListAnnouncementsScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.adminEditAnnouncement,
+              name: 'adminEditAnnouncement',
+              builder: (context, state) => EditAnnouncementScreen(
+                  announcement: state.extra),
+            ),
+            GoRoute(
+              path: AppRoutes.adminCreateAnnouncement,
+              name: 'adminCreateAnnouncement',
+              builder: (context, state) => AddAnnouncementScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.adminListPqrs,
+              name: 'adminListPqrs',
+              builder: (context, state) => const ListPqrsScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.adminEditPqrs,
+              name: 'adminEditPqrs',
+              builder: (context, state) => EditPqrsScreen(
+                  pqrs: state.extra),
+            ),
+            
           ]),
     ],
   );
