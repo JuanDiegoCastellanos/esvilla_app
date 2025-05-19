@@ -2,6 +2,8 @@ import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/presentation/providers/schedules/all_schedules_provider.dart';
 import 'package:esvilla_app/presentation/providers/schedules/schedule_model_presentation.dart';
 import 'package:esvilla_app/presentation/views/admin/admin_home_screen.dart';
+import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
+import 'package:esvilla_app/presentation/widgets/shared/sector_chips.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -185,10 +187,50 @@ class ListSchedulesScreen extends ConsumerWidget {
             ),
           ),
         ),
+        Center(
+          child:ButtonRectangular(
+            size: WidgetStateProperty.all(const Size(200, 30)),
+            color: Colors.blue,
+            onPressedFunction: () {  
+              ref.read(goRouterProvider).pushNamed('adminCreateSchedule');
+            },
+            child: Text(
+              'Crear Horario',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18
+                ),),
+          )
+        ),
         Expanded(
           child: listScheduleAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) => Center(child: Text(e.toString())),
+            error: (e, st) => Center(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text('Revisa tu conexion a internet'),
+                  ),
+                  ButtonRectangular(
+                    size: WidgetStateProperty.all(const Size(150, 30)),
+                    onPressedFunction: () {
+                      ref.read(schedulesSearchTextProvider.notifier).state = '';
+                      ref.read(schedulesDateFilterProvider.notifier).state = '';
+                      ref.invalidate(listScheduleNotifierProvider);
+                    },
+                    child: Text(
+                      'Reintentar',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             data: (schedulesList) {
               //Filros
               final filtered = schedulesList.where((schedule) {
@@ -207,12 +249,13 @@ class ListSchedulesScreen extends ConsumerWidget {
                     // limpia filtros
                     ref.read(schedulesSearchTextProvider.notifier).state = '';
                     ref.read(schedulesDateFilterProvider.notifier).state = '';
+                    ref.invalidate(listScheduleNotifierProvider);
                   },
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: const [
                       SizedBox(height: 200),
-                      Center(child: Text('No hay PQRS que coincidan.')),
+                      Center(child: Text('No hay horarios que coincidan.')),
                     ],
                   ),
                 );
@@ -255,13 +298,30 @@ class ListSchedulesScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(schedule.observations ?? '',
+                              Text('Recolección de residuos: ${schedule.garbageType}',
                                   style: const TextStyle(
                                       fontSize: 20,
-                                      fontWeight: FontWeight.bold)),
+                                      fontWeight: FontWeight.w400)),
                               const SizedBox(height: 8),
-                              Text(
-                                schedule.active == true ? 'Activo' : 'Inactivo',
+                              Text('${schedule.startTime} - ${schedule.endTime} ',
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400)),
+                              const SizedBox(height: 8),
+                              Chip(
+                                shape: StadiumBorder(),
+                                backgroundColor: schedule.active == true
+                                    ? Colors.blue.shade400
+                                    : Colors.blueGrey,
+                                label: Text(
+                                  schedule.active == true
+                                      ? 'Activo'
+                                      : 'Inactivo',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white),
+                                ),
                               ),
                               const SizedBox(height: 8),
                               Text(
@@ -277,7 +337,74 @@ class ListSchedulesScreen extends ConsumerWidget {
                                 style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w600),
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 12),
+                              ExpansionTile(
+                                  backgroundColor: Colors.blue.shade50,
+                                  collapsedBackgroundColor:
+                                      Colors.blue.shade50,
+                                  collapsedShape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20)),
+                                  ),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20)),
+                                  ),
+                                  title: const Text(
+                                    'Sectores',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  children: [
+                                    SectorChips(
+                                        schedule.associatedSectors ?? [])
+                                  ]),
+                              const SizedBox(height: 8),
+                              ExpansionTile(
+                                backgroundColor: Colors.blue.shade50,
+                                collapsedBackgroundColor: Colors.blue.shade50,
+                                collapsedShape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20)),
+                                ),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20)),
+                                ),
+                                title: const Text(
+                                  'Días asignados ',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8),
+                                    child: Wrap(
+                                      spacing: 6,
+                                      runSpacing: 2,
+                                      children: schedule.days!.map((day) {
+                                        return Chip(
+                                          backgroundColor: Colors.blue.shade200,
+                                          side: BorderSide(
+                                              color: Colors.blue.shade200),
+                                          label: Text(
+                                            day,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -317,8 +444,8 @@ class ListSchedulesScreen extends ConsumerWidget {
     );
   }
 
-  void _onDeleteTap(
-      BuildContext context, ScheduleModelPresentation scheduleModel, WidgetRef ref) {
+  void _onDeleteTap(BuildContext context,
+      ScheduleModelPresentation scheduleModel, WidgetRef ref) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -363,8 +490,11 @@ class ListSchedulesScreen extends ConsumerWidget {
                     ),
                     onPressed: () async {
                       ref.read(goRouterProvider).pop();
-                      await ref.read(deleteScheduleProvider(scheduleModel).future);
-                      await ref.read(listScheduleNotifierProvider.notifier).load();
+                      await ref
+                          .read(deleteScheduleProvider(scheduleModel).future);
+                      await ref
+                          .read(listScheduleNotifierProvider.notifier)
+                          .load();
                     },
                     child: const Text(
                       'Aceptar',

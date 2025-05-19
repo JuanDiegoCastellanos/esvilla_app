@@ -25,13 +25,12 @@ class AuthInterceptor extends Interceptor {
           AppLogger.e("No refresh token available");
           return handler.next(err);
         }
-
         final newAccessToken =
             await _ref.read(authControllerProvider.notifier).refreshToken();
 
         if (newAccessToken == null) {
           await _ref.read(authControllerProvider.notifier).logout();
-          handler.reject(err); // O redirigir a login
+          handler.reject(err);
           return;
         }
         final response = await dio.fetch(
@@ -43,30 +42,10 @@ class AuthInterceptor extends Interceptor {
             sendTimeout: err.requestOptions.sendTimeout,
           ),
         );
-
-        /* final options = Options(
-          method: err.requestOptions.method,
-          headers: {
-            ...err.requestOptions.headers,
-            'Authorization': 'Bearer $newAccessToken '
-          },
-        );
-        final response = await dio.request(
-          err.requestOptions.path,
-          options: options,
-          data: err.requestOptions.data,
-          queryParameters: err.requestOptions.queryParameters,
-        ); */
-        // Si la solicitud fue exitosa, resolvemos el handler
         return handler.resolve(response);
       } catch (e) {
-        // ESTO VA DENTRO DEL CATCH DEL ONERROR
         await _ref.read(authControllerProvider.notifier).logout();
-
-        // 2. Redirigir usando el router de GoRouter
-        //_ref.read(goRouterProvider).go(AppRoutes.login);
-
-        return handler.reject(err); // Rechazar definitivamente
+        return handler.reject(err); 
       }
     }
     _logError(err);
@@ -109,7 +88,7 @@ class AuthInterceptor extends Interceptor {
           options.headers['Authorization'] = 'Bearer ${tokenState.accessToken}';
         }
       } else {
-        // Si no está por expirar, usamos el token actual
+        
         options.headers['Authorization'] = 'Bearer ${tokenState.accessToken}';
       }
     }

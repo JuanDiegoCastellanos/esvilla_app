@@ -53,28 +53,34 @@ class ScheduleModelPresentation {
         updatedAt: entity.updatedAt,
       );
 
-  CreateScheduleRequestEntity toCreateEntity() => CreateScheduleRequestEntity(
-        days: days??[],
-        startTime: startTime ?? '',
-        endTime: endTime ?? '',
-        associatedSectors: associatedSectors ?? [],
-        active: active ?? false,
-        observations: observations ?? '',
-        garbageType: garbageType ?? '',
+  static CreateScheduleRequestEntity toCreateEntity(ScheduleModelPresentation scheduleModel) => CreateScheduleRequestEntity(
+        days: scheduleModel.days??[],
+        startTime: scheduleModel.startTime ?? '',
+        endTime: scheduleModel.endTime ?? '',
+        associatedSectors: scheduleModel.associatedSectors ?? [],
+        active: scheduleModel.active ?? false,
+        observations: scheduleModel.observations ?? '',
+        garbageType: scheduleModel.garbageType ?? '',
       );
 
-  UpdateScheduleRequestEntity toUpdateEntity() => UpdateScheduleRequestEntity(
-        id: id!,
-        days: days,
-        startTime: startTime,
-        endTime: endTime,
-        associatedSectors: associatedSectors,
-        active: active,
-        observations: observations,
-        garbageType: garbageType,
+  static UpdateScheduleRequestEntity toUpdateEntity(
+    ScheduleModelPresentation schedule
+  ) => UpdateScheduleRequestEntity(
+        id: schedule.id ?? '',
+        days: schedule.days ?? [],
+        startTime: schedule.startTime ?? '',
+        endTime: schedule.endTime ?? '',
+        associatedSectors: schedule.associatedSectors ?? [],
+        active: schedule.active ?? false,
+        observations: schedule.observations ?? '',
+        garbageType: schedule.garbageType ?? '',
       );
 
   static List<ScheduleModelPresentation> fromEntityList(List<ScheduleEntity> entities) =>
       entities.map((e) => fromEntity(e)).toList();
+
+static List<ScheduleModelPresentation> toModelList(List<ScheduleEntity> presentations) =>
+    presentations.map((presentation) => fromEntity(presentation)).toList();
+
       
 }

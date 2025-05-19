@@ -8,5 +8,4 @@ final sectorRepositoryProvider = Provider<SectorsRepository>((ref) {
   final dio = ref.watch(dioClientProvider).dio;
   final repo = SectorRepositoryImpl(SectorsRemoteDataSource(dio));
   return repo;
-
 });

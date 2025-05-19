@@ -1,16 +1,16 @@
 import 'package:esvilla_app/core/config/app_logger.dart';
 import 'package:esvilla_app/presentation/providers/schedules/get_all_schedules_use_case_provider.dart';
-import 'package:esvilla_app/presentation/providers/schedules/schedule_screen_model.dart';
+import 'package:esvilla_app/presentation/providers/schedules/schedule_model_presentation.dart';
 import 'package:esvilla_app/presentation/providers/sectors/get_sectors_by_id_use_case_provider.dart';
 import 'package:esvilla_app/presentation/widgets/home/user/trash_recollection_schedule.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final listSchedulesProvider = FutureProvider<List<ScheduleScreenModel>>(
+final listSchedulesProvider = FutureProvider<List<ScheduleModelPresentation>>(
   (ref) async {
     try {
       final schedulesList = await ref.read(getAllSchedulesUseCaseProvider).call();
       final getSectorsByIdUseCase = ref.read(getSectorsByIdUseCaseProvider);
-      final results = <ScheduleScreenModel>[];
+      final results = <ScheduleModelPresentation>[];
       
       for (final schedule in schedulesList) {
         final sectors = <String>[];
@@ -18,7 +18,7 @@ final listSchedulesProvider = FutureProvider<List<ScheduleScreenModel>>(
           final sectorEntity = await getSectorsByIdUseCase.call(sector);
           sectors.add(sectorEntity.name);
         }
-        results.add(ScheduleScreenModel(
+        results.add(ScheduleModelPresentation(
           id: schedule.id,
           active: schedule.active,
           createdAt: schedule.createdAt,
@@ -45,7 +45,7 @@ final listSchedulesProvider = FutureProvider<List<ScheduleScreenModel>>(
 );
 
 // Función auxiliar para actualizar el estado de scheduleRecollectionProvider
-void _updateScheduleRecollection(Ref ref, List<ScheduleScreenModel> schedules) {
+void _updateScheduleRecollection(Ref ref, List<ScheduleModelPresentation> schedules) {
   // Crear una nueva ScheduleRecollection con días limpios
   final newRecollection = ScheduleRecollection(
     scheduleDays: <DaySchedule>[
@@ -82,3 +82,4 @@ void _updateScheduleRecollection(Ref ref, List<ScheduleScreenModel> schedules) {
   }
   ref.read(scheduleRecollectionProvider.notifier).state = newRecollection;
 }
+

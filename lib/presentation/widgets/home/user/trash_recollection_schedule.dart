@@ -1,4 +1,5 @@
-import 'package:esvilla_app/presentation/providers/schedules/schedule_screen_model.dart';
+
+import 'package:esvilla_app/presentation/providers/schedules/schedule_model_presentation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DaySchedule {
@@ -39,7 +40,7 @@ class ScheduleRecollection {
   ScheduleRecollection({required this.scheduleDays});
 
   List<DaySchedule> buildScheduleRecollectionForScreen(
-      List<ScheduleScreenModel> schedulesModel) {
+      List<ScheduleModelPresentation> schedulesModel) {
     // Limpiar timeBySectors existentes antes de reconstruir
     for (var day in scheduleDays) {
       day.timeBySectors.clear();
@@ -73,10 +74,10 @@ final scheduleRecollectionProvider = StateProvider<ScheduleRecollection>((ref) {
   return ScheduleRecollection(scheduleDays: <DaySchedule>[
     DaySchedule(id: 1, name: 'Lunes', timeBySectors: []),
     DaySchedule(id: 2, name: 'Martes', timeBySectors: []),
-    DaySchedule(id: 3, name: 'Miercoles', timeBySectors: []),
+    DaySchedule(id: 3, name: 'Miércoles', timeBySectors: []),
     DaySchedule(id: 4, name: 'Jueves', timeBySectors: []),
     DaySchedule(id: 5, name: 'Viernes', timeBySectors: []),
-    DaySchedule(id: 6, name: 'Sabado', timeBySectors: []),
+    DaySchedule(id: 6, name: 'Sábado', timeBySectors: []),
     DaySchedule(id: 7, name: 'Domingo', timeBySectors: []),
   ]);
 });

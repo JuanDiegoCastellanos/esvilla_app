@@ -150,6 +150,7 @@ class SchedulesRemoteDataSource {
         'schedules/${updateScheduleRequest.id}',
         data: updateScheduleRequest.toJson(),
       );
+      AppLogger.i('Response Data: ${response.data}');
       if(response.statusCode == 200 || response.statusCode == 201){
         AppLogger.i('Response Data: ${response.data}');
         return ScheduleModel.fromMap(response.data);
