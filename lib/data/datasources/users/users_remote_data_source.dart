@@ -85,7 +85,7 @@ class UsersRemoteDataSource {
 
   Future<UserModel> updateUser(UpdateUserRequest model) async {
     try {
-      final response = await _dio.put(
+      final response = await _dio.patch(
         '/users/${model.id}',
         data: model.toJson()
       );
