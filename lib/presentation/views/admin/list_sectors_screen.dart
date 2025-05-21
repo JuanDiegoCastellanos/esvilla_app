@@ -1,6 +1,8 @@
 import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/presentation/providers/sectors/all_sector_provider.dart';
+import 'package:esvilla_app/presentation/providers/sectors/delete_sector_provider.dart';
 import 'package:esvilla_app/presentation/providers/sectors/list_all_sectors_provider.dart';
+import 'package:esvilla_app/presentation/providers/sectors/sector_model_presentation.dart';
 import 'package:esvilla_app/presentation/views/admin/admin_home_screen.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,7 @@ class ListSectorsScreen extends ConsumerWidget {
     final searchSectorQuery = ref.watch(sectorSearchTextProvider);
     final dateSectorQuery = ref.watch(sectorDateFilterProvider);
     final sectorList = ref.watch(listSectorNotifierProvider);
+    final goRouter = ref.watch(goRouterProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFE4F7FF),
@@ -274,7 +277,7 @@ class ListSectorsScreen extends ConsumerWidget {
                           child: Center(child: CircularProgressIndicator()),
                         );
                       }
-                      final schedule = filtered[i];
+                      final sector = filtered[i];
                       return Card(
                         color: Colors.blue.shade100,
                         margin: const EdgeInsets.symmetric(
@@ -285,113 +288,31 @@ class ListSectorsScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  'Recolección de residuos: ${schedule.garbageType}',
+                                  'Sector: ${sector.name}',
                                   style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
                               const SizedBox(height: 8),
                               Text(
-                                  '${schedule.startTime} - ${schedule.endTime} ',
+                                  '${sector.description}',
                                   style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
-                              const SizedBox(height: 8),
-                              Chip(
-                                shape: StadiumBorder(),
-                                backgroundColor: schedule.active == true
-                                    ? Colors.blue.shade400
-                                    : Colors.blueGrey,
-                                label: Text(
-                                  schedule.active == true
-                                      ? 'Activo'
-                                      : 'Inactivo',
-                                  style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white),
-                                ),
-                              ),
                               const SizedBox(height: 8),
                               Text(
                                 'Fecha de creación: '
-                                '${schedule.createdAt != null ? schedule.createdAt!.toIso8601String().split("T").first : ""}',
+                                '${sector.createdAt != null ? sector.createdAt!.toIso8601String().split("T").first : ""}',
                                 style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w600),
                               ),
                               const SizedBox(height: 5),
                               Text(
                                 'Fecha de actualización: '
-                                '${schedule.updatedAt != null ? schedule.updatedAt!.toIso8601String().split("T").first : ""}',
+                                '${sector.updatedAt != null ? sector.updatedAt!.toIso8601String().split("T").first : ""}',
                                 style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w600),
                               ),
                               const SizedBox(height: 12),
-                              ExpansionTile(
-                                  backgroundColor: Colors.blue.shade50,
-                                  collapsedBackgroundColor: Colors.blue.shade50,
-                                  collapsedShape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                  ),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                  ),
-                                  title: const Text(
-                                    'Sectores',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                  children: [
-                                    SectorChips(
-                                        schedule.associatedSectors ?? [])
-                                  ]),
-                              const SizedBox(height: 8),
-                              ExpansionTile(
-                                backgroundColor: Colors.blue.shade50,
-                                collapsedBackgroundColor: Colors.blue.shade50,
-                                collapsedShape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20)),
-                                ),
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20)),
-                                ),
-                                title: const Text(
-                                  'Días asignados ',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: Wrap(
-                                      spacing: 6,
-                                      runSpacing: 2,
-                                      children: schedule.days!.map((day) {
-                                        return Chip(
-                                          backgroundColor: Colors.blue.shade200,
-                                          side: BorderSide(
-                                              color: Colors.blue.shade200),
-                                          label: Text(
-                                            day,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ],
-                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -402,8 +323,8 @@ class ListSectorsScreen extends ConsumerWidget {
                                       size: 30,
                                     ),
                                     onPressed: () => goRouter.pushNamed(
-                                        'adminEditSchedule',
-                                        extra: schedule),
+                                        'adminEditSector',
+                                        extra: sector),
                                   ),
                                   IconButton(
                                     icon: const Icon(
@@ -412,7 +333,7 @@ class ListSectorsScreen extends ConsumerWidget {
                                       size: 30,
                                     ),
                                     onPressed: () =>
-                                        _onDeleteTap(context, schedule, ref),
+                                        _onDeleteTap(context, sector, ref),
                                   ),
                                 ],
                               )
@@ -432,27 +353,27 @@ class ListSectorsScreen extends ConsumerWidget {
   }
 
   void _onDeleteTap(BuildContext context,
-      ScheduleModelPresentation scheduleModel, WidgetRef ref) {
+      SectorModelPresentation sectorModel, WidgetRef ref) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
                 backgroundColor: Colors.blue.shade100,
-                title: const Text('Eliminar horario de recolección'),
+                title: const Text('Eliminar sector'),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                        '¿Estás seguro de eliminar este horario de recolección?'),
+                        '¿Estás seguro de eliminar este sector?'),
                     ListTile(
                       leading: CircleAvatar(
                         backgroundColor: Colors.lightBlue.shade300,
-                        child: Text(scheduleModel.observations?[0] ?? ''),
+                        child: Text(sectorModel.name?[0] ?? ''),
                       ),
-                      title: Text(scheduleModel.garbageType ?? ''),
+                      title: Text(sectorModel.name ?? ''),
                       subtitle: Text(
-                        scheduleModel.createdAt?.toIso8601String() ?? '',
+                        sectorModel.description ?? '',
                         style: const TextStyle(fontSize: 12),
                       ),
                     ),
@@ -464,7 +385,7 @@ class ListSectorsScreen extends ConsumerWidget {
                       backgroundColor: WidgetStateProperty.all(Colors.blueGrey),
                     ),
                     onPressed: () {
-                      Navigator.of(context).pop(); // Cerrar diálogo
+                      Navigator.of(context).pop();
                     },
                     child: const Text(
                       'Cancelar',
@@ -477,11 +398,8 @@ class ListSectorsScreen extends ConsumerWidget {
                     ),
                     onPressed: () async {
                       ref.read(goRouterProvider).pop();
-                      await ref
-                          .read(deleteScheduleProvider(scheduleModel).future);
-                      await ref
-                          .read(listScheduleNotifierProvider.notifier)
-                          .load();
+                      await ref.read(deleteSectorProvider(sectorModel).future);
+                      await ref.read(listSectorNotifierProvider.notifier).load();
                     },
                     child: const Text(
                       'Aceptar',

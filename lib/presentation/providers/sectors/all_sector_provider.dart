@@ -1,6 +1,7 @@
 import 'package:esvilla_app/domain/use_cases/sectors/get_all_sectors_use_case.dart';
 import 'package:esvilla_app/presentation/providers/sectors/get_all_sectors_use_case_provider.dart';
 import 'package:esvilla_app/presentation/providers/sectors/sector_model_presentation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SectorScreenListNotifier
@@ -27,9 +28,9 @@ class SectorScreenListNotifier
       final sectors = await _getAllSectorUseCase.call();
       final list = sectors
           .where((sector) =>
-              sector.createdAt!.year == date.year &&
-              sector.createdAt!.month == date.month &&
-              sector.createdAt!.day == date.day)
+              sector.createdAt.year == date.year &&
+              sector.createdAt.month == date.month &&
+              sector.createdAt.day == date.day)
           .map((sector) => SectorModelPresentation.fromEntity(sector))
           .toList();
 
@@ -47,11 +48,24 @@ final listSectorNotifierProvider = StateNotifierProvider<
   ),
 );
 
-
 final sectorSearchTextProvider = StateProvider<String>((ref) {
   return '';
 });
 
 final sectorDateFilterProvider = StateProvider<String>((ref) {
   return '';
+});
+
+
+final descriptionControllerProvider = Provider.autoDispose.family<TextEditingController, SectorModelPresentation>((ref, sector) {
+  final ctrl = TextEditingController(text: sector.description);
+  ref.onDispose(ctrl.dispose);
+  return ctrl;
+});
+
+final nameControllerProvider = Provider.autoDispose
+    .family<TextEditingController, SectorModelPresentation>((ref, sector) {
+  final ctrl = TextEditingController(text: sector.name);
+  ref.onDispose(ctrl.dispose);
+  return ctrl;
 });

@@ -10,6 +10,7 @@ import 'package:esvilla_app/presentation/widgets/home/user/home_bottom_navigatio
 import 'package:esvilla_app/presentation/widgets/home/user/schedule_card.dart';
 import 'package:esvilla_app/presentation/widgets/home/user/trash_recollection_schedule.dart';
 import 'package:esvilla_app/presentation/widgets/home/user_info.dart';
+import 'package:esvilla_app/presentation/widgets/shared/title_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -97,7 +98,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildHomeContent() {
-  
     final schedulesAsync = ref.watch(listSchedulesProvider);
     final daysSchedule = ref.watch(scheduleRecollectionProvider);
     return RefreshIndicator(
@@ -112,18 +112,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Container(
               padding: const EdgeInsets.only(
-                left: 20,
+                left: 10,
                 right: 20,
                 top: 10,
                 bottom: 10,
               ),
               width: double.infinity,
-              child: const Text(
-                'Horarios De Recoleccion',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w300,
-                ),
+              child: const TitleSection(
+                titleText: 'Horarios De Recoleccion',
               ),
             ),
             Container(
@@ -204,18 +200,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                   runSpacing: 10,
                                                   children: timeBySector.sectors
                                                       .map(
-                                                        (sector) => Chip(
+                                                        (sector) => RawChip(
                                                           color:
                                                               WidgetStateProperty
                                                                   .all<Color>(
                                                                       Colors
                                                                           .red),
-                                                          label: Text(
-                                                            sector.name,
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
+                                                          label: Column(
+                                                            children: [
+                                                              Text(
+                                                                sector.name,
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .white),
+                                                              ),
+                                                            ],
                                                           ),
+
+
                                                         ),
                                                       )
                                                       .toList(),
@@ -237,6 +239,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               error: (error, stackTrace) => Text(error.toString()),
               loading: () => const CircularProgressIndicator(),
             ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              alignment: Alignment.bottomRight,
+              child: FloatingActionButton(
+                backgroundColor: Colors.blue,
+                onPressed: () {
+                  ref.invalidate(listSchedulesProvider);
+                  return ref.read(listSchedulesProvider.future);
+                },
+                child: Icon(
+                  Icons.refresh,
+                  color: Colors.white,
+                  ),
+              ),
+            )
           ],
         ),
       ),

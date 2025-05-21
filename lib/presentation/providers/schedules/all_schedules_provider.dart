@@ -83,7 +83,7 @@ class ScheduleScreenListNotifier
   }
 }
 
-final listScheduleNotifierProvider = StateNotifierProvider<
+final listScheduleNotifierProvider = StateNotifierProvider.autoDispose<
     ScheduleScreenListNotifier, AsyncValue<List<ScheduleModelPresentation>>>(
   (ref) => ScheduleScreenListNotifier(
     ref.read(getAllSchedulesUseCaseProvider),

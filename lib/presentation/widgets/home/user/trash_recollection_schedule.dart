@@ -39,7 +39,7 @@ class ScheduleRecollection {
 
   ScheduleRecollection({required this.scheduleDays});
 
-  List<DaySchedule> buildScheduleRecollectionForScreen(
+  /* List<DaySchedule> buildScheduleRecollectionForScreen(
       List<ScheduleModelPresentation> schedulesModel) {
     // Limpiar timeBySectors existentes antes de reconstruir
     for (var day in scheduleDays) {
@@ -67,7 +67,7 @@ class ScheduleRecollection {
       }
     }
     return scheduleDays;
-  }
+  } */
 }
 
 final scheduleRecollectionProvider = StateProvider<ScheduleRecollection>((ref) {

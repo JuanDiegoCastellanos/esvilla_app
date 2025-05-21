@@ -13,7 +13,8 @@ class SectorMapper {
         name: entity.name,
         description: entity.description,
         location: LocationMapper.toModel(entity.location),
-        updatedAt: entity.updatedAt);
+        updatedAt: entity.updatedAt,
+        createdAt: entity.createdAt);
   }
 
   static SectorEntity toEntity(SectorModel model) {
@@ -22,7 +23,8 @@ class SectorMapper {
         name: model.name,
         description: model.description,
         location: LocationMapper.toEntity(model.location),
-        updatedAt: model.updatedAt);
+        updatedAt: model.updatedAt,
+        createdAt: model.createdAt);
   }
 
   static CreateSectorRequest toRequest(CreateSectorRequestEntity entity) {

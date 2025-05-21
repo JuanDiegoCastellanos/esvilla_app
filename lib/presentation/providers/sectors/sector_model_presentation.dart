@@ -1,5 +1,7 @@
+import 'package:esvilla_app/domain/entities/sectors/create_sector_request_entity.dart';
 import 'package:esvilla_app/domain/entities/sectors/location_entity.dart';
 import 'package:esvilla_app/domain/entities/sectors/sector_entity.dart';
+import 'package:esvilla_app/domain/entities/sectors/update_sector_request_entity.dart';
 
 class SectorModelPresentation {
   final LocationModelPresentation? location;
@@ -38,6 +40,28 @@ class SectorModelPresentation {
       location: LocationModelPresentation.fromEntity(entity.location),
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
+    );
+  }
+
+  static UpdateSectorRequestEntity toUpdateSectorRequestEntity(
+      SectorModelPresentation presentation) {
+    return UpdateSectorRequestEntity(
+      id: presentation.id ?? '',
+      name: presentation.name ?? '',
+      description: presentation.description ?? '',
+      location: LocationModelPresentation.toEntity(
+          presentation.location ?? LocationModelPresentation()),    
+      updatedAt: presentation.updatedAt ?? DateTime.now(),
+    );
+  }
+
+  static CreateSectorRequestEntity toCreateSectorRequestEntity(
+      SectorModelPresentation presentation) {
+    return CreateSectorRequestEntity(
+      name: presentation.name ?? '',
+      description: presentation.description ?? '',
+      location: LocationModelPresentation.toEntity(
+          presentation.location ?? LocationModelPresentation()),
     );
   }
 

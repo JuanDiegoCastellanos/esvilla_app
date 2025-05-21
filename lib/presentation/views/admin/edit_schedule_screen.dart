@@ -351,9 +351,11 @@ class EditScheduleScreen extends ConsumerWidget {
                             if (searchSectorController.text.isNotEmpty) {
                               ref.read(searchSectorProvider.notifier).state =
                                   searchSectorController.text.trim();
+                              ref.invalidate(listAllSectorsProvider);
                             } else {
                               ref.read(searchSectorProvider.notifier).state =
                                   '';
+                              ref.invalidate(listAllSectorsProvider);
                             }
                           },
                           style: ButtonStyle(
@@ -367,8 +369,9 @@ class EditScheduleScreen extends ConsumerWidget {
                         width: 20,
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          //mandarlo al crear sector
+                        onPressed: () async {
+                          await ref.read(goRouterProvider).pushNamed('adminCreateSector');
+                          ref.invalidate(listAllSectorsProvider);
                         },
                         style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all(

@@ -5,7 +5,11 @@ import 'package:esvilla_app/presentation/providers/sectors/get_sectors_by_id_use
 import 'package:esvilla_app/presentation/widgets/home/user/trash_recollection_schedule.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final listSchedulesProvider = FutureProvider<List<ScheduleModelPresentation>>(
+// se me ocurre ue pueda cambiar el tipo de modelo ya que se require otro tipo,
+// usar una tecnica para nombre el sector ponerle rural: o centro: para que se reconozca 
+// y asi poder reclasificarlo y poner no se un chip de color verde si es rural, naranja del centro y los demas morado 
+// es la solucion temporal y ya no mas
+final listSchedulesProvider = FutureProvider.autoDispose<List<ScheduleModelPresentation>>(
   (ref) async {
     try {
       final schedulesList = await ref.read(getAllSchedulesUseCaseProvider).call();
@@ -51,10 +55,10 @@ void _updateScheduleRecollection(Ref ref, List<ScheduleModelPresentation> schedu
     scheduleDays: <DaySchedule>[
       DaySchedule(id: 1, name: 'Lunes', timeBySectors: []),
       DaySchedule(id: 2, name: 'Martes', timeBySectors: []),
-      DaySchedule(id: 3, name: 'Miercoles', timeBySectors: []),
+      DaySchedule(id: 3, name: 'Miércoles', timeBySectors: []),
       DaySchedule(id: 4, name: 'Jueves', timeBySectors: []),
       DaySchedule(id: 5, name: 'Viernes', timeBySectors: []),
-      DaySchedule(id: 6, name: 'Sabado', timeBySectors: []),
+      DaySchedule(id: 6, name: 'Sábado', timeBySectors: []),
       DaySchedule(id: 7, name: 'Domingo', timeBySectors: []), 
     ]
   );

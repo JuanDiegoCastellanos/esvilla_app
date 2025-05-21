@@ -303,7 +303,10 @@ class AddSchedulesScreen extends ConsumerWidget {
                           ),
                           onPressed: () {
                             searchSectorCtrl.text = '';
-                            ref.read(searchSectorCreateProvider.notifier).state = '';
+                            ref
+                                .read(searchSectorCreateProvider.notifier)
+                                .state = '';
+                            ref.invalidate(listAllSectorsProvider);
                           },
                         ),
                       ),
@@ -314,8 +317,11 @@ class AddSchedulesScreen extends ConsumerWidget {
                       if (searchSectorCtrl.text.isNotEmpty) {
                         ref.read(searchSectorCreateProvider.notifier).state =
                             searchSectorCtrl.text.trim();
+                        ref.invalidate(listAllSectorsProvider);
                       } else {
-                        ref.read(searchSectorCreateProvider.notifier).state = '';
+                        ref.read(searchSectorCreateProvider.notifier).state =
+                            '';
+                        ref.invalidate(listAllSectorsProvider);
                       }
                     },
                     style: ButtonStyle(
@@ -330,7 +336,8 @@ class AddSchedulesScreen extends ConsumerWidget {
                     loading: () => const CircularProgressIndicator(),
                     error: (_, __) => const Text('Error al cargar sectores'),
                     data: (allSectors) {
-                      final query = ref.watch(searchSectorCreateProvider).toLowerCase();
+                      final query =
+                          ref.watch(searchSectorCreateProvider).toLowerCase();
                       final filtered = query.isEmpty
                           ? allSectors
                           : allSectors
@@ -359,7 +366,8 @@ class AddSchedulesScreen extends ConsumerWidget {
                               if (v == true) {
                                 n.state = [...n.state, sector.name!];
                               } else {
-                                n.state = List.from(n.state)..remove(sector.name);
+                                n.state = List.from(n.state)
+                                  ..remove(sector.name);
                               }
                             },
                           );

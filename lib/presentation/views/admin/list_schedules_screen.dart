@@ -477,7 +477,7 @@ class ListSchedulesScreen extends ConsumerWidget {
                       backgroundColor: WidgetStateProperty.all(Colors.blueGrey),
                     ),
                     onPressed: () {
-                      Navigator.of(context).pop(); // Cerrar diálogo
+                      ref.read(goRouterProvider).pop();
                     },
                     child: const Text(
                       'Cancelar',

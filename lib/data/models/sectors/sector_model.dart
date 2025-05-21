@@ -6,6 +6,7 @@ class SectorModel {
     final String name;
     final String description;
     final DateTime updatedAt;
+    final DateTime createdAt;
 
     SectorModel({
         required this.location,
@@ -13,12 +14,14 @@ class SectorModel {
         required this.name,
         required this.description,
         required this.updatedAt,
+        required this.createdAt
     });
     factory SectorModel.fromMap(Map<String, dynamic> json) => SectorModel(
         location: LocationModel.fromMap(json["ubicacion"]),
         id: json["_id"],
         name: json["nombre"],
         description: json["descripcion"],
+        createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
     );
 
@@ -27,6 +30,7 @@ class SectorModel {
         "ubicacion": location.toJson(),
         "nombre": name,
         "descripcion": description,
+        "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
     };
 }
