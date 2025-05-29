@@ -106,7 +106,7 @@ class _AddUserScreenState extends ConsumerState<AddUserScreen> {
                         TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Editar usuario: ',
+                              text: 'Crear usuario: ',
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w500,
@@ -117,6 +117,16 @@ class _AddUserScreenState extends ConsumerState<AddUserScreen> {
                       ),
                     ),
                   ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    'La contraseña asignada será el mismo que el documento de identidad',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w300,
+                    ),
+                    ),
                 ),
                 Form(
                   key: _formKey,

@@ -303,9 +303,14 @@ class ListSchedulesScreen extends ConsumerWidget {
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
                               const SizedBox(height: 8),
-                              Text('${schedule.startTime} - ${schedule.endTime} ',
+                              Text('${schedule.startTime}',
                                   style: const TextStyle(
                                       fontSize: 20,
+                                      fontWeight: FontWeight.w400)),
+                              const SizedBox(height: 8),
+                              Text('${schedule.observations}',
+                                  style: const TextStyle(
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w400)),
                               const SizedBox(height: 8),
                               Chip(

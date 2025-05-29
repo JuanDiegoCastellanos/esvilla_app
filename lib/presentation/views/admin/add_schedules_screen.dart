@@ -23,7 +23,7 @@ class AddSchedulesScreen extends ConsumerWidget {
         ref.read(observationsCreateControllerProvider).text.trim();
     final trashType = ref.read(trashTypeCreateControllerProvider).text.trim();
     final startTime = ref.read(startTimeCreateControllerProvider).text.trim();
-    final endTime = ref.read(endTimeCreateControllerProvider).text.trim();
+    //final endTime = ref.read(endTimeCreateControllerProvider).text.trim();
     final isActive = ref.read(stateScheduleCreateProvider.notifier).state;
     final days = ref.read(selectedDaysCreateProvider);
 
@@ -43,7 +43,7 @@ class AddSchedulesScreen extends ConsumerWidget {
       observations: observations,
       garbageType: trashType,
       startTime: startTime,
-      endTime: endTime,
+      endTime: startTime,
       active: isActive,
       days: days,
       associatedSectors: selectedIds,
@@ -81,7 +81,7 @@ class AddSchedulesScreen extends ConsumerWidget {
     final observationsCtrl = ref.watch(observationsCreateControllerProvider);
     final trashTypeCtrl = ref.watch(trashTypeCreateControllerProvider);
     final startTimeCtrl = ref.watch(startTimeCreateControllerProvider);
-    final endTimeCtrl = ref.watch(endTimeCreateControllerProvider);
+    //final endTimeCtrl = ref.watch(endTimeCreateControllerProvider);
     final isActive = ref.watch(stateScheduleCreateProvider);
     final searchSectorCtrl = ref.watch(searchSectorCreateControllerProvider);
     final sectorsList = ref.watch(listAllSectorsProvider);
@@ -149,7 +149,7 @@ class AddSchedulesScreen extends ConsumerWidget {
                 inputType: TextInputType.multiline,
                 maxLines: 3,
                 minLines: 1,
-                maxLength: 80,
+                maxLength: 100,
                 controller: observationsCtrl,
                 validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
               ),
@@ -159,7 +159,7 @@ class AddSchedulesScreen extends ConsumerWidget {
               TextFieldFormEsvilla(
                 name: 'Tipo de Basura',
                 inputType: TextInputType.text,
-                maxLength: 50,
+                maxLength: 60,
                 minLines: 1,
                 maxLines: 1,
                 controller: trashTypeCtrl,
@@ -170,65 +170,62 @@ class AddSchedulesScreen extends ConsumerWidget {
               // HORARIOS
               Row(children: [
                 Expanded(
-                  child: TextFieldFormEsvilla(
-                    name: 'Hora Inicio',
-                    maxLength: 5,
-                    minLength: 5,
-                    inputType: TextInputType.datetime,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      labelText: 'Hora Inicio',
+                      floatingLabelStyle:
+                          const TextStyle(color: Colors.blue, fontSize: 22),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.blue,
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.blue,
+                          width: 4,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.blue,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    maxLength: 7,
+                    keyboardType: TextInputType.datetime,
                     controller: startTimeCtrl,
                     validator: (value) {
-                      if (value == null || value.isEmpty || value.length < 5) {
+                      if (value == null || value.isEmpty) {
                         return 'La hora de inicio es requerida';
-                      }
-                      final time = value.split(':');
-                      if (time.length != 2) {
-                        return 'La hora de inicio debe ser en formato HH:MM';
-                      }
-                      try {
-                        final hour = int.parse(time[0]);
-                        final minute = int.parse(time[1]);
-                        if (hour < 0 ||
-                            hour > 23 ||
-                            minute < 0 ||
-                            minute > 59) {
-                          return 'La hora de inicio es inválida';
-                        }
-                      } on FormatException {
-                        return 'La hora de inicio debe ser en formato HH:MM';
                       }
                       return null;
                     },
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextFieldFormEsvilla(
-                    inputType: TextInputType.datetime,
-                    maxLength: 5,
-                    minLength: 5,
-                    name: 'Hora Fin',
-                    controller: endTimeCtrl,
-                    validator: (value) {
-                      if (value == null || value.isEmpty || value.length < 5) {
-                        return 'La hora de fin es requerida';
+                    onTap: () async {
+                      TimeOfDay? pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                        builder: (context, child) {
+                          return MediaQuery(
+                            data: MediaQuery.of(context)
+                                .copyWith(alwaysUse24HourFormat: false),
+                            child: child!,
+                          );
+                        },
+                      );
+
+                      if (pickedTime != null) {
+                        final time12hr = pickedTime
+                            .format(context); // Formato AM/PM automático
+                        startTimeCtrl.text = time12hr;
                       }
-                      final time = value.split(':');
-                      if (time.length != 2) {
-                        return 'La hora de fin debe ser en formato HH:MM';
-                      }
-                      try {
-                        final hour = int.parse(time[0]);
-                        final minute = int.parse(time[1]);
-                        if (hour < 0 ||
-                            hour > 23 ||
-                            minute < 0 ||
-                            minute > 59) {
-                          return 'La hora de fin es inválida';
-                        }
-                      } on FormatException {
-                        return 'La hora de fin debe ser en formato HH:MM';
-                      }
-                      return null;
                     },
                   ),
                 ),

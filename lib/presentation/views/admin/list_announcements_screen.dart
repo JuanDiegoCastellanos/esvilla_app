@@ -185,6 +185,7 @@ class ListAnnouncementsScreen extends ConsumerWidget {
           ),
         ),
         ButtonRectangular(
+          color: Colors.blue,
           child: Row(
             children: [
               const Icon(

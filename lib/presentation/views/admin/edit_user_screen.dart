@@ -298,7 +298,7 @@ class _EditUserFormState extends ConsumerState<EditUserForm> {
               ),
             ],
           ),
-          const SizedBox(
+          /*const SizedBox(
             height: 20,
           ),
           ElevatedButton.icon(
@@ -316,7 +316,7 @@ class _EditUserFormState extends ConsumerState<EditUserForm> {
               backgroundColor: WidgetStateProperty.all(Colors.orange),
               minimumSize: const WidgetStatePropertyAll(Size(300, 50)),
             ),
-          ),
+          ), */
           const SizedBox(
             height: 50,
           ),

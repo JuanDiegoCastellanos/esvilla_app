@@ -1,12 +1,10 @@
 
-import 'package:esvilla_app/presentation/providers/schedules/schedule_model_presentation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DaySchedule {
   final int id;
   final String name;
   List<TimeBySector> timeBySectors;
-
   DaySchedule({
     required this.id,
     required this.name,
@@ -18,7 +16,6 @@ class TimeBySector {
   final String starthour;
   final String endHour;
   List<Sector> sectors;
-
   TimeBySector({
     required this.starthour,
     required this.endHour,
@@ -28,7 +25,6 @@ class TimeBySector {
 
 class Sector {
   final String name;
-
   Sector({
     required this.name,
   });
@@ -36,38 +32,7 @@ class Sector {
 
 class ScheduleRecollection {
   final List<DaySchedule> scheduleDays;
-
   ScheduleRecollection({required this.scheduleDays});
-
-  /* List<DaySchedule> buildScheduleRecollectionForScreen(
-      List<ScheduleModelPresentation> schedulesModel) {
-    // Limpiar timeBySectors existentes antes de reconstruir
-    for (var day in scheduleDays) {
-      day.timeBySectors.clear();
-    }
-    for (var schedule in schedulesModel) {
-      if (schedule.days == null || schedule.days!.isEmpty) continue;
-      // Para cada día en el horario
-      for (var day in schedule.days!) {
-        // Encontrar el día correspondiente en scheduleDays
-        for (var scheduleDay in scheduleDays) {
-          if (scheduleDay.name.toLowerCase() == day.toLowerCase()) {
-            // Añadir el horario a ese día
-            scheduleDay.timeBySectors.add(TimeBySector(
-              starthour: schedule.startTime ?? '',
-              endHour: schedule.endTime ?? '',
-              sectors: schedule.associatedSectors
-                      ?.map((sector) => Sector(name: sector))
-                      .toList() ??
-                  [],
-            ));
-            break; // Ya encontramos el día, no necesitamos seguir buscando
-          }
-        }
-      }
-    }
-    return scheduleDays;
-  } */
 }
 
 final scheduleRecollectionProvider = StateProvider<ScheduleRecollection>((ref) {

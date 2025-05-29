@@ -99,7 +99,7 @@ class EditScheduleScreen extends ConsumerWidget {
         ref.watch(observationsTypeControllerProvider(schedule));
     final startTimeController =
         ref.watch(startTimeControllerProvider(schedule));
-    final endTimeController = ref.watch(endTimeControllerProvider(schedule));
+    //final endTimeController = ref.watch(endTimeControllerProvider(schedule));
 
     final searchSectorController = ref.watch(searchSectorControllerProvider);
 
@@ -170,7 +170,7 @@ class EditScheduleScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               TextFieldFormEsvilla(
                 name: 'Observaciones',
-                maxLength: 50,
+                maxLength: 100,
                 controller: observationsController,
                 inputType: TextInputType.text,
                 validator: (value) {
@@ -183,7 +183,7 @@ class EditScheduleScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               TextFieldFormEsvilla(
                 name: 'Tipo de Basura',
-                maxLength: 50,
+                maxLength: 60,
                 controller: trashTypeController,
                 inputType: TextInputType.text,
                 validator: (value) {
@@ -197,69 +197,78 @@ class EditScheduleScreen extends ConsumerWidget {
               Row(
                 children: [
                   Expanded(
-                    child: TextFieldFormEsvilla(
-                      name: 'Hora Inicio',
-                      maxLength: 5,
-                      minLength: 5,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        labelText: 'Hora Inicio',
+                        floatingLabelStyle:
+                            const TextStyle(color: Colors.blue, fontSize: 22),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.blue,
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.blue,
+                            width: 4,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.blue,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      maxLength: 7,
+                      keyboardType: TextInputType.datetime,
                       controller: startTimeController,
-                      inputType: TextInputType.number,
                       validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.length < 5) {
+                        if (value == null || value.isEmpty) {
                           return 'La hora de inicio es requerida';
                         }
-                        final time = value.split(':');
-                        if (time.length != 2) {
-                          return 'La hora de inicio debe ser en formato HH:MM';
+
+                        final timeRegex =
+                            RegExp(r'^([1-9]|1[0-2]):[0-5][0-9] (AM|PM)$');
+                        if (!timeRegex.hasMatch(value)) {
+                          return 'Formato inválido. Use: HH:MM AM/PM';
                         }
-                        try {
-                          final hour = int.parse(time[0]);
-                          final minute = int.parse(time[1]);
-                          if (hour < 0 ||
-                              hour > 23 ||
-                              minute < 0 ||
-                              minute > 59) {
-                            return 'La hora de inicio es inválida';
-                          }
-                        } on FormatException {
-                          return 'La hora de inicio debe ser en formato HH:MM';
-                        }
+
                         return null;
                       },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFieldFormEsvilla(
-                      name: 'Hora Fin',
-                      maxLength: 5,
-                      minLength: 5,
-                      controller: endTimeController,
-                      inputType: TextInputType.datetime,
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.length < 5) {
-                          return 'La hora de fin es requerida';
+                      onTap: () async {
+                        TimeOfDay initialTime = TimeOfDay.now();
+
+                        if (startTimeController.text.isNotEmpty) {
+                          initialTime = parseTime(startTimeController.text);
                         }
-                        final time = value.split(':');
-                        if (time.length != 2) {
-                          return 'La hora de fin debe ser en formato HH:MM';
+
+                        final pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: initialTime,
+                          builder: (context, child) {
+                            return MediaQuery(
+                              data: MediaQuery.of(context)
+                                  .copyWith(alwaysUse24HourFormat: false),
+                              child: child!,
+                            );
+                          },
+                        );
+
+                        if (pickedTime != null) {
+                          final hour = pickedTime.hourOfPeriod; // 1-12
+                          final minute =
+                              pickedTime.minute.toString().padLeft(2, '0');
+                          final period =
+                              pickedTime.period == DayPeriod.am ? 'AM' : 'PM';
+                          startTimeController.text = '$hour:$minute $period';
                         }
-                        try {
-                          final hour = int.parse(time[0]);
-                          final minute = int.parse(time[1]);
-                          if (hour < 0 ||
-                              hour > 23 ||
-                              minute < 0 ||
-                              minute > 59) {
-                            return 'La hora de fin es inválida';
-                          }
-                        } on FormatException {
-                          return 'La hora de fin debe ser en formato HH:MM';
-                        }
-                        return null;
                       },
                     ),
                   ),
@@ -370,7 +379,9 @@ class EditScheduleScreen extends ConsumerWidget {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          await ref.read(goRouterProvider).pushNamed('adminCreateSector');
+                          await ref
+                              .read(goRouterProvider)
+                              .pushNamed('adminCreateSector');
                           ref.invalidate(listAllSectorsProvider);
                         },
                         style: ButtonStyle(
@@ -486,5 +497,26 @@ class EditScheduleScreen extends ConsumerWidget {
         ),
       ),
     ));
+  }
+
+  TimeOfDay parseTime(String timeString) {
+    try {
+      final parts = timeString.split(' ');
+      final time = parts[0].split(':');
+      int hour = int.parse(time[0]);
+      final int minute = int.parse(time[1]);
+      final String period = parts.length > 1 ? parts[1] : 'AM';
+
+      // Convertir a 24h
+      if (period == 'PM' && hour != 12) {
+        hour += 12;
+      } else if (period == 'AM' && hour == 12) {
+        hour = 0;
+      }
+
+      return TimeOfDay(hour: hour, minute: minute);
+    } catch (e) {
+      return TimeOfDay.now(); // Fallback
+    }
   }
 }

@@ -23,8 +23,14 @@ class AddSectorScreen extends ConsumerWidget {
       name: name,
       description: description,
       location: LocationModelPresentation(
-        type: 'Polygon', //Se usa solo este, para agregar otro se debe cambiar directamente en el backend
-        coordinates: [[[0.0], [0.0]]], // No esta incorporado lo de mapas pero puede serun feature a futuro
+        type:
+            'Polygon', //Se usa solo este, para agregar otro se debe cambiar directamente en el backend
+        coordinates: [
+          [
+            [0.0],
+            [0.0]
+          ]
+        ], // No esta incorporado lo de mapas pero puede serun feature a futuro
       ),
     );
     try {
@@ -63,10 +69,12 @@ class AddSectorScreen extends ConsumerWidget {
       );
     }
   }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nameController = ref.watch(nameControllerCreateProvider);
-    final descriptionController = ref.watch(descriptionControllerCreateProvider);
+    final descriptionController =
+        ref.watch(descriptionControllerCreateProvider);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -92,18 +100,13 @@ class AddSectorScreen extends ConsumerWidget {
                   },
                 ),
                 TextFieldFormEsvilla(
-                  name: 'Descricpcion del sector: ',
+                  name: 'Descripción del sector: ',
                   maxLength: 100,
                   controller: descriptionController,
                   inputType: TextInputType.multiline,
                   maxLines: 3,
+                  minLength: 0,
                   minLines: 1,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'La descricpción es requerida';
-                    }
-                    return null;
-                  },
                 ),
                 Wrap(
                   alignment: WrapAlignment.spaceAround,
@@ -114,8 +117,14 @@ class AddSectorScreen extends ConsumerWidget {
                         size: WidgetStateProperty.all(const Size(150, 50)),
                         color: Colors.green,
                         onPressedFunction: () async {
-                          if (!_formKey.currentState!.validate()) return;
-                          await _onSave(ref, context);
+                          if (descriptionController.text.isEmpty) {
+                            ref.read(descriptionControllerCreateProvider).text =  'Sin Descripción';
+                            if (!_formKey.currentState!.validate()) return;
+                            await _onSave(ref, context);
+                          }else{
+                            if (!_formKey.currentState!.validate()) return;
+                            await _onSave(ref, context);
+                          }
                         },
                         child: Text('Guardar',
                             style:

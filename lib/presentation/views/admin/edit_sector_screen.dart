@@ -93,18 +93,13 @@ class EditSectorScreen extends ConsumerWidget {
                   },
                 ),
                 TextFieldFormEsvilla(
-                  name: 'Descricpcion del sector: ',
+                  name: 'Descripción del sector: ',
                   maxLength: 100,
                   controller: descriptionController,
                   inputType: TextInputType.multiline,
                   maxLines: 3,
+                  minLength: 0,
                   minLines: 1,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'La descricpción es requerida';
-                    }
-                    return null;
-                  },
                 ),
                 Wrap(
                   alignment: WrapAlignment.spaceAround,
@@ -115,8 +110,16 @@ class EditSectorScreen extends ConsumerWidget {
                         size: WidgetStateProperty.all(const Size(150, 50)),
                         color: Colors.green,
                         onPressedFunction: () async {
-                          if (!_formKey.currentState!.validate()) return;
-                          await _onSave(ref, context);
+                          if (descriptionController.text.isEmpty) {
+                            ref
+                                .read(descriptionControllerProvider(sector))
+                                .text = 'Sin Descripción';
+                            if (!_formKey.currentState!.validate()) return;
+                            await _onSave(ref, context);
+                          }else{
+                            if (!_formKey.currentState!.validate()) return;
+                            await _onSave(ref, context);
+                          }
                         },
                         child: Text('Guardar',
                             style:

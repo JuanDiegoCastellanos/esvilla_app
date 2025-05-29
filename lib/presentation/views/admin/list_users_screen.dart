@@ -181,6 +181,7 @@ class _ListUsersScreenState extends ConsumerState<ListUsersScreen> {
               ),
             ),
             ButtonRectangular(
+                      color: Colors.blue,
                       child: Row(
                         children: [
                           const Icon(
