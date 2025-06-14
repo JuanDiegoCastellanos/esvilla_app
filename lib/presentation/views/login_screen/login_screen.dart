@@ -1,11 +1,13 @@
 import 'package:esvilla_app/core/config/app_router.dart';
 import 'package:esvilla_app/core/constants/app_texts.dart';
+import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_notifier.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_state.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -50,27 +52,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     ref.listen<AuthState>(authControllerProvider, (prev, next) {
       // Si cambió el mensaje de error, muéstralo
-    if (next.error != null && next.error != prev?.error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: Duration(milliseconds: 500),
-          content: Text(next.error!),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+      if (next.error != null && next.error != prev?.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: Duration(milliseconds: 500),
+            content: Text(next.error!),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
 
-    // Si pasó de loading a autenticado con éxito, muestro bienvenida
-    final wasLoading = prev?.isLoading ?? false;
-    if (wasLoading && next.isAuthenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(milliseconds: 500),
-          content: Text('¡Bienvenido!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    }
+      // Si pasó de loading a autenticado con éxito, muestro bienvenida
+      final wasLoading = prev?.isLoading ?? false;
+      if (wasLoading && next.isAuthenticated) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(milliseconds: 500),
+            content: Text('¡Bienvenido!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     });
 
     return Scaffold(
@@ -91,7 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   children: [
                     Transform(
-                      transform: Matrix4.translationValues(0, -90, 0),
+                      transform: Matrix4.translationValues(0, -120, 0),
                       child: const Text(
                         'Iniciar Sesión',
                         textAlign: TextAlign.center,
@@ -102,7 +104,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     Container(
-                      transform: Matrix4.translationValues(0, -50, 0),
+                      transform: Matrix4.translationValues(0, -110, 0),
                       width: MediaQuery.of(context).size.width,
                       padding: const EdgeInsets.only(left: 20),
                       child: const Text(
@@ -114,8 +116,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             fontWeight: FontWeight.w300),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                    Container(
+                      transform: Matrix4.translationValues(0, -80, 0),
+                      padding: const EdgeInsets.only(left: 15, right: 15),
                       child: TextFieldFormEsvilla(
                         name: 'Documento de identidad o Email',
                         maxLength: 50,
@@ -124,8 +127,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         validator: (value) => _validarCampo(value, 'Documento'),
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    Padding(
+                    const SizedBox(height: 20),
+                    Container(
+                      transform: Matrix4.translationValues(0, -80, 0),
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: TextFieldFormEsvilla(
                         name: 'Clave',
@@ -145,51 +149,62 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             icon: Icon(Icons.remove_red_eye)),
                       ),
                     ),
-                    const SizedBox(height: 30),
                     //authState.isLoading ? const CircularProgressIndicator() :
-                    ButtonRectangular(
-                      onPressedFunction: authState.isLoading ? null : _login,
-                      child: authState.isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                              'Iniciar Sesión',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w600),
-                            ),
+                    Container(
+                      transform: Matrix4.translationValues(0, -70, 0),
+                      child: ButtonRectangular(
+                        onPressedFunction: authState.isLoading ? null : _login,
+                        child: authState.isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
+                            : const Text(
+                                'Iniciar Sesión',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                      ),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        final goRouter = ref.read(goRouterProvider);
-                        goRouter.push('/register');
-                      },
-                      child: const Text(
-                        'Register',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF4F78FF),
-                          decoration: TextDecoration.underline,
+                    Container(
+                      transform: Matrix4.translationValues(0, -50, 0),
+                      child: GestureDetector(
+                        onTap: () {
+                          final goRouter = ref.read(goRouterProvider);
+                          goRouter.push('/register');
+                        },
+                        child: const Text(
+                          'Register',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF4F78FF),
+                            decoration: TextDecoration.underline,
+                            decorationStyle: TextDecorationStyle.dotted,
+                            decorationColor: Color(0xFF4F78FF),
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
-                      child: const Text(
-                        AppTexts.termsAndPrivacy,
-                        style: TextStyle(
-                          fontFamily: 'Sniglet',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w300,
+                    GestureDetector(
+                      onTap: () {
+                        launchPrivacy();
+                      },
+                      child: Container(
+                        transform: Matrix4.translationValues(0, -30, 0),
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        child: const Text(
+                          AppTexts.termsAndPrivacy,
+                          style: TextStyle(
+                            color: Color(0xFF4F78FF),
+                            decoration: TextDecoration.underline,
+                            decorationStyle: TextDecorationStyle.dotted,
+                            decorationColor: Color(0xFF4F78FF),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],
@@ -200,5 +215,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> launchPrivacy() async {
+    try {
+      final url = Uri.parse('http://www.esvilla-esp.gov.co/politicas/');
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      throw AppException(message: 'Error al abrir Link de privacidad $e');
+    }
   }
 }

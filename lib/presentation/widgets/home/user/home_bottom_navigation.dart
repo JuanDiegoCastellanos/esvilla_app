@@ -44,7 +44,7 @@ class _HomeBottomNavigationState extends ConsumerState<HomeBottomNavigation> {
         BottomNavigationBarItem(
           backgroundColor: Colors.white,
           icon:Icon(Icons.home),
-          label: 'Home',
+          label: 'Inicio',
         ),
         BottomNavigationBarItem(
           backgroundColor: Colors.white,

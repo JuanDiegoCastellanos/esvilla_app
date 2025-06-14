@@ -76,14 +76,14 @@ class _PaymentLinksSectionScreenState
             const Padding(
               padding: EdgeInsets.only(top: 20),
               child: TitleSection(
-                titleText: 'Link para pago de Servicios',
+                titleText: 'Medios de pago de Servicios',
               ),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
               child: Text(
-                'A continuación están los links para dirigirse a las apps para realizar el pago de servicios: ',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
+                'Acceda ahora mismo a nuestros canales digitales para pagos rápidos y seguros.',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w300),
                 textAlign: TextAlign.center,
               ),
             ),

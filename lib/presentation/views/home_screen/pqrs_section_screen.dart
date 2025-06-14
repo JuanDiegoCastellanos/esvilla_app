@@ -142,7 +142,7 @@ Widget buildPQRSForm(
         Center(child: TitleSection(titleText: 'PQRS - Soporte esvilla')),
         const SizedBox(height: 10),
         const Text(
-          'Estimado usuario en esta sección puede generar una PQRS',
+          'Estimado usuario, en esta sección podrá crear y gestionar sus peticiones, quejas, reclamos y sugerencias (PQRS).',
           style: TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 24),

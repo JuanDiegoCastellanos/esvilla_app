@@ -116,7 +116,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               width: double.infinity,
               child: const TitleSection(
-                titleText: 'Horarios De Recoleccion',
+                titleText: 'Horarios De Recolección',
               ),
             ),
             Container(
@@ -128,7 +128,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               width: double.infinity,
               child: const Text(
-                'Estimado usuario en esta sección puede encontrar los horarios de recolección de basuras ',
+                'Estimado usuario, en esta sección encontrará los horarios de recolección de residuos correspondientes a su sector.',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
               ),
             ),

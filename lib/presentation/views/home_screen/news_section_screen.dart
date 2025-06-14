@@ -19,10 +19,9 @@ class NewsSectionScreen extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: const Text(
-            'Infórmate de las noticias más recientes e informes públicos a los que el ciudadano puede acceder.\n '
-            '\nAprende sobre los impactos ambientales, consejos de reciclaje y manejo de residuos que te ayudarán a '
-            ' vivir de una manera más sostenible y a cuidar tu entorno.\n '
-            '\nDescubre cómo puedes contribuir a una comunidad más ecológica y responsable.',
+            'Descubre las noticias más relevantes y accede a informes públicos de interés ciudadano.\n'
+            '\nAprende sobre impactos ambientales y recibe consejos prácticos de reciclaje y manejo de residuos para adoptar un estilo de vida más sostenible y proteger tu entorno.\n'
+            '\nConoce cómo tus acciones individuales pueden transformar nuestra comunidad en un espacio más ecológico y responsable.\n',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,

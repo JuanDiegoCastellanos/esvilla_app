@@ -5,6 +5,7 @@ import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_no
 import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -24,7 +25,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   bool obscurePwd1 = true;
   bool obscurePwd2 = true;
-
 
   @override
   void dispose() {
@@ -118,138 +118,148 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
-    
+
     return Scaffold(
-        body: Container(
-      decoration: const BoxDecoration(
-          gradient: LinearGradient(
-        colors: <Color>[Color(0xFF82D8FF), Color(0xFFFFFFFF)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        stops: [0.56, 1.0],
-      )),
-      child: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Image.asset(
-                'assets/img/logoEsvillaOficial.png',
-                width: 260,
-                height: 160,
+        body: SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Image.asset(
+                'assets/img/imgLogin.png',
+                fit: BoxFit.contain,
               ),
-              Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Registro',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 35,
-                          color: Color.fromRGBO(47, 39, 125, 1),
-                          fontWeight: FontWeight.w400,
-                        ),
+            ),
+            Form(
+              key: _formKey,
+              child: Container(
+                transform: Matrix4.translationValues(0, -80, 0),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Registro',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 35,
+                        color: Color.fromRGBO(47, 39, 125, 1),
+                        fontWeight: FontWeight.w400,
                       ),
-                      const SizedBox(height: 10),
-                      newInputField(_nameController, 'Nombre Completo', 60, 6,
-                          null, _validarCampo),
-                      const SizedBox(height: 20),
-                      newInputField(_documentController, 'Documento', 20, 10,
-                          null, _validarCampo),
-                      const SizedBox(height: 20),
-                      newInputField(_emailController, 'Correo electronico', 30,
-                          6, null, _validarCampo),
-                      const SizedBox(height: 20),
-                      newInputField(_telefonoController, 'Telefono', 10, 10,
-                          null, _validarCampo),
-                      const SizedBox(height: 20),
-                      newInputField(_direccionController, 'Direccion', 60, 6,
-                          null, _validarCampo),
-                      const SizedBox(height: 20),
-                      newInputField(
-                          _passwordController,
-                          'Contraseña',
-                          30,
-                          8,
-                          IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  obscurePwd1 = !obscurePwd1;
-                                  AppLogger.d('obscureField: $obscurePwd1');
-                                });
-                              },
-                              icon: Icon(Icons.remove_red_eye)),
-                          _validarCampo,
-                          obscure: obscurePwd1),
-                      const SizedBox(height: 20),
-                      newInputField(
-                          _passwordAgainController,
-                          'Repetir Contraseña',
-                          30,
-                          8,
-                          IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  obscurePwd2 = !obscurePwd2;
-                                  AppLogger.d('obscureField: $obscurePwd2');
-                                });
-                              },
-                              icon: Icon(Icons.remove_red_eye)),
-                          _validarCampo,
-                          obscure: obscurePwd2),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          fixedSize:
-                              WidgetStateProperty.all(const Size(233, 50)),
-                          backgroundColor: WidgetStateColor.resolveWith(
-                              (states) => const Color.fromRGBO(47, 39, 125, 1)),
-                          shape:
-                              WidgetStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                            ),
+                    ),
+                    const SizedBox(height: 20),
+                    newInputField(_nameController, 'Nombres y Apellidos', 200,
+                        6, null, _validarCampo),
+                    const SizedBox(height: 20),
+                    newInputField(_documentController, 'Documento de identidad',
+                        20, 10, null, _validarCampo),
+                    const SizedBox(height: 20),
+                    newInputField(_emailController, 'Correo electrónico', 100,
+                        10, null, _validarCampo),
+                    const SizedBox(height: 20),
+                    newInputField(_telefonoController, 'Teléfono', 20, 10, null,
+                        _validarCampo),
+                    const SizedBox(height: 20),
+                    newInputField(_direccionController, 'Dirección', 100, 6,
+                        null, _validarCampo),
+                    const SizedBox(height: 20),
+                    newInputField(
+                        _passwordController,
+                        'Contraseña',
+                        30,
+                        8,
+                        IconButton(
+                            onPressed: () {
+                              setState(() {
+                                obscurePwd1 = !obscurePwd1;
+                                AppLogger.d('obscureField: $obscurePwd1');
+                              });
+                            },
+                            icon: Icon(Icons.remove_red_eye)),
+                        _validarCampo,
+                        obscure: obscurePwd1),
+                    const SizedBox(height: 20),
+                    newInputField(
+                        _passwordAgainController,
+                        'Repetir Contraseña',
+                        30,
+                        8,
+                        IconButton(
+                            onPressed: () {
+                              setState(() {
+                                obscurePwd2 = !obscurePwd2;
+                                AppLogger.d('obscureField: $obscurePwd2');
+                              });
+                            },
+                            icon: Icon(Icons.remove_red_eye)),
+                        _validarCampo,
+                        obscure: obscurePwd2),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        fixedSize: WidgetStateProperty.all(const Size(233, 50)),
+                        backgroundColor: WidgetStateColor.resolveWith(
+                            (states) => const Color.fromRGBO(47, 39, 125, 1)),
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
                           ),
                         ),
-                        onPressed: _register,
-                        child: authState.isLoading
-                            ? const CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.red),
-                              )
-                            : const Text(
-                                'Register',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w600),
-                              ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
+                      onPressed: _register,
+                      child: authState.isLoading
+                          ? const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.red),
+                            )
+                          : const Text(
+                              'Register',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        launchPrivacy();
+                      },
+                      child: Container(
                         padding: const EdgeInsets.only(left: 20, right: 20),
                         child: const Text(
                           AppTexts.termsAndPrivacy,
                           style: TextStyle(
+                            color: Color(0xFF4F78FF),
+                            decoration: TextDecoration.underline,
+                            decorationStyle: TextDecorationStyle.dotted,
+                            decorationColor: Color(0xFF4F78FF),
                             fontSize: 14,
                             fontWeight: FontWeight.w300,
                           ),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     ));
+  }
+
+  Future<void> launchPrivacy() async {
+    try {
+      final url = Uri.parse('http://www.esvilla-esp.gov.co/politicas/');
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      throw AppException(message: 'Error al abrir Link de privacidad $e');
+    }
   }
 
   Widget newInputField(

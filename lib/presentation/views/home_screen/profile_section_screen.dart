@@ -221,7 +221,8 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                       TextFieldFormEsvilla(
                         name: 'Nombre',
                         controller: _nameController,
-                        maxLength: 40,
+                        maxLength: 200,
+                        minLength: 6,
                         inputType: TextInputType.name,
                         validator: (value) => _validarCampo(value, 'un nombre'),
                       ),
@@ -231,6 +232,7 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                         name: 'Documento',
                         controller: _documentController,
                         inputType: TextInputType.number,
+                        maxLength: 20,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor ingresa un documento';
@@ -245,7 +247,7 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
 
                       TextFieldFormEsvilla(
                           name: 'Email',
-                          maxLength: 30,
+                          maxLength: 100,
                           controller: _emailController,
                           inputType: TextInputType.emailAddress,
                           validator: (value) {
@@ -263,7 +265,7 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
 
                       TextFieldFormEsvilla(
                         name: 'Teléfono',
-                        maxLength: 10,
+                        maxLength: 20,
                         controller: _phoneController,
                         inputType: TextInputType.phone,
                         validator: (value) =>
@@ -273,7 +275,7 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
 
                       TextFieldFormEsvilla(
                         name: 'Dirección principal',
-                        maxLength: 40,
+                        maxLength: 100,
                         controller: _adressController,
                         inputType: TextInputType.streetAddress,
                         validator: (value) =>
@@ -354,6 +356,8 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                         TextFieldFormEsvilla(
                           controller: _oldPasswordController,
                           name: 'Clave antigua',
+                          maxLength: 30,
+                          minLength: 8,
                           inputType: TextInputType.visiblePassword,
                           obscureText: true,
                           validator: (value) =>
@@ -364,6 +368,8 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                         TextFieldFormEsvilla(
                           controller: _newPasswordController,
                           name: 'Nueva clave',
+                          maxLength: 30,
+                          minLength: 8,
                           inputType: TextInputType.visiblePassword,
                           validator: (value) =>
                               _validarCampo(value, 'la nueva clave'),
@@ -373,6 +379,8 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                         TextFieldFormEsvilla(
                           controller: _confirmPasswordController,
                           name: 'Repetir nueva clave',
+                          maxLength: 30,
+                          minLength: 8,
                           inputType: TextInputType.visiblePassword,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
