@@ -280,7 +280,7 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                       AddressAutocompleteField(
                         controller: _adressController,
                         name: 'Dirección principal',
-                        maxLength: 200,
+                        maxLength: 500,
                         minLength: 6,
                         validator: (value) =>
                             _validarCampo(value, 'una dirección principal'),

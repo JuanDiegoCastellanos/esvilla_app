@@ -164,9 +164,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     AddressAutocompleteField(
                       controller: _direccionController,
                       name: 'Dirección',
-                      maxLength: 200,
+                      maxLength: 500,
                       minLength: 6,
-                      validator: (value) => _validarCampo(value, 'una dirección'),
+                      validator: (value) =>
+                          _validarCampo(value, 'una dirección'),
                     ),
                     const SizedBox(height: 20),
                     newInputField(
