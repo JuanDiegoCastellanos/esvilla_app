@@ -208,7 +208,43 @@ class ListAnnouncementsScreen extends ConsumerWidget {
         Expanded(
           child: announcementsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) => Center(child: Text(e.toString())),
+            error: (e, st) {
+              return RefreshIndicator(
+                onRefresh: () async {
+                  ref.read(searchTextProvider.notifier).state = '';
+                  ref.read(dateFilterProvider.notifier).state = '';
+                  await ref
+                      .read(announcementsListControllerProvider.notifier)
+                      .loadInitialNews();
+                },
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: const [
+                    SizedBox(height: 200),
+                    Center(
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.announcement_outlined,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'No hay anuncios disponibles',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
             data: (page) {
               //Filros
               final filtered = page.data.where((a) {
@@ -391,12 +427,12 @@ class ListAnnouncementsScreen extends ConsumerWidget {
                     onPressed: () async {
                       ref.read(goRouterProvider).pop();
 
-                        await ref
-                            .read(deleteAnnouncementByIdUseCaseProvider)
-                            .call(announcement.id!);
-                        await ref
-                            .read(announcementsListControllerProvider.notifier)
-                            .loadInitialNews();
+                      await ref
+                          .read(deleteAnnouncementByIdUseCaseProvider)
+                          .call(announcement.id!);
+                      await ref
+                          .read(announcementsListControllerProvider.notifier)
+                          .loadInitialNews();
                     },
                     child: const Text(
                       'Aceptar',

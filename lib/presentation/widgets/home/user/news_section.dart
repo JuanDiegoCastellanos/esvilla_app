@@ -184,57 +184,86 @@ Widget _buildFilterSection(BuildContext context, WidgetRef ref) {
         ),
 
         // Filtro de fechas
-        TextButton.icon(
-          icon: Icon(
-            Icons.calendar_today,
-            color: Colors.blue.shade900,
-          ),
-          label: Text(
-            'Filtrar por fecha',
-            style: TextStyle(
-                color: Colors.blue.shade800,
-                fontSize: 18,
-                decoration: TextDecoration.underline,
-                decorationColor: Colors.blue.shade800),
-          ),
-          onPressed: () async {
-            final DateTime now = DateTime.now();
-            final DateTime lastDate = now.subtract(Duration(days: 1));
-            final DateTime defaultStart = now.subtract(Duration(days: 7));
-            final DateTime defaultEnd = lastDate; // **¡ojo aquí!**
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton.icon(
+              icon: Icon(
+                Icons.calendar_today,
+                color: Colors.blue.shade900,
+              ),
+              label: Text(
+                'Filtrar por fecha',
+                style: TextStyle(
+                    color: Colors.blue.shade800,
+                    fontSize: 18,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.blue.shade800),
+              ),
+              onPressed: () async {
+                final DateTime now = DateTime.now();
+                final DateTime defaultStart = now.subtract(Duration(days: 7));
+                final DateTime defaultEnd = now;
 
-            DateTime rawStart =
-                ref.read(dateProvider)['startDate'] ?? defaultStart;
-            DateTime rawEnd = ref.read(dateProvider)['endDate'] ?? defaultEnd;
+                DateTime rawStart =
+                    ref.read(dateProvider)['startDate'] ?? defaultStart;
+                DateTime rawEnd =
+                    ref.read(dateProvider)['endDate'] ?? defaultEnd;
 
-// Asegurarse de no pasar de lastDate:
-            final DateTime start =
-                rawStart.isAfter(lastDate) ? lastDate : rawStart;
-            final DateTime end = rawEnd.isAfter(lastDate) ? lastDate : rawEnd;
+                // Garantizar que start ≤ end:
+                final DateTimeRange initialRange = rawStart.isAfter(rawEnd)
+                    ? DateTimeRange(start: rawEnd, end: rawEnd)
+                    : DateTimeRange(start: rawStart, end: rawEnd);
 
-// Y además garantizar que start ≤ end:
-            final DateTimeRange initialRange = start.isAfter(end)
-                ? DateTimeRange(start: end, end: end)
-                : DateTimeRange(start: start, end: end);
+                final DateTimeRange? picked = await showDateRangePicker(
+                  context: context,
+                  firstDate: DateTime(2000),
+                  lastDate: now,
+                  initialDateRange: initialRange,
+                );
 
-            final DateTimeRange? picked = await showDateRangePicker(
-              context: context,
-              firstDate: DateTime(2000),
-              lastDate: DateTime.now().subtract(Duration(days: 1)),
-              initialDateRange: initialRange,
-            );
+                if (picked != null) {
+                  // Establecer startDate al inicio del día (00:00:00.000)
+                  final startDate = DateTime(
+                    picked.start.year,
+                    picked.start.month,
+                    picked.start.day,
+                  );
 
-            if (picked != null) {
-              AppLogger.i('$picked');
-              ref.read(dateProvider.notifier).state = {
-                'startDate': picked.start,
-                'endDate': picked.end,
-              };
-              final controller =
-                  ref.read(announcementsListControllerProvider.notifier);
-              controller.setDateFilter(picked.start, picked.end);
-            }
-          },
+                  // Establecer endDate al final del día (23:59:59.999)
+                  final endDate = DateTime(
+                    picked.end.year,
+                    picked.end.month,
+                    picked.end.day,
+                    23,
+                    59,
+                    59,
+                    999,
+                  );
+
+                  AppLogger.i('Date range: $startDate to $endDate');
+
+                  ref.read(dateProvider.notifier).state = {
+                    'startDate': startDate,
+                    'endDate': endDate,
+                  };
+                  final controller =
+                      ref.read(announcementsListControllerProvider.notifier);
+                  controller.setDateFilter(startDate, endDate);
+                }
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.clear, color: Colors.red.shade700),
+              tooltip: 'Limpiar filtro de fecha',
+              onPressed: () {
+                final controller =
+                    ref.read(announcementsListControllerProvider.notifier);
+                controller.clearFilters();
+                ref.read(dateProvider.notifier).state = {};
+              },
+            ),
+          ],
         ),
       ],
     ),
@@ -252,9 +281,11 @@ Widget _buildNewsItem(
     BuildContext context, AnnouncementsEntity item, WidgetRef ref) {
   // Decodifica la cadena Base64 a Uint8List (bytes)
   Uint8List? mainImageBytes;
-  if (item.mainImage.isNotEmpty) {
+  bool hasImage = false;
+  if (item.mainImage != null && item.mainImage!.isNotEmpty) {
     try {
-      mainImageBytes = decodeBase64Image(item.mainImage);
+      mainImageBytes = decodeBase64Image(item.mainImage!);
+      hasImage = true;
     } catch (e) {
       debugPrint('Error decodificando mainImage: $e');
     }
@@ -287,17 +318,26 @@ Widget _buildNewsItem(
           margin: const EdgeInsets.all(10),
           child: Column(
             children: [
-              Image.memory(
-                mainImageBytes ?? Uint8List(0),
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.error,
-                  color: Colors.red,
+              if (hasImage)
+                Image.memory(
+                  mainImageBytes ?? Uint8List(0),
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.error,
+                    color: Colors.red,
+                  ),
+                )
+              else
+                const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  item.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              Text(
-                item.title,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -310,23 +350,27 @@ Widget _buildNewsItem(
 Widget _buildNewsDetailSheet(
     BuildContext context, AnnouncementsEntity item, WidgetRef ref) {
   Uint8List? mainImageBytes;
-  if (item.mainImage.isNotEmpty) {
+  bool hasMainImage = false;
+  if (item.mainImage != null && item.mainImage!.isNotEmpty) {
     try {
-      mainImageBytes = decodeBase64Image(item.mainImage);
+      mainImageBytes = decodeBase64Image(item.mainImage!);
+      hasMainImage = true;
     } catch (e) {
       debugPrint('Error decodificando mainImage: $e');
     }
   }
 
-  Uint8List secondaryImageBytes = Uint8List(0);
-  if (item.secondaryImage.isNotEmpty) {
+  Uint8List? secondaryImageBytes;
+  bool hasSecondaryImage = false;
+  if (item.secondaryImage != null && item.secondaryImage!.isNotEmpty) {
     try {
-      secondaryImageBytes = decodeBase64Image(item.secondaryImage);
+      secondaryImageBytes = decodeBase64Image(item.secondaryImage!);
+      hasSecondaryImage = true;
     } catch (e) {
       debugPrint('Error decodificando secondaryImage: $e');
     }
   }
-  final user = ref.watch(getUserByIdProvider(item.createdBy)).value;
+  final userAsync = ref.watch(getUserByIdProvider(item.createdBy));
   return DraggableScrollableSheet(
     initialChildSize: 0.5,
     minChildSize: 0.4,
@@ -380,49 +424,67 @@ Widget _buildNewsDetailSheet(
                         fontSize: 16,
                       ),
                     ),
-                    Text(
-                      'Creado por: ${user?.name ?? 'Desconocido'}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                    userAsync.when(
+                      data: (user) => Text(
+                        'Creado por: ${user?.name ?? item.createdBy}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 12),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.memory(
-                          mainImageBytes ?? Uint8List(0),
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(
-                              Icons.error,
-                              color: Colors.red,
-                            );
-                          },
+                      loading: () => const Text(
+                        'Cargando información del autor...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      error: (error, stack) => Text(
+                        'Creado por: ${item.createdBy}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
+                    if (hasMainImage)
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.memory(
+                            mainImageBytes!,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(
+                                Icons.error,
+                                color: Colors.red,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     const SizedBox(height: 16),
                     // Contenido detallado de la noticia
                     Text(
                       item.description,
                       style: TextStyle(fontSize: 20),
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 12),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.memory(
-                          secondaryImageBytes,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(
-                              Icons.error,
-                              color: Colors.red,
-                            );
-                          },
+                    if (hasSecondaryImage)
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.memory(
+                            secondaryImageBytes!,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(
+                                Icons.error,
+                                color: Colors.red,
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
                     const SizedBox(height: 16),
                     Text(
                       item.body,

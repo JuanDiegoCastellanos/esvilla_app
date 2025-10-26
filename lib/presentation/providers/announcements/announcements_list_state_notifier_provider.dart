@@ -97,9 +97,6 @@ final announcementsListControllerProvider = StateNotifierProvider<
 
 final sortOrderProvider = StateProvider<bool>((ref) => false);
 
-final dateProvider = StateProvider<Map<String,DateTime>>((ref) => {
-  'startDate': DateTime.now().subtract(Duration(days: 7)),
-  'endDate': DateTime.now(),
-}); 
+final dateProvider = StateProvider<Map<String,DateTime>>((ref) => {}); 
 
 

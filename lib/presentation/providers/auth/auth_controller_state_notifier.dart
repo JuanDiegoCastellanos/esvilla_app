@@ -40,17 +40,13 @@ class AuthController extends StateNotifier<AuthState> {
         throw Exception("Token vacío, login fallido");
       }
 
-      final expirationTime = DateTime.now()
-          .add(Duration(seconds: response.expiration))
-          .millisecondsSinceEpoch;
-
       await _authTokenStateNotifier.clearTokens();
       await _userDataStateNotifier.clearTokens();
       await _authTokenStateNotifier.saveTokens(
         role: response.role,
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
-        expiresIn: expirationTime,
+        expiresIn: response.expiration,
       );
       state = AuthState(
           token: response.accessToken,
@@ -83,17 +79,13 @@ class AuthController extends StateNotifier<AuthState> {
           password: password,
           direccion: direccion));
 
-      final expirationTime = DateTime.now()
-          .add(Duration(seconds: response.expiration))
-          .millisecondsSinceEpoch;
-
       await _authTokenStateNotifier.clearTokens();
       await _userDataStateNotifier.clearTokens();
       await _authTokenStateNotifier.saveTokens(
         role: response.role,
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
-        expiresIn: expirationTime,
+        expiresIn: response.expiration,
       );
 
       state = AuthState(
@@ -156,16 +148,12 @@ class AuthController extends StateNotifier<AuthState> {
       final newTokens =
           await _ref.read(authRepositoryProvider).refreshToken(refreshToken);
 
-      // 2. Calcular tiempo de expiración CORRECTAMENTE (usando expiresIn del response)
-      final expirationTime = DateTime.now()
-          .add(Duration(seconds: newTokens.expiration))
-          .millisecondsSinceEpoch;
-      // 3. Actualizar estado y almacenamiento
+      // 2. Guardar tokens con expiresIn en segundos (no timestamp)
       await _authTokenStateNotifier.saveTokens(
         role: newTokens.role,
         accessToken: newTokens.accessToken,
         refreshToken: newTokens.refreshToken,
-        expiresIn: expirationTime, // Usar el valor calculado
+        expiresIn: newTokens.expiration,
       );
 
       // 4. Actualizar AuthState

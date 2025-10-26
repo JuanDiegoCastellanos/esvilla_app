@@ -21,8 +21,9 @@ class AuthInterceptor extends Interceptor {
         final refreshToken = await _ref
             .read(authTokenStateNotifierProvider.notifier)
             .getRefreshToken();
-        if (refreshToken!.isEmpty) {
-          AppLogger.e("No refresh token available");
+        if (refreshToken == null || refreshToken.isEmpty) {
+          AppLogger.e("No refresh token available - skipping refresh");
+          // Si no hay refresh token, no intentar refrescar, solo pasar el error
           return handler.next(err);
         }
         final newAccessToken =
@@ -44,8 +45,13 @@ class AuthInterceptor extends Interceptor {
         );
         return handler.resolve(response);
       } catch (e) {
-        await _ref.read(authControllerProvider.notifier).logout();
-        return handler.reject(err); 
+        AppLogger.e("Error in token refresh: $e");
+        // Solo hacer logout si no es un logout explícito
+        final authState = _ref.read(authControllerProvider);
+        if (authState.isAuthenticated) {
+          await _ref.read(authControllerProvider.notifier).logout();
+        }
+        return handler.reject(err);
       }
     }
     _logError(err);
@@ -69,9 +75,17 @@ class AuthInterceptor extends Interceptor {
           final refreshToken = await _ref
               .read(authTokenStateNotifierProvider.notifier)
               .getRefreshToken();
+          if (refreshToken == null) {
+            // Si no hay refresh token, usar el token actual
+            options.headers['Authorization'] =
+                'Bearer ${tokenState.accessToken}';
+            handler.next(options);
+            return;
+          }
+
           final tokenResponse = await _ref
               .read(refreshTokenServiceProvider)
-              .refreshToken(refreshToken!);
+              .refreshToken(refreshToken);
           // Guardamos los nuevos tokens
           await _ref.read(authTokenStateNotifierProvider.notifier).saveTokens(
               accessToken: tokenResponse.accessToken,
@@ -88,7 +102,6 @@ class AuthInterceptor extends Interceptor {
           options.headers['Authorization'] = 'Bearer ${tokenState.accessToken}';
         }
       } else {
-        
         options.headers['Authorization'] = 'Bearer ${tokenState.accessToken}';
       }
     }

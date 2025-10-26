@@ -183,10 +183,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       //AppLogger.w('state location: ${state.fullPath}');
       //AppLogger.w('state matchedLocation: ${state.matchedLocation}');
       // 3. Verificar permisos de administrador
-      if (AppRoutes.adminRoutes.contains(getBaseRoute(currentLocation))) {
-        if (!isAdmin) {
-          return AppRoutes.home; // Redirigir a home si no es admin
-        }
+      final baseRoute = getBaseRoute(currentLocation);
+      final isAdminRoute = AppRoutes.adminRoutes.contains(baseRoute) ||
+          AppRoutes.adminRoutes.contains(baseRoute.replaceFirst('/', ''));
+
+      if (isAdminRoute && !isAdmin) {
+        return AppRoutes.home; // Redirigir a home si no es admin
       }
 
       // 4. Permitir acceso a rutas autenticadas
@@ -253,8 +255,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
               path: AppRoutes.adminEditAnnouncement,
               name: 'adminEditAnnouncement',
-              builder: (context, state) => EditAnnouncementScreen(
-                  announcement: state.extra),
+              builder: (context, state) =>
+                  EditAnnouncementScreen(announcement: state.extra),
             ),
             GoRoute(
               path: AppRoutes.adminCreateAnnouncement,
@@ -269,8 +271,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
               path: AppRoutes.adminEditPqrs,
               name: 'adminEditPqrs',
-              builder: (context, state) => EditPqrsScreen(
-                  pqrs: state.extra),
+              builder: (context, state) => EditPqrsScreen(pqrs: state.extra),
             ),
             GoRoute(
               path: AppRoutes.adminListSchedules,
@@ -280,8 +281,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
               path: AppRoutes.adminEditSchedule,
               name: 'adminEditSchedule',
-              builder: (context, state) => EditScheduleScreen(
-                  schedule: state.extra),
+              builder: (context, state) =>
+                  EditScheduleScreen(schedule: state.extra),
             ),
             GoRoute(
               path: AppRoutes.adminCreateSchedule,
@@ -296,15 +297,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
               path: AppRoutes.adminEditSector,
               name: 'adminEditSector',
-              builder: (context, state) => EditSectorScreen(
-                  sector: state.extra),
-              ),
+              builder: (context, state) =>
+                  EditSectorScreen(sector: state.extra),
+            ),
             GoRoute(
               path: AppRoutes.adminCreateSector,
               name: 'adminCreateSector',
               builder: (context, state) => AddSectorScreen(),
             ),
-            
           ]),
     ],
   );

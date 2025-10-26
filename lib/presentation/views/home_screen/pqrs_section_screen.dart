@@ -211,7 +211,10 @@ Widget buildPQRSStatusInfo(
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Center(child: TitleSection(titleText: 'PQRS - Soporte esvilla',)),
+      Center(
+          child: TitleSection(
+        titleText: 'PQRS - Soporte esvilla',
+      )),
       const SizedBox(height: 10),
       // Texto descriptivo
       const Text(

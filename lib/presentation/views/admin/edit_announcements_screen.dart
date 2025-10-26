@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:esvilla_app/core/config/app_router.dart';
+import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/presentation/providers/announcements/all_announcements_provider.dart';
 import 'package:esvilla_app/presentation/providers/announcements/announcements_list_state_notifier_provider.dart';
 import 'package:esvilla_app/presentation/providers/announcements/announcements_model_presentation.dart';
@@ -123,12 +124,18 @@ class _EditAnnouncementScreenState
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: \$e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      final errorMessage = e is AppException 
+          ? e.message 
+          : 'Ha ocurrido un error inesperado';
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $errorMessage'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

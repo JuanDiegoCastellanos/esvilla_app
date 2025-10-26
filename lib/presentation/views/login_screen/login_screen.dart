@@ -121,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       padding: const EdgeInsets.only(left: 15, right: 15),
                       child: TextFieldFormEsvilla(
                         name: 'Documento de identidad o Email',
-                        maxLength: 50,
+                        maxLength: 200,
                         controller: _emailController,
                         inputType: TextInputType.text,
                         validator: (value) => _validarCampo(value, 'Documento'),
@@ -136,7 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _passwordController,
                         inputType: TextInputType.visiblePassword,
                         obscureText: _isObscure,
-                        maxLength: 30,
+                        maxLength: 50,
                         minLength: 8,
                         validator: (value) => _validarCampo(value, 'Clave'),
                         suffixIcon: IconButton(
