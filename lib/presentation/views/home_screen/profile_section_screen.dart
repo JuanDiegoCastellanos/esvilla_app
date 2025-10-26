@@ -3,6 +3,7 @@ import 'package:esvilla_app/presentation/providers/user/update_user_controller_p
 import 'package:esvilla_app/presentation/providers/user/user_model_presentation.dart';
 import 'package:esvilla_app/presentation/widgets/shared/button_rectangular.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
+import 'package:esvilla_app/presentation/widgets/shared/address_autocomplete_field.dart';
 import 'package:esvilla_app/presentation/widgets/shared/title_section.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -276,12 +277,11 @@ class _ProfileSectionScreenState extends ConsumerState<ProfileSectionScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      TextFieldFormEsvilla(
+                      AddressAutocompleteField(
+                        controller: _adressController,
                         name: 'Dirección principal',
                         maxLength: 200,
                         minLength: 6,
-                        controller: _adressController,
-                        inputType: TextInputType.streetAddress,
                         validator: (value) =>
                             _validarCampo(value, 'una dirección principal'),
                       ),

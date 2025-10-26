@@ -3,6 +3,7 @@ import 'package:esvilla_app/core/constants/app_texts.dart';
 import 'package:esvilla_app/core/error/app_exceptions.dart';
 import 'package:esvilla_app/presentation/providers/auth/auth_controller_state_notifier.dart';
 import 'package:esvilla_app/presentation/widgets/shared/text_field_form_esvilla.dart';
+import 'package:esvilla_app/presentation/widgets/shared/address_autocomplete_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -160,8 +161,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     newInputField(_telefonoController, 'Teléfono', 20, 10, null,
                         _validarCampo),
                     const SizedBox(height: 20),
-                    newInputField(_direccionController, 'Dirección', 200, 6,
-                        null, _validarCampo),
+                    AddressAutocompleteField(
+                      controller: _direccionController,
+                      name: 'Dirección',
+                      maxLength: 200,
+                      minLength: 6,
+                      validator: (value) => _validarCampo(value, 'una dirección'),
+                    ),
                     const SizedBox(height: 20),
                     newInputField(
                         _passwordController,
